@@ -12,8 +12,8 @@ before_install:
 - node --version
 
 before_script: 
-  - pip install --user awscli
-  - pip install --user aws-sam-cli
+  - pip install awscli
+  - pip install aws-sam-cli
   - aws configure set region us-east-1
   - npm run copy-package
   - cd aws-api-gateway-developer-portal
