@@ -23,12 +23,12 @@ before_script:
   - cd ..
 
 script:
-  - cd aws-api-gateway-developer-portal
-  - npm run stackresults
-  - cp ./.env ../
-  - cd ..
+  #- cd aws-api-gateway-developer-portal
+  - node ./scripts/getStackFeatures dev-portal #creates .env
+  #- cp ./.env ../
+  #- cd ..
   - wget -O releases.json https://api.github.com/repos/phillyfan1138/option_price_faas/releases/latest
-  - echo "REACT_APP_TAG=$(node outputTag)" >> .env # creates tag for the main site to know which docs to grab
+  - echo "REACT_APP_TAG=$(node ./scripts/outputTag)" >> .env # creates tag for the main site to know which docs to grab
   - echo "SKIP_PREFLIGHT_CHECK=true" >> .env # skips check for module interactions
   - cd main_site
   - npm install
