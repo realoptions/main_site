@@ -12,7 +12,7 @@ exec(
         const result=JSON.parse(stdout).Stacks.find(({StackName})=>StackName===stackName)
         const envArr1=result.Outputs.reduce((aggr, {OutputKey, OutputValue})=>[...aggr, reactOutput(OutputKey, OutputValue)], [])
         const envArr2=result.Parameters.reduce((aggr, {ParameterValue, ParameterKey})=>[...aggr, reactOutput(ParameterKey, ParameterValue)], [])
-        const envStr=[...envArr1, ...envArr2].join('\n')
+        const envStr=[...envArr1, ...envArr2, ''].join('\n') //final array entry is to make the file have a new line
         writeFile('./.env', envStr, err=>{
             if(err){
                 console.log(err)
