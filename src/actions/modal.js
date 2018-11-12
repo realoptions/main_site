@@ -1,7 +1,6 @@
-import {
-    TOGGLE_OPEN
-} from './constants'
+import { TOGGLE_OPEN } from './constants'
 
-export const toggleOpen=dispatch=>()=>dispatch({
-    type:TOGGLE_OPEN
-})
+export const toggleOpen = dispatch => () =>
+  dispatch({
+    type: TOGGLE_OPEN
+  })

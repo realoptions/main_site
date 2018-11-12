@@ -7,9 +7,8 @@ export default class SwaggerTest extends Component {
   componentDidMount() {
     SwaggerUI({
       dom_id: '#swaggerContainer',
-      url: `https://cdn.rawgit.com/phillyfan1138/option_price_faas/${
-        process.env.REACT_APP_TAG||"v26"
-      }/docs/openapi_merged.yml`
+      url: `https://cdn.rawgit.com/phillyfan1138/option_price_faas/${process.env
+        .REACT_APP_TAG || 'v26'}/docs/openapi_merged.yml`
       //presets: [presets.apis],
     })
   }

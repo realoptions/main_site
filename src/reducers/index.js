@@ -5,13 +5,13 @@ import errors from './errors'
 import client from './client'
 import loading from './loading'
 import modal from './modal'
-import {combineReducers} from 'redux'
+import { combineReducers } from 'redux'
 export default combineReducers({
-    auth,
-    catalog,
-    client,
-    menu,
-    errors,
-    loading,
-    modal
+  auth,
+  catalog,
+  client,
+  menu,
+  errors,
+  loading,
+  modal
 })

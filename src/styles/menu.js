@@ -1,1 +1,1 @@
-export const menuBarHeight='50px'
+export const menuBarHeight = '50px'
