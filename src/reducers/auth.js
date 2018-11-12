@@ -6,6 +6,8 @@ const defaultQuery = {
 
 const getDefaultState = () => {
   const { token, usagePlanId } = queryString.parse(window.location.search)
+  console.log(token)
+  console.log(usagePlanId)
   return {
     ...defaultQuery,
     token,
