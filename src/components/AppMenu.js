@@ -19,7 +19,8 @@ import {
   REGISTER,
   LOGIN,
   MARKETPLACE,
-  SUBSCRIPTIONS
+  SUBSCRIPTIONS,
+  DEMO
 } from '../routes/names'
 import { logout } from '../services/auth'
 import { menuBarHeight } from '../styles/menu'
@@ -77,6 +78,11 @@ export const AppMenu = ({
         <NavItem>
           <NavLink to={MARKETPLACE} tag={Link}>
             Purchase
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink to={DEMO} tag={Link}>
+            Demo
           </NavLink>
         </NavItem>
         {isSignedIn ? (
