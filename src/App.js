@@ -13,12 +13,14 @@ import {
   PRODUCTS,
   DEVELOPERS,
   LOGIN,
+  DEMO,
   REGISTER,
   SUCCESS_MARKETPLACE,
   SUBSCRIPTIONS
 } from './routes/names'
 import Subscriptions from './pages/Subscriptions'
 import { connect } from 'react-redux'
+import Demo from './pages/Demo'
 
 export const checkIfRegisteringFromMarketplace = (
   isFromMarketPlace,
@@ -57,7 +59,7 @@ const App = ({ isFromMarketPlace, isSignedIn, freeUsagePlanId }) =>
       <Route path={PRODUCTS} component={Products} />
       <Route path={DEVELOPERS} component={Developers} />
       <Route path={SUBSCRIPTIONS} component={Subscriptions} />
-
+      <Route path={DEMO} component={Demo} />
       <Route path={REGISTER} component={Register} />
       <Route path={LOGIN} component={Register} />
     </div>

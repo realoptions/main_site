@@ -22,7 +22,12 @@ export default () => [
       </p>
     </Container>
   </Jumbotron>,
-  <Jumbotron style={heightStyle} key="description" fluid className="no-margin">
+  <Jumbotron
+    style={heightStyle}
+    key="description"
+    fluid
+    className="no-margin light-background"
+  >
     <Container>
       <h1 className="display-3">Option Pricing Models</h1>
       <p className="lead">
