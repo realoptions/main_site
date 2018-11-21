@@ -27,7 +27,7 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "copy-package": "cp ./package.json ./aws-api-gateway-developer-portal/lambdas/backend/pckg.json",
-    "prettier":"prettier --single-quote --no-semi --write 'src/**/*.js'"
+    "prettier": "prettier --single-quote --no-semi --write 'src/**/*.js'"
   },
   "lint-staged": {
     "src/**/*.{js,jsx,json,css}": [

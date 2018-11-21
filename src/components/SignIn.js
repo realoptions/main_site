@@ -7,7 +7,7 @@ import { loginError, updateLoggingIn, noLoginError } from '../actions/signIn'
 import Loading from '../components/Loading'
 import { HOME } from '../routes/names'
 
-const goToPreviousPageOrHome = (
+const logInAndGoHome = (
   fn,
   history,
   loginError,
@@ -39,7 +39,7 @@ export const SignIn = ({
   isFromMarketPlace
 }) => (
   <Form
-    onSubmit={goToPreviousPageOrHome(
+    onSubmit={logInAndGoHome(
       register({
         paidUsagePlanId,
         freeUsagePlanId,
@@ -55,7 +55,7 @@ export const SignIn = ({
     {error && <Alert color="danger">{error.message}</Alert>}
     <FormGroup>
       <Label for="emailId">Email</Label>
-      <Input type="email" name="email" id="emailId" />
+      <Input autoFocus type="email" name="email" id="emailId" />
     </FormGroup>
     <FormGroup>
       <Label for="passwordId">Password</Label>

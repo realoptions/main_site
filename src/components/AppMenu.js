@@ -30,8 +30,14 @@ import { init } from '../services/auth'
 import { toggleNavBar } from '../actions/menu'
 import { getPossibleSubscriptions } from '../actions/subscriptions.js'
 
-export const LogOut = ({ logout, cognitoUser }) => (
-  <NavLink href="#" onClick={() => logout(cognitoUser)}>
+export const LogOut = ({ logout, cognitoUser, history }) => (
+  <NavLink
+    href="#"
+    onClick={() => {
+      logout(cognitoUser)
+      history.push(HOME)
+    }}
+  >
     Log Out
   </NavLink>
 )
@@ -42,6 +48,7 @@ export const AppMenu = ({
   isSignedIn,
   isOpen,
   logout,
+  history,
   init,
   cognitoUser,
   paidUsagePlanId,
@@ -99,7 +106,11 @@ export const AppMenu = ({
             requiredObject={freeUsagePlanId !== undefined}
             render={() =>
               isSignedIn ? (
-                <LogOut logout={logout} cognitoUser={cognitoUser} />
+                <LogOut
+                  logout={logout}
+                  cognitoUser={cognitoUser}
+                  history={history}
+                />
               ) : (
                 <NavLink to={LOGIN} tag={Link}>
                   Log In
