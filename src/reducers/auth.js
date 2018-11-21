@@ -3,9 +3,14 @@ import queryString from 'query-string'
 const defaultQuery = {
   isSignedIn: false
 }
-
+export const splitHash = hash => {
+  const split = hash.split('?')
+  return split.length > 1 ? split[1] : ''
+}
 const getDefaultState = () => {
-  const { token, usagePlanId } = queryString.parse(window.location.search)
+  const { token, usagePlanId } = queryString.parse(
+    splitHash(window.location.hash)
+  )
   console.log(token)
   console.log(usagePlanId)
   return {
