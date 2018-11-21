@@ -133,7 +133,7 @@ const conditionalRegistration = (
         addSubscriptionLocal(dispatch)(paidUsagePlanId)
         deleteSubscriptionLocal(dispatch)(freeUsagePlanId)
         return registerPaid(paidUsagePlanId, freeUsagePlanId, token, client)
-      } else if (!isSubscribedFree) {
+      } else if (!isSubscribedFree && !isSubscribedPaid) {
         addSubscriptionLocal(dispatch)(freeUsagePlanId)
         return registerFree(freeUsagePlanId, client)
       } else {
