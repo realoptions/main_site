@@ -1,6 +1,10 @@
 import React from 'react'
 import Loading from '../components/Loading'
-import { SignIn, checkIfRegisteringFromMarketplace } from './SignIn'
+import {
+  SignIn,
+  checkIfRegisteringFromMarketplace,
+  checkIfRegisteredPaid
+} from './SignIn'
 import { shallow } from 'enzyme'
 const gf = () => {}
 const defaultParams = {
@@ -64,5 +68,21 @@ describe('checkIfRegisteringFromMarketPlace', () => {
     expect(
       checkIfRegisteringFromMarketplace(false, undefined, undefined)
     ).toEqual(false)
+  })
+})
+
+describe('checkIfResteredPaid', () => {
+  it('returns true if isFromMarketPlace and isSignedIn', () => {
+    expect(checkIfRegisteredPaid(true, true)).toEqual(true)
+  })
+  it('returns false if isFromMarketPlace and not isSignedIn', () => {
+    expect(checkIfRegisteredPaid(true, false)).toEqual(false)
+  })
+
+  it('returns false if not isFromMarketPlace and isSignedIn', () => {
+    expect(checkIfRegisteredPaid(false, true)).toEqual(false)
+  })
+  it('returns false if not isFromMarketPlace and not isSignedIn', () => {
+    expect(checkIfRegisteredPaid(false, false)).toEqual(false)
   })
 })

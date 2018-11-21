@@ -6,6 +6,7 @@ import { register } from '../services/auth'
 import { loginError, updateLoggingIn, noLoginError } from '../actions/signIn'
 import Loading from '../components/Loading'
 import { HOME, SUCCESS_MARKETPLACE } from '../routes/names'
+import { Redirect } from 'react-router-dom'
 
 export const checkIfRegisteringFromMarketplace = (
   isFromMarketPlace,
@@ -14,6 +15,9 @@ export const checkIfRegisteringFromMarketplace = (
 ) =>
   isFromMarketPlace &&
   (isSignedIn === undefined || freeUsagePlanId === undefined)
+
+export const checkIfRegisteredPaid = (isFromMarketPlace, isSignedIn) =>
+  isFromMarketPlace && isSignedIn
 
 const logInAndGoHome = (
   fn,
@@ -55,6 +59,8 @@ export const SignIn = ({
     freeUsagePlanId
   ) ? (
     <Loading />
+  ) : checkIfRegisteredPaid(isFromMarketPlace, isSignedIn) ? (
+    <Redirect to={SUCCESS_MARKETPLACE} />
   ) : (
     <Form
       onSubmit={logInAndGoHome(
