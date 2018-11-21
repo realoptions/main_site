@@ -7,6 +7,14 @@ import { loginError, updateLoggingIn, noLoginError } from '../actions/signIn'
 import Loading from '../components/Loading'
 import { HOME } from '../routes/names'
 
+export const checkIfRegisteringFromMarketplace = (
+  isFromMarketPlace,
+  isSignedIn,
+  freeUsagePlanId
+) =>
+  isFromMarketPlace &&
+  (isSignedIn === undefined || freeUsagePlanId === undefined)
+
 const logInAndGoHome = (
   fn,
   history,
@@ -33,43 +41,51 @@ export const SignIn = ({
   noLoginError,
   error,
   updateLoggingIn,
+  isSignedIn,
   token,
   paidUsagePlanId,
   freeUsagePlanId,
   isFromMarketPlace
-}) => (
-  <Form
-    onSubmit={logInAndGoHome(
-      register({
-        paidUsagePlanId,
-        freeUsagePlanId,
-        token,
-        isFromMarketPlace
-      }),
-      history,
-      loginError,
-      noLoginError,
-      updateLoggingIn
-    )}
-  >
-    {error && <Alert color="danger">{error.message}</Alert>}
-    <FormGroup>
-      <Label for="emailId">Email</Label>
-      <Input autoFocus type="email" name="email" id="emailId" />
-    </FormGroup>
-    <FormGroup>
-      <Label for="passwordId">Password</Label>
-      <Input type="password" name="password" id="passwordId" />
-    </FormGroup>
-    {isLoggingIn ? (
-      <Loading />
-    ) : (
-      <Button color="primary" className="login-form-button">
-        Register/Log In
-      </Button>
-    )}
-  </Form>
-)
+}) =>
+  checkIfRegisteringFromMarketplace(
+    isFromMarketPlace,
+    isSignedIn,
+    freeUsagePlanId
+  ) ? (
+    <Loading />
+  ) : (
+    <Form
+      onSubmit={logInAndGoHome(
+        register({
+          paidUsagePlanId,
+          freeUsagePlanId,
+          token,
+          isFromMarketPlace
+        }),
+        history,
+        loginError,
+        noLoginError,
+        updateLoggingIn
+      )}
+    >
+      {error && <Alert color="danger">{error.message}</Alert>}
+      <FormGroup>
+        <Label for="emailId">Email</Label>
+        <Input autoFocus type="email" name="email" id="emailId" />
+      </FormGroup>
+      <FormGroup>
+        <Label for="passwordId">Password</Label>
+        <Input type="password" name="password" id="passwordId" />
+      </FormGroup>
+      {isLoggingIn ? (
+        <Loading />
+      ) : (
+        <Button color="primary" className="login-form-button">
+          Register/Log In
+        </Button>
+      )}
+    </Form>
+  )
 SignIn.propTypes = {
   register: PropTypes.func.isRequired,
   isLoggingIn: PropTypes.bool.isRequired,
@@ -101,7 +117,7 @@ const mapDispatchToProps = dispatch => ({
 })
 const mapStateToProps = ({
   loading: { isLoggingIn },
-  auth: { token, paidUsagePlanId, isFromMarketPlace },
+  auth: { token, paidUsagePlanId, isFromMarketPlace, isSignedIn },
   errors: { loginError: error },
   catalog: {
     free: { id: freeUsagePlanId }
@@ -112,7 +128,8 @@ const mapStateToProps = ({
   token,
   paidUsagePlanId,
   freeUsagePlanId,
-  isFromMarketPlace
+  isFromMarketPlace,
+  isSignedIn
 })
 
 export default connect(

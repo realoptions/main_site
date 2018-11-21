@@ -22,58 +22,37 @@ import Subscriptions from './pages/Subscriptions'
 import { connect } from 'react-redux'
 import Demo from './pages/Demo'
 
-export const checkIfRegisteringFromMarketplace = (
-  isFromMarketPlace,
-  isSignedIn,
-  freeUsagePlanId
-) =>
-  isFromMarketPlace &&
-  (isSignedIn === undefined || freeUsagePlanId === undefined)
-
 ///TODO!! Consider using isSubscribed instead of isSignedIn
 export const checkIfRegisteredPaid = (isFromMarketPlace, isSignedIn) =>
   isFromMarketPlace && isSignedIn
 //note that the route has to include AppMenu even though AppMenu doesn't use "page".
 //this is because AppMenu won't update the selected menu unless part of a route
-const App = ({ isFromMarketPlace, isSignedIn, freeUsagePlanId }) =>
-  checkIfRegisteringFromMarketplace(
-    isFromMarketPlace,
-    isSignedIn,
-    freeUsagePlanId
-  ) ? (
-    <Loading />
-  ) : (
-    <div className="app">
-      <Route path="/:page" component={AppMenu} />
-      <Switch>
-        <Route
-          path={SUCCESS_MARKETPLACE}
-          component={SuccessMarketPlaceRegister}
-        />
-        {checkIfRegisteredPaid(isFromMarketPlace, isSignedIn) ? (
-          <Redirect to={SUCCESS_MARKETPLACE} />
-        ) : null}
-        <Redirect from="/" exact to={HOME} />
-      </Switch>
-      <Route exact path={HOME} component={FrontPage} />
-      <Route path={PRODUCTS} component={Products} />
-      <Route path={DEVELOPERS} component={Developers} />
-      <Route path={SUBSCRIPTIONS} component={Subscriptions} />
-      <Route path={DEMO} component={Demo} />
-      <Route path={REGISTER} component={Register} />
-      <Route path={LOGIN} component={Register} />
-    </div>
-  )
+const App = ({ isFromMarketPlace, isSignedIn }) => (
+  <div className="app">
+    <Route path="/:page" component={AppMenu} />
+    <Switch>
+      <Route
+        path={SUCCESS_MARKETPLACE}
+        component={SuccessMarketPlaceRegister}
+      />
+      {checkIfRegisteredPaid(isFromMarketPlace, isSignedIn) ? (
+        <Redirect to={SUCCESS_MARKETPLACE} />
+      ) : null}
+      <Redirect from="/" exact to={HOME} />
+    </Switch>
+    <Route exact path={HOME} component={FrontPage} />
+    <Route path={PRODUCTS} component={Products} />
+    <Route path={DEVELOPERS} component={Developers} />
+    <Route path={SUBSCRIPTIONS} component={Subscriptions} />
+    <Route path={DEMO} component={Demo} />
+    <Route path={REGISTER} component={Register} />
+    <Route path={LOGIN} component={Register} />
+  </div>
+)
 
-const mapStateToProps = ({
-  auth: { isSignedIn, isFromMarketPlace },
-  catalog: {
-    free: { id: freeUsagePlanId }
-  }
-}) => ({
+const mapStateToProps = ({ auth: { isSignedIn, isFromMarketPlace } }) => ({
   isSignedIn,
-  isFromMarketPlace,
-  freeUsagePlanId
+  isFromMarketPlace
 })
 
 export default withRouter(connect(mapStateToProps)(App))

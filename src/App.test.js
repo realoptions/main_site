@@ -1,9 +1,6 @@
 import React from 'react'
 //import ReactDOM from 'react-dom'
-import App, {
-  checkIfRegisteringFromMarketplace,
-  checkIfRegisteredPaid
-} from './App'
+import App, { checkIfRegisteredPaid } from './App'
 //import awsApp from './reducers'
 //import { createStore } from 'redux'
 import { Provider } from 'react-redux'
@@ -21,33 +18,6 @@ import * as Swagger from './components/Swagger' //overwride swagger
 import { REGISTER } from './routes/names'
 Swagger.default = () => <div />
 
-describe('checkIfRegisteringFromMarketPlace', () => {
-  it('returns true if isFromMarketPlace and not finished logging in: freeUsagePlanId', () => {
-    expect(checkIfRegisteringFromMarketplace(true, true, undefined)).toEqual(
-      true
-    )
-  })
-  it('returns true if isFromMarketPlace and not finished logging in: isSignedIn', () => {
-    expect(checkIfRegisteringFromMarketplace(true, undefined, 'hello')).toEqual(
-      true
-    )
-  })
-  it('returns true if isFromMarketPlace and not finished logging in: both', () => {
-    expect(
-      checkIfRegisteringFromMarketplace(true, undefined, undefined)
-    ).toEqual(true)
-  })
-  it('returns false if isFromMarketPlace and finished logging in', () => {
-    expect(checkIfRegisteringFromMarketplace(true, true, 'hello')).toEqual(
-      false
-    )
-  })
-  it('returns false if not isFromMarketPlace', () => {
-    expect(
-      checkIfRegisteringFromMarketplace(false, undefined, undefined)
-    ).toEqual(false)
-  })
-})
 describe('checkIfResteredPaid', () => {
   it('returns true if isFromMarketPlace and isSignedIn', () => {
     expect(checkIfRegisteredPaid(true, true)).toEqual(true)
@@ -92,8 +62,7 @@ describe('app', () => {
         </MemoryRouter>
       </Provider>
     )
-    expect(app.find('.app').length).toEqual(0)
-    expect(app.find(Loading).length).toEqual(1)
+    expect(app.find('.app').length).toEqual(1)
   })
   it('renders loading if registering from marketplace, is signedIn, but no catalog', () => {
     const initialState = {
@@ -120,8 +89,7 @@ describe('app', () => {
         </MemoryRouter>
       </Provider>
     )
-    expect(app.find('.app').length).toEqual(0)
-    expect(app.find(Loading).length).toEqual(1)
+    expect(app.find('.app').length).toEqual(1)
   })
   it('renders app if not registering from marketplace', () => {
     const initialState = {

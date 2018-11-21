@@ -1,6 +1,6 @@
 import React from 'react'
 import Loading from '../components/Loading'
-import { SignIn } from './SignIn'
+import { SignIn, checkIfRegisteringFromMarketplace } from './SignIn'
 import { shallow } from 'enzyme'
 const gf = () => {}
 const defaultParams = {
@@ -25,6 +25,9 @@ it('renders error message with error', () => {
       {...defaultParams}
       error={{ message: 'an error' }}
       isLoggingIn={false}
+      isFromMarketPlace={true}
+      isSignedIn={false}
+      freeUsagePlanId="someid"
     />
   )
   expect(signIn.findWhere(v => v.text() === 'an error').length).toBeGreaterThan(
@@ -34,4 +37,32 @@ it('renders error message with error', () => {
 it('renders loading when is logging in', () => {
   const signIn = shallow(<SignIn {...defaultParams} isLoggingIn={true} />)
   expect(signIn.find(Loading).length).toEqual(1)
+})
+
+describe('checkIfRegisteringFromMarketPlace', () => {
+  it('returns true if isFromMarketPlace and not finished logging in: freeUsagePlanId', () => {
+    expect(checkIfRegisteringFromMarketplace(true, true, undefined)).toEqual(
+      true
+    )
+  })
+  it('returns true if isFromMarketPlace and not finished logging in: isSignedIn', () => {
+    expect(checkIfRegisteringFromMarketplace(true, undefined, 'hello')).toEqual(
+      true
+    )
+  })
+  it('returns true if isFromMarketPlace and not finished logging in: both', () => {
+    expect(
+      checkIfRegisteringFromMarketplace(true, undefined, undefined)
+    ).toEqual(true)
+  })
+  it('returns false if isFromMarketPlace and finished logging in', () => {
+    expect(checkIfRegisteringFromMarketplace(true, true, 'hello')).toEqual(
+      false
+    )
+  })
+  it('returns false if not isFromMarketPlace', () => {
+    expect(
+      checkIfRegisteringFromMarketplace(false, undefined, undefined)
+    ).toEqual(false)
+  })
 })
