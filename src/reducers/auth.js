@@ -1,5 +1,5 @@
 import { LOGOUT, UPDATE_API_KEY, UPDATE_AWS_CLIENT } from '../actions/constants'
-import queryString from 'query-string'
+import { getQueryString } from '../services/helpers/queryString'
 const defaultQuery = {
   isSignedIn: false
 }
@@ -7,10 +7,8 @@ export const splitHash = hash => {
   const split = hash.split('?')
   return split.length > 1 ? split[1] : ''
 }
-const getDefaultState = () => {
-  const { token, usagePlanId } = queryString.parse(
-    splitHash(window.location.hash)
-  )
+export const getDefaultState = (hash = window.location.hash) => {
+  const { token, usagePlanId } = getQueryString(splitHash(hash))
   return {
     ...defaultQuery,
     token,
@@ -19,7 +17,9 @@ const getDefaultState = () => {
   }
 }
 
-export default (state = getDefaultState(), action) => {
+const defaultState = getDefaultState()
+
+export default (state = defaultState, action) => {
   switch (action.type) {
     case UPDATE_API_KEY:
       return {

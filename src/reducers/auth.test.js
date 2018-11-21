@@ -1,13 +1,9 @@
-import auth, { splitHash } from './auth'
+import auth, { splitHash, getDefaultState } from './auth'
 import { UPDATE_API_KEY, LOGOUT, UPDATE_AWS_CLIENT } from '../actions/constants'
 
 it('correctly instantiates from market when token and usageplan are provided', () => {
-  window.history.replaceState(
-    {},
-    'Test',
-    '/#/test?token=hello&usagePlanId=123fds'
-  )
-  const state = auth(undefined, { type: 'test' })
+  const defaulState = getDefaultState('/test?token=hello&usagePlanId=123fds')
+  const state = auth(defaulState, { type: 'test' })
   expect(state).toEqual({
     isSignedIn: false,
     token: 'hello',

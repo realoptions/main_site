@@ -48,9 +48,9 @@ export const renderUsage = (
       Usage since {startDate}: {convertUsage(items)} out of {quota.limit}.
       {onUnsubscribe && isSubscribed ? (
         isUnRegistering ? (
-          <Loading className="small-padding-left" />
+          <Loading className="small-margin-left" />
         ) : (
-          <Button className="small-padding-left" onClick={onUnsubscribe}>
+          <Button className="small-margin-left" onClick={onUnsubscribe}>
             Unsubscribe
           </Button>
         )
