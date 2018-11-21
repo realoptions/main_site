@@ -94,6 +94,7 @@ const filterSubscriptions = ({ paidUsagePlanId, freeUsagePlanId }) => ({
 }) =>
   data.reduce(
     (aggr, { id }) => {
+      console.log(id)
       switch (id) {
         case paidUsagePlanId: {
           return { ...aggr, isSubscribedPaid: true }

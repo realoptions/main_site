@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { register } from '../services/auth'
 import { loginError, updateLoggingIn, noLoginError } from '../actions/signIn'
 import Loading from '../components/Loading'
-import { HOME } from '../routes/names'
+import { HOME, SUCCESS_MARKETPLACE } from '../routes/names'
 
 export const checkIfRegisteringFromMarketplace = (
   isFromMarketPlace,
@@ -20,9 +20,11 @@ const logInAndGoHome = (
   history,
   loginError,
   noLoginError,
+  isFromMarketPlace,
   updateLoggingIn
 ) => {
-  const navigate = () => history.push(HOME)
+  const navigate = () =>
+    history.push(isFromMarketPlace ? SUCCESS_MARKETPLACE : HOME)
   return e => {
     updateLoggingIn(true)
     fn(e)
@@ -65,6 +67,7 @@ export const SignIn = ({
         history,
         loginError,
         noLoginError,
+        isFromMarketPlace,
         updateLoggingIn
       )}
     >

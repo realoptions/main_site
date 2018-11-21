@@ -11,8 +11,6 @@ const getDefaultState = () => {
   const { token, usagePlanId } = queryString.parse(
     splitHash(window.location.hash)
   )
-  console.log(token)
-  console.log(usagePlanId)
   return {
     ...defaultQuery,
     token,
