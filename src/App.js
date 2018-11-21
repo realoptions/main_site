@@ -5,7 +5,6 @@ import SuccessMarketPlaceRegister from './pages/SuccessMarketPlaceRegister'
 import Register from './pages/Register'
 import AppMenu from './components/AppMenu'
 import './App.css'
-import Loading from './components/Loading'
 import { Route, Redirect, Switch, withRouter } from 'react-router-dom'
 import Products from './pages/Products'
 import {
