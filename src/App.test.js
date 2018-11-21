@@ -1,6 +1,6 @@
 import React from 'react'
 //import ReactDOM from 'react-dom'
-import App, { checkIfRegisteredPaid } from './App'
+import App from './App'
 //import awsApp from './reducers'
 //import { createStore } from 'redux'
 import { Provider } from 'react-redux'
@@ -18,21 +18,6 @@ import * as Swagger from './components/Swagger' //overwride swagger
 import { REGISTER } from './routes/names'
 Swagger.default = () => <div />
 
-describe('checkIfResteredPaid', () => {
-  it('returns true if isFromMarketPlace and isSignedIn', () => {
-    expect(checkIfRegisteredPaid(true, true)).toEqual(true)
-  })
-  it('returns false if isFromMarketPlace and not isSignedIn', () => {
-    expect(checkIfRegisteredPaid(true, false)).toEqual(false)
-  })
-
-  it('returns false if not isFromMarketPlace and isSignedIn', () => {
-    expect(checkIfRegisteredPaid(false, true)).toEqual(false)
-  })
-  it('returns false if not isFromMarketPlace and not isSignedIn', () => {
-    expect(checkIfRegisteredPaid(false, false)).toEqual(false)
-  })
-})
 const mockStore = configureStore([])
 //note that there will be not be any actual API calls if catalog.free.id is defined at this level
 describe('app', () => {
@@ -148,35 +133,6 @@ describe('app', () => {
     )
     expect(app.find('.app').length).toEqual(1)
     expect(app.find(Loading).length).toEqual(0)
-  })
-
-  it('renders SuccessMarketPlaceRegister if registering from marketplace and has signed in and has catalog', () => {
-    const initialState = {
-      auth: {
-        isFromMarketPlace: true,
-        isSignedIn: true
-      },
-      catalog: {
-        free: {
-          id: '123',
-          quota: { period: 'month' }
-        },
-        paid: {
-          quota: { period: 'month' },
-          isSubscribed: false
-        }
-      },
-      menu: false
-    }
-    const store = mockStore(initialState)
-    const app = mount(
-      <Provider store={store}>
-        <Router>
-          <App />
-        </Router>
-      </Provider>
-    )
-    expect(app.find(SuccessMarketPlaceRegister).length).toEqual(1)
   })
 
   it('renders register if not signed in and initial path is to register', () => {
