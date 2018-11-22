@@ -27,32 +27,32 @@ import { menuBarHeight } from '../styles/menu'
 import Loading from './Loading'
 import AsyncLoad from './AsyncLoad'
 import { init } from '../services/auth'
-import { updateSignIn } from '../actions/signIn'
+import { updateSignIn, updateLogOut } from '../actions/signIn'
 import { toggleNavBar } from '../actions/menu'
 import {
   getPossibleSubscriptions,
   addSubscriptionLocal
 } from '../actions/subscriptions.js'
-import { updateLogOut } from '../actions/auth'
 
 const mapStateToPropsLogOut = ({ auth: { cognitoUser } }) => ({
   cognitoUser
 })
 const mapDispatchToPropsLogOut = dispatch => ({
-  logout: logout(dispatch),
   updateLogOut: () => updateLogOut(dispatch)
 })
 //exported for testing
 export const LogOut = connect(
   mapStateToPropsLogOut,
   mapDispatchToPropsLogOut
-)(({ logout, updateLogOut, cognitoUser, history }) => (
+)(({ updateLogOut, cognitoUser, history }) => (
   <NavLink
     href="#"
     onClick={() => {
       logout(cognitoUser)
       updateLogOut()
-      history.push(HOME)
+      if (history.location.pathname !== HOME) {
+        history.push(HOME)
+      }
     }}
   >
     Log Out
@@ -60,7 +60,10 @@ export const LogOut = connect(
 ))
 LogOut.propTypes = {
   history: PropTypes.shape({
-    push: PropTypes.func.isRequired
+    push: PropTypes.func.isRequired,
+    location: PropTypes.shape({
+      pathname: PropTypes.string.isRequired
+    }).isRequired
   }).isRequired
 }
 
@@ -75,6 +78,7 @@ const mapStateToPropsLogInOrOut = ({
   isSignedIn,
   freeUsagePlanId
 })
+
 const mapDispatchToPropsLogInOrOut = dispatch => ({
   init: ({ token, isFromMarketPlace }) =>
     getPossibleSubscriptions(dispatch).then(

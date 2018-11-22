@@ -50,7 +50,6 @@ const logInAndGoHome = ({
 }
 
 export const SignIn = ({
-  register,
   isLoggingIn,
   history,
   loginError,
@@ -76,7 +75,7 @@ export const SignIn = ({
   ) : (
     <Form
       onSubmit={logInAndGoHome({
-        fn: register({
+        fn: getForm(register)({
           paidUsagePlanId,
           freeUsagePlanId,
           token,
@@ -110,7 +109,6 @@ export const SignIn = ({
     </Form>
   )
 SignIn.propTypes = {
-  register: PropTypes.func.isRequired,
   isLoggingIn: PropTypes.bool.isRequired,
   history: PropTypes.shape({
     goBack: PropTypes.func.isRequired,
@@ -135,7 +133,6 @@ const getForm = fn => aggr => e => {
   return fn(aggr)(email, password)
 }
 const mapDispatchToProps = dispatch => ({
-  register: getForm(register(dispatch)),
   loginError: loginError(dispatch),
   noLoginError: noLoginError(dispatch),
   updateLoggingIn: isLoggingIn => updateLoggingIn(dispatch, isLoggingIn),
@@ -144,10 +141,11 @@ const mapDispatchToProps = dispatch => ({
 })
 const mapStateToProps = ({
   loading: { isLoggingIn },
-  auth: { token, paidUsagePlanId, isFromMarketPlace, isSignedIn },
+  auth: { token, isFromMarketPlace, isSignedIn },
   errors: { loginError: error },
   catalog: {
-    free: { id: freeUsagePlanId }
+    free: { id: freeUsagePlanId },
+    paid: { id: paidUsagePlanId }
   }
 }) => ({
   isLoggingIn,

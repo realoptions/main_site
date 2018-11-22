@@ -91,8 +91,9 @@ const rethrowNoLoginError = err => {
 //returns {isSubscribedPaid:bool, isSubscribedFree:bool}
 export const filterSubscriptions = ({ paidUsagePlanId, freeUsagePlanId }) => ({
   data
-}) =>
-  data.reduce(
+}) => {
+  console.log(data)
+  return data.reduce(
     (aggr, { id }) => {
       switch (id) {
         case paidUsagePlanId: {
@@ -108,7 +109,7 @@ export const filterSubscriptions = ({ paidUsagePlanId, freeUsagePlanId }) => ({
     },
     { isSubscribedPaid: false, isSubscribedFree: false }
   )
-
+}
 const NEED_TO_SUBSCRIBE_PAID = 'NEED_TO_SUBSCRIBE_PAID'
 const NEED_TO_SUBSCRIBE_FREE = 'NEED_TO_SUBSCRIBE_FREE'
 const IS_SUBSCRIBED_FREE = 'IS_SUBSCRIBED_FREE'
@@ -150,6 +151,10 @@ const conditionalSubscription = ({
       })
     )
     .then(({ isSubscribedFree, isSubscribedPaid }) => {
+      console.log(isSubscribedFree)
+      console.log(isSubscribedPaid)
+      console.log(paidUsagePlanId)
+      console.log(freeUsagePlanId)
       switch (
         handleSubscriptionLogic({
           isFromMarketPlace,
