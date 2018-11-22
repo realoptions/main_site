@@ -27,6 +27,9 @@ it('fully mounts with error', () => {
     catalog: {
       free: {
         id: 'hello'
+      },
+      paid: {
+        id: 'goodbye'
       }
     }
   }
@@ -54,6 +57,9 @@ it('fully mounts without error', () => {
     catalog: {
       free: {
         id: 'hello'
+      },
+      paid: {
+        id: 'goodbye'
       }
     }
   }

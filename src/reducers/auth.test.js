@@ -35,7 +35,8 @@ it('correctly appends client', () => {
 it('correctly logs out', () => {
   const state = auth({}, { type: LOGOUT })
   expect(state).toEqual({
-    isSignedIn: false
+    isSignedIn: false,
+    isFromMarketPlace: false
   })
 })
 
