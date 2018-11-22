@@ -7,6 +7,8 @@ import { loginError, updateLoggingIn, noLoginError } from '../actions/signIn'
 import Loading from '../components/Loading'
 import { HOME, SUCCESS_MARKETPLACE } from '../routes/names'
 import { Redirect } from 'react-router-dom'
+import { updateSignIn } from '../actions/signIn'
+import { addSubscriptionLocal } from '../actions/subscriptions'
 
 export const checkIfRegisteringFromMarketplace = (
   isFromMarketPlace,
@@ -19,21 +21,29 @@ export const checkIfRegisteringFromMarketplace = (
 export const checkIfRegisteredPaid = (isFromMarketPlace, isSignedIn) =>
   isFromMarketPlace && isSignedIn
 
-const logInAndGoHome = (
+const logInAndGoHome = ({
   fn,
   history,
   loginError,
   noLoginError,
   isFromMarketPlace,
-  updateLoggingIn
-) => {
+  updateLoggingIn,
+  addSubscription,
+  updateSignIn
+}) => {
   const navigate = () =>
     history.push(isFromMarketPlace ? SUCCESS_MARKETPLACE : HOME)
   return e => {
     updateLoggingIn(true)
     fn(e)
-      .then(navigate)
-      .then(noLoginError)
+      .then(([usagePlanId, client, cognitoUser]) =>
+        Promise.all([
+          navigate(),
+          addSubscription(usagePlanId),
+          updateSignIn(client, cognitoUser),
+          noLoginError()
+        ])
+      )
       .catch(loginError)
       .then(() => updateLoggingIn(false))
   }
@@ -51,7 +61,9 @@ export const SignIn = ({
   token,
   paidUsagePlanId,
   freeUsagePlanId,
-  isFromMarketPlace
+  isFromMarketPlace,
+  updateSignIn,
+  addSubscription
 }) =>
   checkIfRegisteringFromMarketplace(
     isFromMarketPlace,
@@ -63,8 +75,8 @@ export const SignIn = ({
     <Redirect to={SUCCESS_MARKETPLACE} />
   ) : (
     <Form
-      onSubmit={logInAndGoHome(
-        register({
+      onSubmit={logInAndGoHome({
+        fn: register({
           paidUsagePlanId,
           freeUsagePlanId,
           token,
@@ -74,8 +86,10 @@ export const SignIn = ({
         loginError,
         noLoginError,
         isFromMarketPlace,
-        updateLoggingIn
-      )}
+        updateLoggingIn,
+        updateSignIn,
+        addSubscription
+      })}
     >
       {error && <Alert color="danger">{error.message}</Alert>}
       <FormGroup>
@@ -111,7 +125,9 @@ SignIn.propTypes = {
   token: PropTypes.string,
   paidUsagePlanId: PropTypes.string,
   freeUsagePlanId: PropTypes.string,
-  isFromMarketPlace: PropTypes.bool.isRequired
+  isFromMarketPlace: PropTypes.bool.isRequired,
+  updateSignIn: PropTypes.func.isRequired,
+  addSubscription: PropTypes.func.isRequired
 }
 const getForm = fn => aggr => e => {
   e.preventDefault()
@@ -122,7 +138,9 @@ const mapDispatchToProps = dispatch => ({
   register: getForm(register(dispatch)),
   loginError: loginError(dispatch),
   noLoginError: noLoginError(dispatch),
-  updateLoggingIn: isLoggingIn => updateLoggingIn(dispatch, isLoggingIn)
+  updateLoggingIn: isLoggingIn => updateLoggingIn(dispatch, isLoggingIn),
+  updateSignIn: updateSignIn(dispatch),
+  addSubscription: addSubscriptionLocal(dispatch)
 })
 const mapStateToProps = ({
   loading: { isLoggingIn },

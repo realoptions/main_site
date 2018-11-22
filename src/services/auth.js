@@ -19,17 +19,7 @@ import {
   getSession
 } from './helpers/promisifyAuth'
 
-import {
-  updateSignIn,
-  updateLogOut,
-  updateApiKey,
-  apiError
-} from '../actions/signIn'
 import { registerFree, registerPaid, getSubscriptions } from './api-catalog'
-import {
-  deleteSubscriptionLocal,
-  addSubscriptionLocal
-} from '../actions/subscriptions'
 
 const POOL_DATA = {
   UserPoolId: cognitoUserPoolId,
@@ -38,7 +28,9 @@ const POOL_DATA = {
 
 const COGNITO_LOGIN_KEY = `cognito-idp.${cognitoRegion}.amazonaws.com/${cognitoUserPoolId}`
 
-const updateCredentials = (jwtToken, cognitoUser, dispatch) => {
+//returns promise
+//on success, returns client instance, else error
+const getClient = jwtToken => {
   const Logins = {
     [COGNITO_LOGIN_KEY]: jwtToken
   }
@@ -60,13 +52,14 @@ const updateCredentials = (jwtToken, cognitoUser, dispatch) => {
       invokeUrl: url
     })
     return signIn(apigClient).then(() => {
-      updateSignIn(dispatch, apigClient, cognitoUser)
       return apigClient
     })
   })
 }
 
-const login = (email, password, dispatch) => {
+//returns promise
+//if success, returns client instance and cognitorUser, else error
+const login = (email, password) => {
   const authenticationData = {
     Username: email,
     Password: password
@@ -78,10 +71,15 @@ const login = (email, password, dispatch) => {
     Pool: userPool
   }
   const cognitoUser = new CognitoUser(userData)
-  return authenticateUser(cognitoUser, authDetails).then(result => {
-    const jwtToken = result.getIdToken().getJwtToken()
-    return updateCredentials(jwtToken, cognitoUser, dispatch)
-  })
+  return authenticateUser(cognitoUser, authDetails)
+    .then(result => {
+      const jwtToken = result.getIdToken().getJwtToken()
+      return getClient(jwtToken)
+    })
+    .then(client => ({
+      client,
+      cognitoUser
+    }))
 }
 
 const rethrowNoLoginError = err => {
@@ -89,7 +87,9 @@ const rethrowNoLoginError = err => {
     throw err
   }
 }
-const filterSubscriptions = ({ paidUsagePlanId, freeUsagePlanId }) => ({
+//export for testing
+//returns {isSubscribedPaid:bool, isSubscribedFree:bool}
+export const filterSubscriptions = ({ paidUsagePlanId, freeUsagePlanId }) => ({
   data
 }) =>
   data.reduce(
@@ -108,10 +108,37 @@ const filterSubscriptions = ({ paidUsagePlanId, freeUsagePlanId }) => ({
     },
     { isSubscribedPaid: false, isSubscribedFree: false }
   )
-const conditionalRegistration = (
-  { paidUsagePlanId, freeUsagePlanId, token, isFromMarketPlace },
-  dispatch
-) => client => {
+
+const NEED_TO_SUBSCRIBE_PAID = 'NEED_TO_SUBSCRIBE_PAID'
+const NEED_TO_SUBSCRIBE_FREE = 'NEED_TO_SUBSCRIBE_FREE'
+const IS_SUBSCRIBED_FREE = 'IS_SUBSCRIBED_FREE'
+const IS_SUBSCRIBED_PAID = 'IS_SUBSCRIBED_PAID'
+
+//export for testing
+export const handleSubscriptionLogic = ({
+  isSubscribedFree,
+  isSubscribedPaid,
+  isFromMarketPlace
+}) => {
+  if (isFromMarketPlace && !isSubscribedPaid) {
+    return NEED_TO_SUBSCRIBE_PAID
+  } else if (!isSubscribedFree && !isSubscribedPaid) {
+    return NEED_TO_SUBSCRIBE_FREE
+  } else if (isSubscribedFree) {
+    return IS_SUBSCRIBED_FREE
+  } else if (isSubscribedPaid) {
+    return IS_SUBSCRIBED_PAID
+  }
+  return '' //should never get here, see auth.test.js
+}
+//returns promise
+//if success, then returns current subscription OR nothing
+const conditionalSubscription = ({
+  paidUsagePlanId,
+  freeUsagePlanId,
+  token,
+  isFromMarketPlace
+}) => client => {
   if (!client) {
     return Promise.resolve()
   }
@@ -123,51 +150,64 @@ const conditionalRegistration = (
       })
     )
     .then(({ isSubscribedFree, isSubscribedPaid }) => {
-      if (isSubscribedFree) {
-        addSubscriptionLocal(dispatch)(freeUsagePlanId)
-      }
-      if (isSubscribedPaid) {
-        addSubscriptionLocal(dispatch)(paidUsagePlanId)
-      }
-      if (isFromMarketPlace & !isSubscribedPaid) {
-        addSubscriptionLocal(dispatch)(paidUsagePlanId)
-        deleteSubscriptionLocal(dispatch)(freeUsagePlanId)
-        return registerPaid(paidUsagePlanId, freeUsagePlanId, token, client)
-      } else if (!isSubscribedFree && !isSubscribedPaid) {
-        addSubscriptionLocal(dispatch)(freeUsagePlanId)
-        return registerFree(freeUsagePlanId, client)
-      } else {
-        return Promise.resolve()
+      switch (
+        handleSubscriptionLogic({
+          isFromMarketPlace,
+          isSubscribedFree,
+          isSubscribedPaid
+        })
+      ) {
+        case NEED_TO_SUBSCRIBE_FREE:
+          return registerFree(freeUsagePlanId, client).then(
+            () => freeUsagePlanId
+          )
+        case NEED_TO_SUBSCRIBE_PAID:
+          return registerPaid(
+            paidUsagePlanId,
+            freeUsagePlanId,
+            token,
+            client
+          ).then(() => paidUsagePlanId)
+        case IS_SUBSCRIBED_FREE:
+          return Promise.resolve(freeUsagePlanId)
+        case IS_SUBSCRIBED_PAID:
+          return Promise.resolve(paidUsagePlanId)
+        default:
+          //should never get here
+          return Promise.resolve()
       }
     })
 }
 
-/**Always "register" instead of logging in.  Login will just fail on already registered and then login */
-export const register = dispatch => ({
+/**Always "register" instead of logging in.
+ * Login will just fail on already registered
+ * and then login.
+ * Returns [subscription, client, cognitoUser] */
+export const register = ({
   paidUsagePlanId,
   freeUsagePlanId,
   token,
   isFromMarketPlace
 }) => {
   const userPool = new CognitoUserPool(POOL_DATA)
+  const subscriptionInstance = conditionalSubscription({
+    paidUsagePlanId,
+    freeUsagePlanId,
+    token,
+    isFromMarketPlace
+  })
   return (email, password) => {
     return signUp(userPool, email, password)
       .catch(rethrowNoLoginError)
-      .then(() => login(email, password, dispatch))
-      .then(
-        conditionalRegistration(
-          {
-            paidUsagePlanId,
-            freeUsagePlanId,
-            token,
-            isFromMarketPlace
-          },
-          dispatch
-        )
+      .then(() => login(email, password))
+      .then(({ client, cognitoUser }) =>
+        Promise.all([subscriptionInstance(client), client, cognitoUser])
       )
   }
 }
-export const init = dispatch => ({
+/**
+ * Returns [subscription, client, cognitoUser] */
+export const init = ({
   paidUsagePlanId,
   freeUsagePlanId,
   token,
@@ -175,34 +215,30 @@ export const init = dispatch => ({
 }) => {
   const userPool = new CognitoUserPool(POOL_DATA)
   const cognitoUser = userPool.getCurrentUser()
+  const subscriptionInstance = conditionalSubscription({
+    paidUsagePlanId,
+    freeUsagePlanId,
+    token,
+    isFromMarketPlace
+  })
   return (cognitoUser
     ? getSession(cognitoUser).then(session => {
         const token = session.getIdToken().getJwtToken()
-        return updateCredentials(token, cognitoUser, dispatch)
+        return getClient(token)
       })
     : Promise.resolve()
-  ).then(
-    conditionalRegistration(
-      {
-        paidUsagePlanId,
-        freeUsagePlanId,
-        token,
-        isFromMarketPlace
-      },
-      dispatch
-    )
+  ).then(client =>
+    Promise.resolve([subscriptionInstance(client), client, cognitoUser])
   )
 }
 
-export const logout = dispatch => cognitoUser => {
+export const logout = cognitoUser => {
   cognitoUser.signOut()
-  updateLogOut(dispatch)
 }
 
-export const showApiKey = dispatch => client =>
+export const showApiKey = client =>
   client
     .invokeApi({}, '/apikey', 'GET', {}, {})
-    .then(({ data: { value } }) => updateApiKey(dispatch, value))
-    .catch(apiError(dispatch))
+    .then(({ data: { value } }) => value)
 
 const signIn = client => client.invokeApi({}, '/signin', 'POST', {}, {})

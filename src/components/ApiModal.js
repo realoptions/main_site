@@ -6,6 +6,7 @@ import AsyncLoad from './AsyncLoad'
 import { showApiKey } from '../services/auth'
 import Loading from './Loading'
 import PropTypes from 'prop-types'
+import { updateApiKey, apiError } from '../actions/signIn'
 const mapStateToProps = ({
   modal: { isOpen },
   auth: { apiKey, isSignedIn },
@@ -18,7 +19,10 @@ const mapStateToProps = ({
 })
 const mapDispatchToProps = dispatch => ({
   toggleOpen: toggleOpen(dispatch),
-  onLoad: showApiKey(dispatch)
+  onLoad: client =>
+    showApiKey(client)
+      .then(v => updateApiKey(dispatch, v))
+      .catch(apiError(dispatch))
 })
 export const ApiModal = ({
   style,

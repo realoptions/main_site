@@ -32,6 +32,7 @@ export const unregisterPaid = (paidUsagePlanId, freeUsagePlanId, client) =>
 
 export const removeSubscription = (usagePlanId, client) =>
   client.invokeApi({}, `/subscriptions/${usagePlanId}`, 'DELETE', {}, {})
+
 const getCurrentMonth = () => {
   const date = new Date()
   const start = new Date(date.getFullYear(), date.getMonth(), 1)

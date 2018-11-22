@@ -12,7 +12,6 @@ export const getDefaultState = (hash = window.location.hash) => {
   return {
     ...defaultQuery,
     token,
-    paidUsagePlanId: usagePlanId,
     isFromMarketPlace: !!(token && usagePlanId)
   }
 }

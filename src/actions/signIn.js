@@ -8,7 +8,7 @@ import {
   NO_LOGIN_ERROR
 } from './constants'
 
-export const updateSignIn = (dispatch, client, user) =>
+export const updateSignIn = dispatch => (client, user) =>
   dispatch({
     type: UPDATE_AWS_CLIENT,
     client,
