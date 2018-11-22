@@ -132,9 +132,10 @@ export const handleSubscriptionLogic = ({
   }
   return '' //should never get here, see auth.test.js
 }
+//exported for testing
 //returns promise
 //if success, then returns current subscription OR nothing
-const conditionalSubscription = ({
+export const conditionalSubscription = ({
   paidUsagePlanId,
   freeUsagePlanId,
   token,
@@ -233,7 +234,7 @@ export const init = ({
       })
     : Promise.resolve()
   ).then(client =>
-    Promise.resolve([subscriptionInstance(client), client, cognitoUser])
+    Promise.all([subscriptionInstance(client), client, cognitoUser])
   )
 }
 

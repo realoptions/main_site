@@ -1,4 +1,8 @@
-import { filterSubscriptions, handleSubscriptionLogic } from './auth'
+import {
+  filterSubscriptions,
+  handleSubscriptionLogic,
+  conditionalSubscription
+} from './auth'
 
 describe('filterSubscriptions', () => {
   it('produces both false when empty array', () => {
@@ -204,6 +208,22 @@ describe('handleSubscriptionLogic', () => {
     ]
     allPossibilities.forEach(v => {
       expect(handleSubscriptionLogic(v)).toEqual(v.expected)
+    })
+  })
+})
+describe('conditionalSubscription', () => {
+  it('returns id correctly', () => {
+    const instSub = conditionalSubscription({
+      paidUsagePlanId: 4,
+      freeUsagePlanId: 5,
+      token: undefined,
+      isFromMarketPlace: false
+    })
+    const client = {
+      invokeApi: jest.fn(() => Promise.resolve({ data: [{ id: 4 }] }))
+    }
+    return instSub(client).then(id => {
+      return expect(id).toEqual(4)
     })
   })
 })
