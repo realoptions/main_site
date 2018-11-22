@@ -8,7 +8,7 @@ import {
 import Loading from '../components/Loading'
 
 import React from 'react'
-import { shallow, mount } from 'enzyme'
+import { shallow } from 'enzyme'
 import { Button, Alert } from 'reactstrap'
 describe('getFirstOfNestedOrNonsenseKey', () => {
   it('returns "key" if arr is null', () => {

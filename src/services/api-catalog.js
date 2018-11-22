@@ -22,13 +22,17 @@ export const registerPaid = (paidUsagePlanId, freeUsagePlanId, token, client) =>
   Promise.all([
     removeSubscription(freeUsagePlanId, client),
     marketPlaceSubscribe(paidUsagePlanId, token, client)
-  ]).then(data => console.log(data))
+  ])
+//.then(data => console.log(data))
+//.catch(err => console.log(err))
 
 export const unregisterPaid = (paidUsagePlanId, freeUsagePlanId, client) =>
   Promise.all([
     removeSubscription(paidUsagePlanId, client),
     registerFree(freeUsagePlanId, client)
-  ]).then(data => console.log(data))
+  ])
+//.then(data => console.log(data))
+//.catch(err => console.log(err))
 
 export const removeSubscription = (usagePlanId, client) =>
   client.invokeApi({}, `/subscriptions/${usagePlanId}`, 'DELETE', {}, {})
