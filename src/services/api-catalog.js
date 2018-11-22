@@ -18,23 +18,19 @@ const marketPlaceSubscribe = (usagePlanId, token, client) =>
     { token }
   )
 
+//has to happen in order (cant do it in parallel)
 export const registerPaid = (paidUsagePlanId, freeUsagePlanId, token, client) =>
-  Promise.all([
-    removeSubscription(freeUsagePlanId, client),
+  removeSubscription(freeUsagePlanId, client).then(() =>
     marketPlaceSubscribe(paidUsagePlanId, token, client)
-  ])
-//.then(data => console.log(data))
-//.catch(err => console.log(err))
+  )
 
+//has to happen in order (cant do it in parallel)
 export const unregisterPaid = (paidUsagePlanId, freeUsagePlanId, client) =>
-  Promise.all([
-    removeSubscription(paidUsagePlanId, client),
+  removeSubscription(paidUsagePlanId, client).then(() =>
     registerFree(freeUsagePlanId, client)
-  ])
-//.then(data => console.log(data))
-//.catch(err => console.log(err))
+  )
 
-export const removeSubscription = (usagePlanId, client) =>
+const removeSubscription = (usagePlanId, client) =>
   client.invokeApi({}, `/subscriptions/${usagePlanId}`, 'DELETE', {}, {})
 
 const getCurrentMonth = () => {

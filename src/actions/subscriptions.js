@@ -36,7 +36,6 @@ export const removePaidSubscription = dispatch => (
   })
   unregisterPaid(paidUsagePlanId, freeUsagePlanId, client)
     .then(() => {
-      console.log('got to line 39')
       addSubscriptionLocal(dispatch)(freeUsagePlanId)
       deleteSubscriptionLocal(dispatch)(paidUsagePlanId)
       dispatch({ type: NO_SUBSCRIPTION_ERROR })

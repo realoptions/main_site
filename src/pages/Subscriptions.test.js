@@ -6,9 +6,8 @@ import {
   SubscriptionCard
 } from './Subscriptions'
 import Loading from '../components/Loading'
-
 import React from 'react'
-import { shallow } from 'enzyme'
+import { shallow, mount } from 'enzyme'
 import { Button, Alert } from 'reactstrap'
 describe('getFirstOfNestedOrNonsenseKey', () => {
   it('returns "key" if arr is null', () => {
@@ -75,6 +74,14 @@ describe('renderUsage', () => {
     expect(usage.find(Alert).length).toEqual(0)
     expect(usage.find(Loading).length).toEqual(1)
   })
+  it('shows error if unsubscribed exists, isSubscribed is true, and isUnregistering', () => {
+    const usage = shallow(
+      renderUsage(subscriptionObject, false, () => {}, false, {
+        message: 'an error'
+      })()
+    )
+    expect(usage.find(Alert).length).toEqual(1)
+  })
   it('shows error if error', () => {
     const usage = shallow(
       renderUsage(subscriptionObject, true, () => {}, true, {
@@ -92,7 +99,8 @@ describe('Subscriptions', () => {
       limit: 10,
       period: 'MONTH'
     },
-    isSubscribed: true
+    isSubscribed: true,
+    items: { hello: [[1, 'something'], [2, 'something else']] }
   }
   const paid = {
     id: 'goodbye',
@@ -100,7 +108,9 @@ describe('Subscriptions', () => {
       limit: 5000,
       period: 'MONTH'
     },
-    isSubscribed: true
+    isSubscribed: true,
+    startDate: '2015',
+    items: { hello: [[1, 'something'], [2, 'something else']] }
   }
   it('shows two subscription cards', () => {
     const subscriptions = shallow(
@@ -114,5 +124,43 @@ describe('Subscriptions', () => {
       />
     )
     expect(subscriptions.find(SubscriptionCard).length).toEqual(2)
+  })
+  it('correctly creates error', done => {
+    const subscriptions = mount(
+      <Subscriptions
+        free={free}
+        paid={paid}
+        isSignedIn={true}
+        getUsage={() => Promise.resolve()}
+        removePaidSubscription={() => {}}
+        isUnRegistering={false}
+        error={{ message: 'an error' }}
+      />
+    )
+    setTimeout(() => {
+      subscriptions.update()
+      expect(subscriptions.find(Loading).length).toEqual(0)
+      expect(subscriptions.find(Alert).length).toEqual(1)
+      done()
+    }, 30)
+  })
+  it('correctly creates error if still unregistering', done => {
+    const subscriptions = mount(
+      <Subscriptions
+        free={free}
+        paid={paid}
+        isSignedIn={true}
+        getUsage={() => Promise.resolve()}
+        removePaidSubscription={() => {}}
+        isUnRegistering={true}
+        error={{ message: 'an error' }}
+      />
+    )
+    setTimeout(() => {
+      subscriptions.update()
+      expect(subscriptions.find(Loading).length).toEqual(1)
+      expect(subscriptions.find(Alert).length).toEqual(1)
+      done()
+    }, 30)
   })
 })

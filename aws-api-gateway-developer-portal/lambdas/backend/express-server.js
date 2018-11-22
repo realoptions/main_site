@@ -184,16 +184,7 @@ app.delete('/subscriptions/:usagePlanId', (req, res) => {
     function success(data) {
         res.status(200).json(data)
     }
-
-   // getUsagePlanFromCatalog(usagePlanId).then((usagePlan) => {
-        //const isUsagePlanInCatalog = Boolean(usagePlan)
-
-        //if (!isUsagePlanInCatalog) {
-        //    res.status(404).json('Invalid Usage Plan ID')
-        //} else {
     customersController.unsubscribe(cognitoIdentityId, usagePlanId, error, success)
-        //}
-    //})
 })
 
 // no auth
