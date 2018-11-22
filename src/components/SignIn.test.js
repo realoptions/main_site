@@ -16,6 +16,8 @@ const defaultParams = {
   },
   loginError: gf,
   updateLoggingIn: gf,
+  updateSignIn: gf,
+  addSubscription: gf,
   isFromMarketPlace: true
 }
 it('renders without error', () => {

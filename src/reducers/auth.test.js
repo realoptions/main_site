@@ -2,12 +2,11 @@ import auth, { splitHash, getDefaultState } from './auth'
 import { UPDATE_API_KEY, LOGOUT, UPDATE_AWS_CLIENT } from '../actions/constants'
 
 it('correctly instantiates from market when token and usageplan are provided', () => {
-  const defaulState = getDefaultState('/test?token=hello&usagePlanId=123fds')
-  const state = auth(defaulState, { type: 'test' })
+  const defaultState = getDefaultState('/test?token=hello&usagePlanId=123fds')
+  const state = auth(defaultState, { type: 'test' })
   expect(state).toEqual({
     isSignedIn: false,
     token: 'hello',
-    paidUsagePlanId: '123fds',
     isFromMarketPlace: true
   })
 })
@@ -17,7 +16,6 @@ it('correctly does not instantiate from market when token and usageplan are not 
   expect(state).toEqual({
     isSignedIn: false,
     token: undefined,
-    paidUsagePlanId: undefined,
     isFromMarketPlace: false
   })
 })
@@ -37,7 +35,8 @@ it('correctly appends client', () => {
 it('correctly logs out', () => {
   const state = auth({}, { type: LOGOUT })
   expect(state).toEqual({
-    isSignedIn: false
+    isSignedIn: false,
+    isFromMarketPlace: false
   })
 })
 

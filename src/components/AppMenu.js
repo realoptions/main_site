@@ -27,35 +27,125 @@ import { menuBarHeight } from '../styles/menu'
 import Loading from './Loading'
 import AsyncLoad from './AsyncLoad'
 import { init } from '../services/auth'
+import { updateSignIn, updateLogOut } from '../actions/signIn'
 import { toggleNavBar } from '../actions/menu'
-import { getPossibleSubscriptions } from '../actions/subscriptions.js'
+import {
+  getPossibleSubscriptions,
+  addSubscriptionLocal
+} from '../actions/subscriptions.js'
 
-export const LogOut = ({ logout, cognitoUser, history }) => (
+const mapStateToPropsLogOut = ({ auth: { cognitoUser } }) => ({
+  cognitoUser
+})
+const mapDispatchToPropsLogOut = dispatch => ({
+  updateLogOut: () => updateLogOut(dispatch)
+})
+//exported for testing
+export const LogOut = connect(
+  mapStateToPropsLogOut,
+  mapDispatchToPropsLogOut
+)(({ updateLogOut, cognitoUser, history }) => (
   <NavLink
     href="#"
     onClick={() => {
       logout(cognitoUser)
-      history.push(HOME)
+      updateLogOut()
+      if (history.location.pathname !== HOME) {
+        history.push(HOME)
+      }
     }}
   >
     Log Out
   </NavLink>
-)
+))
+LogOut.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired,
+    location: PropTypes.shape({
+      pathname: PropTypes.string.isRequired
+    }).isRequired
+  }).isRequired
+}
 
-//the "purchase" link will go to amazon web store
-export const AppMenu = ({
-  toggleNavBar,
-  isSignedIn,
-  isOpen,
-  logout,
-  history,
-  init,
-  cognitoUser,
-  paidUsagePlanId,
-  freeUsagePlanId,
+const mapStateToPropsLogInOrOut = ({
+  auth: { isFromMarketPlace, token, isSignedIn },
+  catalog: {
+    free: { id: freeUsagePlanId }
+  }
+}) => ({
+  isFromMarketPlace,
   token,
-  isFromMarketPlace
-}) => (
+  isSignedIn,
+  freeUsagePlanId
+})
+
+const mapDispatchToPropsLogInOrOut = dispatch => ({
+  init: ({ token, isFromMarketPlace }) =>
+    getPossibleSubscriptions(dispatch).then(
+      ({
+        value: {
+          free: { id: freeUsagePlanId },
+          paid: { id: paidUsagePlanId }
+        }
+      }) =>
+        init({
+          token,
+          paidUsagePlanId,
+          isFromMarketPlace,
+          freeUsagePlanId
+        })
+    ),
+  updateSignIn: updateSignIn(dispatch),
+  addSubscription: addSubscriptionLocal(dispatch)
+})
+
+export const LogInOrOut = connect(
+  mapStateToPropsLogInOrOut,
+  mapDispatchToPropsLogInOrOut
+)(
+  ({
+    init,
+    token,
+    isFromMarketPlace,
+    freeUsagePlanId,
+    isSignedIn,
+    history,
+    updateSignIn,
+    addSubscription
+  }) => (
+    <AsyncLoad
+      onLoad={() =>
+        init({
+          token,
+          isFromMarketPlace
+        }).then(([usagePlanId, client, cognitoUser]) =>
+          Promise.all([
+            addSubscription(usagePlanId),
+            updateSignIn(client, cognitoUser)
+          ])
+        )
+      }
+      loading={Loading}
+      requiredObject={freeUsagePlanId !== undefined}
+      render={() =>
+        isSignedIn ? (
+          <LogOut history={history} />
+        ) : (
+          <NavLink to={LOGIN} tag={Link}>
+            Log In
+          </NavLink>
+        )
+      }
+    />
+  )
+)
+LogInOrOut.propTypes = {
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired
+  }).isRequired
+}
+//the "purchase" link will go to amazon web store
+export const AppMenu = ({ toggleNavBar, isSignedIn, isOpen, history }) => (
   <Navbar color="light" light expand="md">
     <NavbarBrand>
       <Logo
@@ -100,24 +190,7 @@ export const AppMenu = ({
           </NavItem>
         ) : null}
         <NavItem>
-          <AsyncLoad
-            onLoad={() => init({ token, paidUsagePlanId, isFromMarketPlace })}
-            loading={Loading}
-            requiredObject={freeUsagePlanId !== undefined}
-            render={() =>
-              isSignedIn ? (
-                <LogOut
-                  logout={logout}
-                  cognitoUser={cognitoUser}
-                  history={history}
-                />
-              ) : (
-                <NavLink to={LOGIN} tag={Link}>
-                  Log In
-                </NavLink>
-              )
-            }
-          />
+          <LogInOrOut history={history} />
         </NavItem>
         {isSignedIn ? null : (
           <NavItem>
@@ -134,51 +207,17 @@ AppMenu.propTypes = {
   toggleNavBar: PropTypes.func.isRequired,
   isSignedIn: PropTypes.bool,
   isOpen: PropTypes.bool.isRequired,
-  logout: PropTypes.func.isRequired,
-  init: PropTypes.func.isRequired,
-  cognitoUser: PropTypes.shape({
-    authenticateUser: PropTypes.func.isRequired,
-    getSession: PropTypes.func.isRequired,
-    signOut: PropTypes.func.isRequired
-  }),
-  paidUsagePlanId: PropTypes.string,
-  freeUsagePlanId: PropTypes.string,
-  token: PropTypes.string,
-  isFromMarketPlace: PropTypes.bool.isRequired
+  history: PropTypes.shape({
+    push: PropTypes.func.isRequired
+  }).isRequired
 }
 
-const mapStateToProps = ({
-  auth: { isSignedIn, cognitoUser, token, paidUsagePlanId, isFromMarketPlace },
-  menu,
-  catalog: {
-    free: { id: freeUsagePlanId }
-  }
-}) => ({
+const mapStateToProps = ({ auth: { isSignedIn }, menu }) => ({
   isSignedIn,
-  cognitoUser,
-  isOpen: menu,
-  token,
-  paidUsagePlanId,
-  freeUsagePlanId,
-  isFromMarketPlace
+  isOpen: menu
 })
 
 const mapDispatchToProps = dispatch => ({
-  logout: logout(dispatch),
-  init: ({ paidUsagePlanId, token, isFromMarketPlace }) =>
-    getPossibleSubscriptions(dispatch).then(
-      ({
-        value: {
-          free: { id: freeUsagePlanId }
-        }
-      }) =>
-        init(dispatch)({
-          token,
-          paidUsagePlanId,
-          isFromMarketPlace,
-          freeUsagePlanId
-        })
-    ),
   toggleNavBar: toggleNavBar(dispatch)
 })
 export default connect(

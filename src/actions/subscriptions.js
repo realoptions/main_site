@@ -11,13 +11,15 @@ import { unregisterPaid, getUsage, getCatalog } from '../services/api-catalog'
 import { keys } from '../reducers/catalog'
 const containsString = (match, string) => match.toLowerCase().includes(string)
 const checkKey = name => keys.find(key => containsString(name, key))
+
 export const addSubscriptionLocal = dispatch => usagePlanId =>
+  usagePlanId &&
   dispatch({
     type: ADD_SUBSCRIPTION,
     value: usagePlanId
   })
 
-export const deleteSubscriptionLocal = dispatch => usagePlanId =>
+const deleteSubscriptionLocal = dispatch => usagePlanId =>
   dispatch({
     type: DELETE_SUBSCRIPTION,
     value: usagePlanId

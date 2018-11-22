@@ -1,7 +1,8 @@
 import { LOGOUT, UPDATE_API_KEY, UPDATE_AWS_CLIENT } from '../actions/constants'
 import { getQueryString } from '../services/helpers/queryString'
 const defaultQuery = {
-  isSignedIn: false
+  isSignedIn: false,
+  isFromMarketPlace: false
 }
 export const splitHash = hash => {
   const split = hash.split('?')
@@ -12,7 +13,6 @@ export const getDefaultState = (hash = window.location.hash) => {
   return {
     ...defaultQuery,
     token,
-    paidUsagePlanId: usagePlanId,
     isFromMarketPlace: !!(token && usagePlanId)
   }
 }

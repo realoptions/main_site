@@ -7,6 +7,8 @@ import { loginError, updateLoggingIn, noLoginError } from '../actions/signIn'
 import Loading from '../components/Loading'
 import { HOME, SUCCESS_MARKETPLACE } from '../routes/names'
 import { Redirect } from 'react-router-dom'
+import { updateSignIn } from '../actions/signIn'
+import { addSubscriptionLocal } from '../actions/subscriptions'
 
 export const checkIfRegisteringFromMarketplace = (
   isFromMarketPlace,
@@ -19,28 +21,35 @@ export const checkIfRegisteringFromMarketplace = (
 export const checkIfRegisteredPaid = (isFromMarketPlace, isSignedIn) =>
   isFromMarketPlace && isSignedIn
 
-const logInAndGoHome = (
+const logInAndGoHome = ({
   fn,
   history,
   loginError,
   noLoginError,
   isFromMarketPlace,
-  updateLoggingIn
-) => {
+  updateLoggingIn,
+  addSubscription,
+  updateSignIn
+}) => {
   const navigate = () =>
     history.push(isFromMarketPlace ? SUCCESS_MARKETPLACE : HOME)
   return e => {
     updateLoggingIn(true)
     fn(e)
-      .then(navigate)
-      .then(noLoginError)
+      .then(([usagePlanId, client, cognitoUser]) =>
+        Promise.all([
+          navigate(),
+          addSubscription(usagePlanId),
+          updateSignIn(client, cognitoUser),
+          noLoginError()
+        ])
+      )
       .catch(loginError)
       .then(() => updateLoggingIn(false))
   }
 }
 
 export const SignIn = ({
-  register,
   isLoggingIn,
   history,
   loginError,
@@ -51,7 +60,9 @@ export const SignIn = ({
   token,
   paidUsagePlanId,
   freeUsagePlanId,
-  isFromMarketPlace
+  isFromMarketPlace,
+  updateSignIn,
+  addSubscription
 }) =>
   checkIfRegisteringFromMarketplace(
     isFromMarketPlace,
@@ -63,8 +74,8 @@ export const SignIn = ({
     <Redirect to={SUCCESS_MARKETPLACE} />
   ) : (
     <Form
-      onSubmit={logInAndGoHome(
-        register({
+      onSubmit={logInAndGoHome({
+        fn: getForm(register)({
           paidUsagePlanId,
           freeUsagePlanId,
           token,
@@ -74,8 +85,10 @@ export const SignIn = ({
         loginError,
         noLoginError,
         isFromMarketPlace,
-        updateLoggingIn
-      )}
+        updateLoggingIn,
+        updateSignIn,
+        addSubscription
+      })}
     >
       {error && <Alert color="danger">{error.message}</Alert>}
       <FormGroup>
@@ -96,7 +109,6 @@ export const SignIn = ({
     </Form>
   )
 SignIn.propTypes = {
-  register: PropTypes.func.isRequired,
   isLoggingIn: PropTypes.bool.isRequired,
   history: PropTypes.shape({
     goBack: PropTypes.func.isRequired,
@@ -111,7 +123,9 @@ SignIn.propTypes = {
   token: PropTypes.string,
   paidUsagePlanId: PropTypes.string,
   freeUsagePlanId: PropTypes.string,
-  isFromMarketPlace: PropTypes.bool.isRequired
+  isFromMarketPlace: PropTypes.bool.isRequired,
+  updateSignIn: PropTypes.func.isRequired,
+  addSubscription: PropTypes.func.isRequired
 }
 const getForm = fn => aggr => e => {
   e.preventDefault()
@@ -119,17 +133,19 @@ const getForm = fn => aggr => e => {
   return fn(aggr)(email, password)
 }
 const mapDispatchToProps = dispatch => ({
-  register: getForm(register(dispatch)),
   loginError: loginError(dispatch),
   noLoginError: noLoginError(dispatch),
-  updateLoggingIn: isLoggingIn => updateLoggingIn(dispatch, isLoggingIn)
+  updateLoggingIn: isLoggingIn => updateLoggingIn(dispatch, isLoggingIn),
+  updateSignIn: updateSignIn(dispatch),
+  addSubscription: addSubscriptionLocal(dispatch)
 })
 const mapStateToProps = ({
   loading: { isLoggingIn },
-  auth: { token, paidUsagePlanId, isFromMarketPlace, isSignedIn },
+  auth: { token, isFromMarketPlace, isSignedIn },
   errors: { loginError: error },
   catalog: {
-    free: { id: freeUsagePlanId }
+    free: { id: freeUsagePlanId },
+    paid: { id: paidUsagePlanId }
   }
 }) => ({
   isLoggingIn,
