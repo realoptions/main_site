@@ -21,7 +21,7 @@ const mapDispatchToProps = dispatch => ({
   toggleOpen: toggleOpen(dispatch),
   onLoad: client =>
     showApiKey(client)
-      .then(v => updateApiKey(dispatch, v))
+      .then(updateApiKey(dispatch))
       .catch(apiError(dispatch))
 })
 export const ApiModal = ({

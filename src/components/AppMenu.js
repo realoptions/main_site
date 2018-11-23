@@ -38,7 +38,7 @@ const mapStateToPropsLogOut = ({ auth: { cognitoUser } }) => ({
   cognitoUser
 })
 const mapDispatchToPropsLogOut = dispatch => ({
-  updateLogOut: () => updateLogOut(dispatch)
+  updateLogOut: updateLogOut(dispatch)
 })
 //exported for testing
 export const LogOut = connect(

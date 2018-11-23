@@ -20,8 +20,8 @@ export const checkIfRegisteringFromMarketplace = (
 
 export const checkIfRegisteredPaid = (isFromMarketPlace, isSignedIn) =>
   isFromMarketPlace && isSignedIn
-
-const logInAndGoHome = ({
+//export for testing
+export const logInAndGoHome = ({
   fn,
   history,
   loginError,
@@ -135,7 +135,7 @@ const getForm = fn => aggr => e => {
 const mapDispatchToProps = dispatch => ({
   loginError: loginError(dispatch),
   noLoginError: noLoginError(dispatch),
-  updateLoggingIn: isLoggingIn => updateLoggingIn(dispatch, isLoggingIn),
+  updateLoggingIn: updateLoggingIn(dispatch),
   updateSignIn: updateSignIn(dispatch),
   addSubscription: addSubscriptionLocal(dispatch)
 })

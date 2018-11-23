@@ -15,7 +15,7 @@ export const updateSignIn = dispatch => (client, user) =>
     user
   })
 
-export const updateLogOut = dispatch => dispatch({ type: LOGOUT })
+export const updateLogOut = dispatch => () => dispatch({ type: LOGOUT })
 
 export const loginError = dispatch => err =>
   dispatch({
@@ -27,13 +27,13 @@ export const noLoginError = dispatch => () =>
     type: NO_LOGIN_ERROR
   })
 
-export const updateLoggingIn = (dispatch, value) =>
+export const updateLoggingIn = dispatch => value =>
   dispatch({
     type: IS_LOGGING_IN,
     value
   })
 
-export const updateApiKey = (dispatch, value) =>
+export const updateApiKey = dispatch => value =>
   dispatch({ type: UPDATE_API_KEY, value })
 export const apiError = dispatch => err =>
   dispatch({ type: API_ERROR, value: err })
