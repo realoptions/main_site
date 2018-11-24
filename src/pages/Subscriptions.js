@@ -59,6 +59,7 @@ export const renderUsage = (
     </div>
   )
 }
+
 export const Subscriptions = ({
   style,
   paid,
@@ -93,7 +94,7 @@ export const Subscriptions = ({
               render={renderUsage(
                 paid,
                 paid.isSubscribed,
-                () => removePaidSubscription(paid.id, free.id, client),
+                removePaidSubscription(paid.id, free.id, client),
                 isUnRegistering,
                 error
               )}

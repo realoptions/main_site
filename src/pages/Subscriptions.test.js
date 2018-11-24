@@ -151,7 +151,7 @@ describe('Subscriptions', () => {
         paid={paid}
         isSignedIn={true}
         getUsage={() => Promise.resolve()}
-        removePaidSubscription={() => {}}
+        removePaidSubscription={() => () => {}}
         isUnRegistering={true}
         error={{ message: 'an error' }}
       />

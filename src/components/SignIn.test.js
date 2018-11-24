@@ -3,7 +3,8 @@ import Loading from '../components/Loading'
 import {
   SignIn,
   checkIfRegisteringFromMarketplace,
-  checkIfRegisteredPaid
+  checkIfRegisteredPaid,
+  getForm
 } from './SignIn'
 import { shallow } from 'enzyme'
 const gf = () => {}
@@ -18,7 +19,8 @@ const defaultParams = {
   updateLoggingIn: gf,
   updateSignIn: gf,
   addSubscription: gf,
-  isFromMarketPlace: true
+  isFromMarketPlace: true,
+  onLogIn: () => gf
 }
 it('renders without error', () => {
   const signIn = shallow(<SignIn {...defaultParams} isLoggingIn={false} />)
@@ -86,5 +88,36 @@ describe('checkIfResteredPaid', () => {
   })
   it('returns false if not isFromMarketPlace and not isSignedIn', () => {
     expect(checkIfRegisteredPaid(false, false)).toEqual(false)
+  })
+})
+describe('getForm', () => {
+  it('correctly executes functions similar to register', () => {
+    const event = {
+      preventDefault: jest.fn(),
+      target: [
+        {
+          value: 'email'
+        },
+        {
+          value: 'password'
+        }
+      ]
+    }
+    const mockRegister = jest.fn(obj => (email, password) =>
+      Promise.resolve({ email, password })
+    )
+    return getForm(mockRegister)({ key: 'value' })(event)
+      .then(({ email, password }) => {
+        return Promise.all([
+          expect(email).toEqual('email'),
+          expect(password).toEqual('password')
+        ])
+      })
+      .then(() => {
+        return expect(mockRegister.mock.calls.length).toEqual(1)
+      })
+      .then(() => {
+        return expect(mockRegister.mock.calls[0][0]).toEqual({ key: 'value' })
+      })
   })
 })
