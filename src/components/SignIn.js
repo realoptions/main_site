@@ -29,8 +29,11 @@ export const SignIn = ({
   freeUsagePlanId,
   isFromMarketPlace,
   onLogIn
-}) =>
-  checkIfRegisteringFromMarketplace(
+}) => {
+  console.log(isFromMarketPlace)
+  console.log(freeUsagePlanId)
+  console.log(isSignedIn)
+  return checkIfRegisteringFromMarketplace(
     isFromMarketPlace,
     isSignedIn,
     freeUsagePlanId
@@ -68,6 +71,7 @@ export const SignIn = ({
       )}
     </Form>
   )
+}
 SignIn.propTypes = {
   isLoggingIn: PropTypes.bool.isRequired,
   history: PropTypes.shape({

@@ -1,12 +1,16 @@
 import React from 'react'
 import Loading from '../components/Loading'
-import {
+import { Provider } from 'react-redux'
+import { Form } from 'reactstrap'
+import SignInComponent, {
   SignIn,
   checkIfRegisteringFromMarketplace,
   checkIfRegisteredPaid,
   getForm
 } from './SignIn'
-import { shallow } from 'enzyme'
+import configureStore from 'redux-mock-store'
+const mockStore = configureStore([])
+import { shallow, mount } from 'enzyme'
 const gf = () => {}
 const defaultParams = {
   register: gf,
@@ -119,5 +123,77 @@ describe('getForm', () => {
       .then(() => {
         return expect(mockRegister.mock.calls[0][0]).toEqual({ key: 'value' })
       })
+  })
+})
+describe('SignInComponent', () => {
+  it('shows progress when isMarketPlace but not signed in or catalog', () => {
+    const usagePlan = {
+      quota: {
+        period: 'MONTH'
+      }
+    }
+    const free = usagePlan
+    const paid = { ...usagePlan, isSubscribed: true }
+    const initialState = {
+      catalog: {
+        free,
+        paid
+      },
+      auth: { isFromMarketPlace: true },
+      loading: {
+        isLoggingIn: false
+      },
+      errors: {
+        loginError: null
+      }
+    }
+    const history = {
+      goBack: jest.fn,
+      push: jest.fn,
+      length: 4
+    }
+    const store = mockStore(initialState)
+    const signIn = mount(
+      <Provider store={store}>
+        <SignInComponent history={history} />
+      </Provider>
+    )
+    expect(signIn.find(Loading).length).toEqual(1)
+  })
+  it('shows form when not isMarketPlace and both signed in and catalog', () => {
+    const usagePlan = {
+      quota: {
+        period: 'MONTH'
+      },
+      id: 'hello'
+    }
+    const free = usagePlan
+    const paid = { ...usagePlan, isSubscribed: true }
+    const initialState = {
+      catalog: {
+        free,
+        paid
+      },
+      auth: { isFromMarketPlace: false, isSignedIn: true },
+      loading: {
+        isLoggingIn: false
+      },
+      errors: {
+        loginError: null
+      }
+    }
+    const history = {
+      goBack: jest.fn,
+      push: jest.fn,
+      length: 4
+    }
+    const store = mockStore(initialState)
+    const signIn = mount(
+      <Provider store={store}>
+        <SignInComponent history={history} />
+      </Provider>
+    )
+    expect(signIn.find(Loading).length).toEqual(0)
+    expect(signIn.find(Form).length).toEqual(1)
   })
 })
