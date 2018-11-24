@@ -38,7 +38,9 @@ describe('updateLogOut', () => {
     dispatch = jest.fn()
   })
   it('dispatches event', () => {
-    updateLogOut(dispatch)()
+    updateLogOut(dispatch)({
+      signOut: jest.fn()
+    })
     expect(dispatch.mock.calls.length).toEqual(1)
     expect(dispatch.mock.calls[0][0]).toEqual({
       type: LOGOUT

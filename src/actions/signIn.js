@@ -5,8 +5,10 @@ import {
   LOGIN_ERROR,
   UPDATE_API_KEY,
   API_ERROR,
+  NO_API_ERROR,
   NO_LOGIN_ERROR
 } from './constants'
+import { logout } from '../services/auth'
 
 export const updateSignIn = dispatch => (client, user) =>
   dispatch({
@@ -15,7 +17,10 @@ export const updateSignIn = dispatch => (client, user) =>
     user
   })
 
-export const updateLogOut = dispatch => () => dispatch({ type: LOGOUT })
+export const updateLogOut = dispatch => user => {
+  logout(user)
+  dispatch({ type: LOGOUT })
+}
 
 export const loginError = dispatch => err =>
   dispatch({
@@ -35,5 +40,8 @@ export const updateLoggingIn = dispatch => value =>
 
 export const updateApiKey = dispatch => value =>
   dispatch({ type: UPDATE_API_KEY, value })
+
 export const apiError = dispatch => err =>
   dispatch({ type: API_ERROR, value: err })
+
+export const noApiError = dispatch => () => dispatch({ type: NO_API_ERROR })

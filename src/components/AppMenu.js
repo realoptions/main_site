@@ -22,17 +22,13 @@ import {
   SUBSCRIPTIONS,
   DEMO
 } from '../routes/names'
-import { logout } from '../services/auth'
 import { menuBarHeight } from '../styles/menu'
 import Loading from './Loading'
 import AsyncLoad from './AsyncLoad'
-import { init } from '../services/auth'
-import { updateSignIn, updateLogOut } from '../actions/signIn'
+//import { init } from '../services/auth'
+import { updateLogOut } from '../actions/signIn'
 import { toggleNavBar } from '../actions/menu'
-import {
-  getPossibleSubscriptions,
-  addSubscriptionLocal
-} from '../actions/subscriptions.js'
+import { onPageLoad } from '../actions/subscriptions.js'
 
 const mapStateToPropsLogOut = ({ auth: { cognitoUser } }) => ({
   cognitoUser
@@ -48,8 +44,7 @@ export const LogOut = connect(
   <NavLink
     href="#"
     onClick={() => {
-      logout(cognitoUser)
-      updateLogOut()
+      updateLogOut(cognitoUser)
       if (history.location.pathname !== HOME) {
         history.push(HOME)
       }
@@ -80,23 +75,7 @@ const mapStateToPropsLogInOrOut = ({
 })
 
 const mapDispatchToPropsLogInOrOut = dispatch => ({
-  init: ({ token, isFromMarketPlace }) =>
-    getPossibleSubscriptions(dispatch).then(
-      ({
-        value: {
-          free: { id: freeUsagePlanId },
-          paid: { id: paidUsagePlanId }
-        }
-      }) =>
-        init({
-          token,
-          paidUsagePlanId,
-          isFromMarketPlace,
-          freeUsagePlanId
-        })
-    ),
-  updateSignIn: updateSignIn(dispatch),
-  addSubscription: addSubscriptionLocal(dispatch)
+  onPageLoad: onPageLoad(dispatch)
 })
 
 export const LogInOrOut = connect(
@@ -104,27 +83,18 @@ export const LogInOrOut = connect(
   mapDispatchToPropsLogInOrOut
 )(
   ({
-    init,
+    onPageLoad,
     token,
     isFromMarketPlace,
     freeUsagePlanId,
     isSignedIn,
-    history,
-    updateSignIn,
-    addSubscription
+    history
   }) => (
     <AsyncLoad
-      onLoad={() =>
-        init({
-          token,
-          isFromMarketPlace
-        }).then(([usagePlanId, client, cognitoUser]) =>
-          Promise.all([
-            addSubscription(usagePlanId),
-            updateSignIn(client, cognitoUser)
-          ])
-        )
-      }
+      onLoad={onPageLoad({
+        token,
+        isFromMarketPlace
+      })}
       loading={Loading}
       requiredObject={freeUsagePlanId !== undefined}
       render={() =>

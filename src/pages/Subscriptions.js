@@ -12,13 +12,9 @@ import {
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import {
-  addSubscriptionLocal,
-  deleteSubscriptionLocal,
-  updateUnSubscribing,
-  subscribeError,
-  noSubscribeError
+  removePaidSubscription,
+  getSubscriptionUsage
 } from '../actions/subscriptions'
-import { unregisterPaid } from '../services/api-catalog'
 import AsyncLoad from '../components/AsyncLoad'
 import Loading from '../components/Loading'
 const paddingTop = { paddingTop: 20 }
@@ -63,26 +59,7 @@ export const renderUsage = (
     </div>
   )
 }
-//export for testing
-export const unregister = ({
-  updateUnSubscribing,
-  addSubscriptionLocal,
-  deleteSubscriptionLocal,
-  subscribeError,
-  noSubscribeError
-}) => (paidUsagePlanId, freeUsagePlanId, client) => () => {
-  updateUnSubscribing(true)
-  return unregisterPaid(paidUsagePlanId, freeUsagePlanId, client)
-    .then(() =>
-      Promise.all([
-        addSubscriptionLocal(freeUsagePlanId),
-        deleteSubscriptionLocal(paidUsagePlanId),
-        noSubscribeError()
-      ])
-    )
-    .catch(subscribeError)
-    .then(() => updateUnSubscribing(false))
-}
+
 export const Subscriptions = ({
   style,
   paid,
@@ -92,11 +69,7 @@ export const Subscriptions = ({
   getUsage,
   isUnRegistering,
   error,
-  updateUnSubscribing,
-  addSubscriptionLocal,
-  deleteSubscriptionLocal,
-  subscribeError,
-  noSubscribeError
+  removePaidSubscription
 }) => (
   <Container key="container">
     <Row style={style} className="dark-text">
@@ -121,13 +94,7 @@ export const Subscriptions = ({
               render={renderUsage(
                 paid,
                 paid.isSubscribed,
-                unregister({
-                  updateUnSubscribing,
-                  addSubscriptionLocal,
-                  deleteSubscriptionLocal,
-                  subscribeError,
-                  noSubscribeError
-                })(paid.id, free.id, client),
+                removePaidSubscription(paid.id, free.id, client),
                 isUnRegistering,
                 error
               )}
@@ -187,12 +154,7 @@ const mapStateToProps = ({
 
 const mapDispatchToProps = dispatch => ({
   getUsage: getSubscriptionUsage(dispatch),
-  //removePaidSubscription: removePaidSubscription(dispatch),
-  updateUnSubscribing: updateUnSubscribing(dispatch),
-  addSubscriptionLocal: addSubscriptionLocal(dispatch),
-  deleteSubscriptionLocal: deleteSubscriptionLocal(dispatch),
-  subscribeError: subscribeError(dispatch),
-  noSubscribeError: noSubscribeError(dispatch)
+  removePaidSubscription: removePaidSubscription(dispatch)
 })
 
 export default connect(
