@@ -33,12 +33,14 @@ export const unregisterPaid = (paidUsagePlanId, freeUsagePlanId, client) =>
 const removeSubscription = (usagePlanId, client) =>
   client.invokeApi({}, `/subscriptions/${usagePlanId}`, 'DELETE', {}, {})
 
-const getCurrentMonth = () => {
-  const date = new Date()
+//exported for testing
+export const getCurrentMonth = (date = new Date()) => {
   const start = new Date(date.getFullYear(), date.getMonth(), 1)
     .toJSON()
     .split('T')[0]
-  const end = new Date().toJSON().split('T')[0]
+  let end = date
+  end.setDate(end.getDate() + 1)
+  end = end.toJSON().split('T')[0]
   return { start, end }
 }
 
