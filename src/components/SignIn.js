@@ -13,8 +13,7 @@ export const checkIfRegisteringFromMarketplace = (
   isSignedIn,
   freeUsagePlanId
 ) =>
-  isFromMarketPlace &&
-  (isSignedIn === undefined || freeUsagePlanId === undefined)
+  isFromMarketPlace && (isSignedIn === false || freeUsagePlanId === undefined)
 
 export const checkIfRegisteredPaid = (isFromMarketPlace, isSignedIn) =>
   isFromMarketPlace && isSignedIn
@@ -29,11 +28,8 @@ export const SignIn = ({
   freeUsagePlanId,
   isFromMarketPlace,
   onLogIn
-}) => {
-  console.log(isFromMarketPlace)
-  console.log(freeUsagePlanId)
-  console.log(isSignedIn)
-  return checkIfRegisteringFromMarketplace(
+}) =>
+  checkIfRegisteringFromMarketplace(
     isFromMarketPlace,
     isSignedIn,
     freeUsagePlanId
@@ -71,7 +67,6 @@ export const SignIn = ({
       )}
     </Form>
   )
-}
 SignIn.propTypes = {
   isLoggingIn: PropTypes.bool.isRequired,
   history: PropTypes.shape({

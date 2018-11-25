@@ -37,7 +37,7 @@ it('renders error message with error', () => {
       {...defaultParams}
       error={{ message: 'an error' }}
       isLoggingIn={false}
-      isFromMarketPlace={true}
+      isFromMarketPlace={false}
       isSignedIn={false}
       freeUsagePlanId="someid"
     />
@@ -58,24 +58,29 @@ describe('checkIfRegisteringFromMarketPlace', () => {
     )
   })
   it('returns true if isFromMarketPlace and not finished logging in: isSignedIn', () => {
-    expect(checkIfRegisteringFromMarketplace(true, undefined, 'hello')).toEqual(
+    expect(checkIfRegisteringFromMarketplace(true, false, 'hello')).toEqual(
       true
     )
   })
   it('returns true if isFromMarketPlace and not finished logging in: both', () => {
-    expect(
-      checkIfRegisteringFromMarketplace(true, undefined, undefined)
-    ).toEqual(true)
+    expect(checkIfRegisteringFromMarketplace(true, false, undefined)).toEqual(
+      true
+    )
   })
   it('returns false if isFromMarketPlace and finished logging in', () => {
     expect(checkIfRegisteringFromMarketplace(true, true, 'hello')).toEqual(
       false
     )
   })
-  it('returns false if not isFromMarketPlace', () => {
-    expect(
-      checkIfRegisteringFromMarketplace(false, undefined, undefined)
-    ).toEqual(false)
+  it('returns false if not isFromMarketPlace and signed in and plan id', () => {
+    expect(checkIfRegisteringFromMarketplace(false, true, 'hello')).toEqual(
+      false
+    )
+  })
+  it('returns false if not isFromMarketPlace and not signed in or plan id', () => {
+    expect(checkIfRegisteringFromMarketplace(false, false, undefined)).toEqual(
+      false
+    )
   })
 })
 
@@ -140,6 +145,75 @@ describe('SignInComponent', () => {
         paid
       },
       auth: { isFromMarketPlace: true },
+      loading: {
+        isLoggingIn: false
+      },
+      errors: {
+        loginError: null
+      }
+    }
+    const history = {
+      goBack: jest.fn,
+      push: jest.fn,
+      length: 4
+    }
+    const store = mockStore(initialState)
+    const signIn = mount(
+      <Provider store={store}>
+        <SignInComponent history={history} />
+      </Provider>
+    )
+    expect(signIn.find(Loading).length).toEqual(1)
+  })
+  it('shows progress when isMarketPlace is true, free usage plan is undefined, and signed in is false', () => {
+    const usagePlan = {
+      quota: {
+        period: 'MONTH'
+      }
+    }
+    const free = usagePlan
+    const paid = { ...usagePlan, isSubscribed: true }
+    const initialState = {
+      catalog: {
+        free,
+        paid
+      },
+      auth: { isFromMarketPlace: true, isSignedIn: false },
+      loading: {
+        isLoggingIn: false
+      },
+      errors: {
+        loginError: null
+      }
+    }
+    const history = {
+      goBack: jest.fn,
+      push: jest.fn,
+      length: 4
+    }
+    const store = mockStore(initialState)
+    const signIn = mount(
+      <Provider store={store}>
+        <SignInComponent history={history} />
+      </Provider>
+    )
+    expect(signIn.find(Loading).length).toEqual(1)
+  })
+  it('shows progress when isMarketPlace is true, free usage plan is defined, and signed in is false', () => {
+    const usagePlan = {
+      quota: {
+        period: 'MONTH'
+      },
+      id: 'hello'
+    }
+    const free = usagePlan
+    const paid = { ...usagePlan, isSubscribed: true }
+    const initialState = {
+      catalog: {
+        free,
+        paid
+      },
+      auth: { isFromMarketPlace: true, isSignedIn: false },
       loading: {
         isLoggingIn: false
       },
