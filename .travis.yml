@@ -24,7 +24,7 @@ before_script:
 
 script:
   - node ./scripts/getStackFeatures dev-portal #creates .env
-  - for i in {1..5}; do wget -O releases.json https://api.github.com/repos/phillyfan1138/option_price_faas/releases/latest??access_token=$GITHUB_TOKEN && break || sleep 10; done 
+  - for i in {1..5}; do wget -O releases.json https://api.github.com/repos/phillyfan1138/option_price_faas/releases/latest?access_token=$GITHUB_TOKEN && break || sleep 10; done 
   - cp releases.json ./scripts/
   - tag=$(node ./scripts/outputTag) # hopefully this throw an error...
   - echo "REACT_APP_TAG=$tag" >> .env # creates tag for the main site to know which docs to grab
