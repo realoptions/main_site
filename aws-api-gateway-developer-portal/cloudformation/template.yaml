@@ -22,7 +22,7 @@ Parameters:
   MarketplaceSubscriptionTopicName:
     Type: String
     Description: The marketplace SNS topic for subscription/unsubscription events
-    Default: "DevPortalMarketplaceSubscriptionTopic"
+    Default: "4x7mlfxu4exo7tlo1zyeofno2" #product code
 
   CognitoIdentityPoolName:
     Type: String
