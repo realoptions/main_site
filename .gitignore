@@ -22,3 +22,5 @@ yarn-error.log*
 *.pdf
 .env
 releases.json
+awsInfrastructure.json
+catalog.json
