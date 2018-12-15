@@ -6,7 +6,7 @@
   "scripts": {
     "package": "sam package --template-file ./cloudformation/template.yaml --output-template-file ./cloudformation/packaged.yaml --s3-bucket mainsite-20181013074908-deployment",
     "install": "npm --prefix ./lambdas/backend install && npm --prefix ./lambdas/listener install",
-    "deploy": "sam deploy --template-file ./cloudformation/packaged.yaml --stack-name \"dev-portal\" --capabilities CAPABILITY_NAMED_IAM --parameter-overrides ArtifactsS3BucketName=\"finside-dev-portal-artifacts\""
+    "deploy": "sam deploy --template-file ./cloudformation/packaged.yaml --stack-name \"dev-portal\" --capabilities CAPABILITY_NAMED_IAM --parameter-overrides ArtifactsS3BucketName=\"finside-dev-portal-artifacts\"     MarketplaceSubscriptionTopicName=\"4x7mlfxu4exo7tlo1zyeofno2\" "
   },
   "license": "Apache-2.0",
   "dependencies": {},
