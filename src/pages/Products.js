@@ -4,7 +4,7 @@ import { REGISTER } from '../routes/names'
 import Pricing from '../components/Pricing'
 import { Link } from 'react-router-dom'
 const padding = { paddingTop: 40, paddingBottom: 20 }
-const githubUrl = 'https://github.com/phillyfan1138'
+const githubUrl = 'https://github.com/realoptions'
 const documentationUrl = `${process.env.PUBLIC_URL}/OptionCalculation.pdf`
 export default () => (
   <Container>
