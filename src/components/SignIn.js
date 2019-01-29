@@ -56,7 +56,7 @@ export const SignIn = ({
       </FormGroup>
       <FormGroup>
         <Label for="passwordId">Password</Label>
-        <Input type="password" name="password" id="passwordId" />
+        <Input type="password" name="password" id="passwordId" minLength="8" />
       </FormGroup>
       {isLoggingIn ? (
         <Loading />
