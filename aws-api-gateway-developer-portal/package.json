@@ -6,7 +6,7 @@
   "scripts": {
     "package": "sam package --template-file ./cloudformation/template.yaml --output-template-file ./cloudformation/packaged.yaml --s3-bucket main-site-lambda-backend-functions",
     "install": "npm --prefix ./lambdas/backend install && npm --prefix ./lambdas/listener install",
-    "deploy": "sam deploy --template-file ./cloudformation/packaged.yaml --stack-name \"dev-portal\" --capabilities CAPABILITY_NAMED_IAM   --parameter-overrides  MarketplaceSubscriptionTopicProductCode=\"4x7mlfxu4exo7tlo1zyeofno2\" "
+    "deploy": "sam deploy --template-file ./cloudformation/packaged.yaml --stack-name \"dev-portal\" --capabilities CAPABILITY_NAMED_IAM   --parameter-overrides  MarketplaceSubscriptionTopicProductCode=\"4x7mlfxu4exo7tlo1zyeofno2\" --parameter-overrides DevPortalSiteS3BucketName=\"devportaltmptest\" --parameter-overrides ArtifactsS3BucketName=\"artifacttmptest\" " 
   },
   "license": "Apache-2.0",
   "dependencies": {},
