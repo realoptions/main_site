@@ -10,7 +10,7 @@ Metadata:
         Label:
           default: "Dev Portal Content Configuration"
         Parameters:
-          - ArtifactsS3BucketName
+          #- ArtifactsS3BucketName
           #- DevPortalSiteS3BucketName
           #- StaticAssetRebuildToken
           #- StaticAssetRebuildMode
@@ -33,10 +33,10 @@ Metadata:
           - CustomDomainNameAcmCertArn
           - UseRoute53Nameservers
 Parameters:
-  ArtifactsS3BucketName:
-    Type: String
-    Description: The S3 bucket in which the Open API documents are stored. Bucket
-      names are globally unique, so you must change this.
+  #ArtifactsS3BucketName:
+  #  Type: String
+  #  Description: The S3 bucket in which the Open API documents are stored. Bucket
+  #    names are globally unique, so you must change this.
 
   DevPortalCustomersTableName:
     Type: String
@@ -397,31 +397,31 @@ Resources:
   #       IndexDocument: index.html
   #       ErrorDocument: index.html
 
-  ArtifactsS3Bucket:
-    Type: AWS::S3::Bucket
-    DependsOn: CatalogUpdaterLambdaFunction
-    Properties:
-      BucketName: !Ref ArtifactsS3BucketName
-      NotificationConfiguration:
-        LambdaConfigurations:
-          -
-            Function: !GetAtt CatalogUpdaterLambdaFunction.Arn
-            Event: "s3:ObjectCreated:*"
-            Filter:
-              S3Key:
-                Rules:
-                  -
-                    Name: prefix
-                    Value: "catalog/"
-          -
-            Function: !GetAtt CatalogUpdaterLambdaFunction.Arn
-            Event: "s3:ObjectRemoved:*"
-            Filter:
-              S3Key:
-                Rules:
-                  -
-                    Name: prefix
-                    Value: "catalog/"
+  #ArtifactsS3Bucket:
+  #  Type: AWS::S3::Bucket
+    #DependsOn: CatalogUpdaterLambdaFunction
+  #  Properties:
+  #    BucketName: !Ref ArtifactsS3BucketName
+      #NotificationConfiguration:
+        # LambdaConfigurations:
+        #   -
+        #     Function: !GetAtt CatalogUpdaterLambdaFunction.Arn
+        #     Event: "s3:ObjectCreated:*"
+        #     Filter:
+        #       S3Key:
+        #         Rules:
+        #           -
+        #             Name: prefix
+        #             Value: "catalog/"
+        #   -
+        #     Function: !GetAtt CatalogUpdaterLambdaFunction.Arn
+        #     Event: "s3:ObjectRemoved:*"
+        #     Filter:
+        #       S3Key:
+        #         Rules:
+        #           -
+        #             Name: prefix
+        #             Value: "catalog/"
 
   CustomersTable:
     Type: AWS::DynamoDB::Table
@@ -477,14 +477,14 @@ Resources:
             Action:
             - apigateway:*
             Resource: '*'
-          - Effect: Allow
-            Action:
-            - s3:GetObject
-            Resource: !Join
-              - ''
-              - - 'arn:aws:s3:::'
-                - !Ref ArtifactsS3BucketName
-                - '/*'
+          #- Effect: Allow
+            #Action:
+            #- s3:GetObject
+            #Resource: !Join
+            #  - ''
+            #  - - 'arn:aws:s3:::'
+            #    - !Ref ArtifactsS3BucketName
+            #    - '/*'
           - Effect: Allow
             Action:
             - aws-marketplace:ResolveCustomer
@@ -760,7 +760,7 @@ Resources:
       Environment:
         Variables:
           #WEBSITE_BUCKET_NAME: !Ref DevPortalSiteS3BucketName
-          StaticBucketName: !Ref ArtifactsS3BucketName
+          #StaticBucketName: !Ref ArtifactsS3BucketName
           CustomersTableName: !Ref DevPortalCustomersTableName
 
       # Adds the API as a trigger
