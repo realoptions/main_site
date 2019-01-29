@@ -1,5 +1,5 @@
 const customersController = require('./_common/customers-controller.js')
-const catalog = require('./catalog/index.js')
+//const catalog = require('./catalog/index.js')
 const AWS = require('aws-sdk')
 const apigateway = new AWS.APIGateway()
 
