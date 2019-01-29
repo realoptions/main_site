@@ -6,14 +6,14 @@ Description: My Dev Portal Stack
 Metadata:
   AWS::CloudFormation::Interface:
     ParameterGroups:
-      #-
-        #Label:
-        #  default: "Dev Portal Content Configuration"
-        #Parameters:
-          #- ArtifactsS3BucketName
-          #- DevPortalSiteS3BucketName
-          #- StaticAssetRebuildToken
-          #- StaticAssetRebuildMode
+      -
+        Label:
+          default: "Dev Portal Content Configuration"
+        Parameters:
+          - ArtifactsS3BucketName
+          - DevPortalSiteS3BucketName
+          - StaticAssetRebuildToken
+          - StaticAssetRebuildMode
       -
         Label:
           default: "Dev Portal Customer Configuration"
@@ -25,23 +25,38 @@ Metadata:
           default: "Subscription Notification Configuration"
         Parameters:
           - MarketplaceSubscriptionTopicProductCode
-      # -
-      #   Label:
-      #     default: "Custom Domain Configuration"
-      #   Parameters:
-      #     - CustomDomainName
-      #     - CustomDomainNameAcmCertArn
-      #     - UseRoute53Nameservers
+      -
+        Label:
+          default: "Custom Domain Configuration"
+        Parameters:
+          - CustomDomainName
+          - CustomDomainNameAcmCertArn
+          - UseRoute53Nameservers
 Parameters:
-  #ArtifactsS3BucketName:
-  #  Type: String
-  #  Description: The S3 bucket in which the Open API documents are stored. Bucket
-  #    names are globally unique, so you must change this.
+  ArtifactsS3BucketName:
+    Type: String
+    Description: The S3 bucket in which the Open API documents are stored. Bucket
+      names are globally unique, so you must change this.
+
+  DevPortalSiteS3BucketName:
+    Type: String
+    Description: The S3 bucket in which the web application code is stored. Bucket
+      names are globally unique, so you must change this.
 
   DevPortalCustomersTableName:
     Type: String
     Description: The name of the DynamoDB Customers table.
     Default: "DevPortalCustomers"
+
+  StaticAssetRebuildToken:
+    Type: String
+    Description: Provide a token different from the last deployment's token to re-upload the dev portal site's static assets. You can provide a timestamp or GUID on each deployment to always re-upload the assets.
+    Default: defaultRebuildToken
+
+  StaticAssetRebuildMode:
+    Type: String
+    Description: By default, a static asset rebuild doesn't overwrite custom-content. Provide the value `overwrite_content` to replace the custom-content with your local version. Don't do this unless you know what you're doing -- all custom changes in your s3 bucket will be lost. 
+    Default: ''
 
   MarketplaceSubscriptionTopicProductCode:
     Type: String
@@ -53,99 +68,124 @@ Parameters:
     Description: The name for your Cognito Identity Pool.
     Default: "DevPortalUserPool"
 
-#Conditions:
-  #UseCustomDomainName: !And [!Not [!Equals [!Ref CustomDomainName, '']], !Not [!Equals [!Ref CustomDomainNameAcmCertArn, '']]]
+  CognitoDomainNameOrPrefix:
+    Type: String
+    Description: The Domain Name (or Prefix) at which your Cognito Hosted UI is located. Omitting this value opts out of the Cognito Hosted UI.
+    Default: ''
+
+  # CognitoDomainAcmCertArn:
+  #   Type: String
+  #   Description: Doesn't yet do anything. Oh well.
+  #   Default: ''
+
+  CustomDomainName:
+    Type: String
+    Description: Optionally provide a custom domain name associated with an ACM cert to create a developer portal at that domain name (provide with the format foo.bar.net). Leave blank to create a developer portal without a custom domain name. Standing up a developer portal stack with a custom domain name will take significantly longer than without.
+    Default: ''
+
+  CustomDomainNameAcmCertArn:
+    Type: String
+    Description: If you provided a domain name associated with an acm cert, then you must also specify here the acm cert's arn. Leave this blank to create a developer portal without a custom domain name.
+    Default: ''
+
+  UseRoute53Nameservers:
+    Type: String
+    Description: Only applicable if creating a custom domain name for your dev portal. If true, skips creating a Route53 HostedZone and RecordSet. You'll need to provide your own nameserver hosting in place of Route53.
+    Default: 'false'
+
+Conditions:
+  UseCustomDomainName: !And [!Not [!Equals [!Ref CustomDomainName, '']], !Not [!Equals [!Ref CustomDomainNameAcmCertArn, '']]]
   # the second clause is a copy of the UseCustomDomainName condition
   # re-using it doesn't seem possible?
-  #NoCustomDomainName: !Not [ !Condition UseCustomDomainName ]
-  #UseRoute53: !And [!Equals [!Ref UseRoute53Nameservers, 'true'], !Condition UseCustomDomainName]
-  #UseCognitoHostedUI: !Not [!Equals [!Ref CognitoDomainNameOrPrefix, '']]
+  NoCustomDomainName: !Not [ !Condition UseCustomDomainName ]
+  UseRoute53: !And [!Equals [!Ref UseRoute53Nameservers, 'true'], !Condition UseCustomDomainName]
+  UseCognitoHostedUI: !Not [!Equals [!Ref CognitoDomainNameOrPrefix, '']]
 
-# Mappings:
+Mappings:
   # this information comes from these locations, and will need to be kept manually up to date:
   # https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints
   # https://docs.aws.amazon.com/govcloud-us/latest/ug-west/using-govcloud-endpoints.html
   # http://docs.amazonaws.cn/en_us/general/latest/gr/rande.html#cnnorth_region
-  # RegionSpecificConfig:
-  #   us-east-2:
-  #     s3Url: '.s3-website.us-east-2.amazonaws.com'
-  #   us-east-1:
-  #     s3Url: '.s3-website-us-east-1.amazonaws.com'
-  #   us-west-1:
-  #     s3Url: '.s3-website-us-west-1.amazonaws.com'
-  #   us-west-2:
-  #     s3Url: '.s3-website-us-west-2.amazonaws.com'
-  #   ap-south-1:
-  #     s3Url: '.s3-website.ap-south-1.amazonaws.com'
-  #   ap-northeast-3:
-  #     s3Url: '.s3-website.ap-northeast-3.amazonaws.com'
-  #   ap-northeast-2:
-  #     s3Url: '.s3-website.ap-northeast-2.amazonaws.com'
-  #   ap-southeast-1:
-  #     s3Url: '.s3-website-ap-southeast-1.amazonaws.com'
-  #   ap-southeast-2:
-  #     s3Url: '.s3-website-ap-southeast-2.amazonaws.com'
-  #   ap-northeast-1:
-  #     s3Url: '.s3-website-ap-northeast-1.amazonaws.com'
-  #   ca-central-1:
-  #     s3Url: '.s3-website.ca-central-1.amazonaws.com'
-  #   cn-northwest-1:
-  #     s3Url: '.s3-website.cn-northwest-1.amazonaws.com.cn'
-  #   eu-central-1:
-  #     s3Url: '.s3-website.eu-central-1.amazonaws.com'
-  #   eu-west-1:
-  #     s3Url: '.s3-website-eu-west-1.amazonaws.com'
-  #   eu-west-2:
-  #     s3Url: '.s3-website.eu-west-2.amazonaws.com'
-  #   eu-west-3:
-  #     s3Url: '.s3-website.eu-west-3.amazonaws.com'
-  #   sa-east-1:
-  #     s3Url: '.s3-website-sa-east-1.amazonaws.com'
-  #   us-gov-west-1:
-  #     s3Url: '.s3-website-us-gov-west-1.amazonaws.com'
+  RegionSpecificConfig:
+    us-east-2:
+      s3Url: '.s3-website.us-east-2.amazonaws.com'
+    us-east-1:
+      s3Url: '.s3-website-us-east-1.amazonaws.com'
+    us-west-1:
+      s3Url: '.s3-website-us-west-1.amazonaws.com'
+    us-west-2:
+      s3Url: '.s3-website-us-west-2.amazonaws.com'
+    ap-south-1:
+      s3Url: '.s3-website.ap-south-1.amazonaws.com'
+    ap-northeast-3:
+      s3Url: '.s3-website.ap-northeast-3.amazonaws.com'
+    ap-northeast-2:
+      s3Url: '.s3-website.ap-northeast-2.amazonaws.com'
+    ap-southeast-1:
+      s3Url: '.s3-website-ap-southeast-1.amazonaws.com'
+    ap-southeast-2:
+      s3Url: '.s3-website-ap-southeast-2.amazonaws.com'
+    ap-northeast-1:
+      s3Url: '.s3-website-ap-northeast-1.amazonaws.com'
+    ca-central-1:
+      s3Url: '.s3-website.ca-central-1.amazonaws.com'
+    cn-northwest-1:
+      s3Url: '.s3-website.cn-northwest-1.amazonaws.com.cn'
+    eu-central-1:
+      s3Url: '.s3-website.eu-central-1.amazonaws.com'
+    eu-west-1:
+      s3Url: '.s3-website-eu-west-1.amazonaws.com'
+    eu-west-2:
+      s3Url: '.s3-website.eu-west-2.amazonaws.com'
+    eu-west-3:
+      s3Url: '.s3-website.eu-west-3.amazonaws.com'
+    sa-east-1:
+      s3Url: '.s3-website-sa-east-1.amazonaws.com'
+    us-gov-west-1:
+      s3Url: '.s3-website-us-gov-west-1.amazonaws.com'
 
-#Mappings:
+Mappings:
   # this information comes from these locations, and will need to be kept manually up to date:
   # https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_website_region_endpoints
   # https://docs.aws.amazon.com/govcloud-us/latest/ug-west/using-govcloud-endpoints.html
   # http://docs.amazonaws.cn/en_us/general/latest/gr/rande.html#cnnorth_region
-  # RegionSpecificConfig:
-  #   us-east-2:
-  #     s3Url: '.s3-website.us-east-2.amazonaws.com'
-  #   us-east-1:
-  #     s3Url: '.s3-website-us-east-1.amazonaws.com'
-  #   us-west-1:
-  #     s3Url: '.s3-website-us-west-1.amazonaws.com'
-  #   us-west-2:
-  #     s3Url: '.s3-website-us-west-2.amazonaws.com'
-  #   ap-south-1:
-  #     s3Url: '.s3-website.ap-south-1.amazonaws.com'
-  #   ap-northeast-3:
-  #     s3Url: '.s3-website.ap-northeast-3.amazonaws.com'
-  #   ap-northeast-2:
-  #     s3Url: '.s3-website.ap-northeast-2.amazonaws.com'
-  #   ap-southeast-1:
-  #     s3Url: '.s3-website-ap-southeast-1.amazonaws.com'
-  #   ap-southeast-2:
-  #     s3Url: '.s3-website-ap-southeast-2.amazonaws.com'
-  #   ap-northeast-1:
-  #     s3Url: '.s3-website-ap-northeast-1.amazonaws.com'
-  #   ca-central-1:
-  #     s3Url: '.s3-website.ca-central-1.amazonaws.com'
-  #   cn-northwest-1:
-  #     s3Url: '.s3-website.cn-northwest-1.amazonaws.com.cn'
-  #   eu-central-1:
-  #     s3Url: '.s3-website.eu-central-1.amazonaws.com'
-  #   eu-west-1:
-  #     s3Url: '.s3-website-eu-west-1.amazonaws.com'
-  #   eu-west-2:
-  #     s3Url: '.s3-website.eu-west-2.amazonaws.com'
-  #   eu-west-3:
-  #     s3Url: '.s3-website.eu-west-3.amazonaws.com'
-  #   sa-east-1:
-  #     s3Url: '.s3-website-sa-east-1.amazonaws.com'
-  #   us-gov-west-1:
-  #     s3Url: '.s3-website-us-gov-west-1.amazonaws.com'
+  RegionSpecificConfig:
+    us-east-2:
+      s3Url: '.s3-website.us-east-2.amazonaws.com'
+    us-east-1:
+      s3Url: '.s3-website-us-east-1.amazonaws.com'
+    us-west-1:
+      s3Url: '.s3-website-us-west-1.amazonaws.com'
+    us-west-2:
+      s3Url: '.s3-website-us-west-2.amazonaws.com'
+    ap-south-1:
+      s3Url: '.s3-website.ap-south-1.amazonaws.com'
+    ap-northeast-3:
+      s3Url: '.s3-website.ap-northeast-3.amazonaws.com'
+    ap-northeast-2:
+      s3Url: '.s3-website.ap-northeast-2.amazonaws.com'
+    ap-southeast-1:
+      s3Url: '.s3-website-ap-southeast-1.amazonaws.com'
+    ap-southeast-2:
+      s3Url: '.s3-website-ap-southeast-2.amazonaws.com'
+    ap-northeast-1:
+      s3Url: '.s3-website-ap-northeast-1.amazonaws.com'
+    ca-central-1:
+      s3Url: '.s3-website.ca-central-1.amazonaws.com'
+    cn-northwest-1:
+      s3Url: '.s3-website.cn-northwest-1.amazonaws.com.cn'
+    eu-central-1:
+      s3Url: '.s3-website.eu-central-1.amazonaws.com'
+    eu-west-1:
+      s3Url: '.s3-website-eu-west-1.amazonaws.com'
+    eu-west-2:
+      s3Url: '.s3-website.eu-west-2.amazonaws.com'
+    eu-west-3:
+      s3Url: '.s3-website.eu-west-3.amazonaws.com'
+    sa-east-1:
+      s3Url: '.s3-website-sa-east-1.amazonaws.com'
+    us-gov-west-1:
+      s3Url: '.s3-website-us-gov-west-1.amazonaws.com'
 
 Resources:
   ApiGatewayApi:
@@ -389,39 +429,39 @@ Resources:
       Variables:
         DevPortalFunctionName: !Ref DevPortalLambdaFunction
 
-  # DevPortalSiteS3Bucket:
-  #   Type: AWS::S3::Bucket
-  #   Properties:
-  #     BucketName: !Ref DevPortalSiteS3BucketName
-  #     WebsiteConfiguration:
-  #       IndexDocument: index.html
-  #       ErrorDocument: index.html
+  DevPortalSiteS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref DevPortalSiteS3BucketName
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
 
-  #ArtifactsS3Bucket:
-  #  Type: AWS::S3::Bucket
-    #DependsOn: CatalogUpdaterLambdaFunction
-  #  Properties:
-  #    BucketName: !Ref ArtifactsS3BucketName
-      #NotificationConfiguration:
-        # LambdaConfigurations:
-        #   -
-        #     Function: !GetAtt CatalogUpdaterLambdaFunction.Arn
-        #     Event: "s3:ObjectCreated:*"
-        #     Filter:
-        #       S3Key:
-        #         Rules:
-        #           -
-        #             Name: prefix
-        #             Value: "catalog/"
-        #   -
-        #     Function: !GetAtt CatalogUpdaterLambdaFunction.Arn
-        #     Event: "s3:ObjectRemoved:*"
-        #     Filter:
-        #       S3Key:
-        #         Rules:
-        #           -
-        #             Name: prefix
-        #             Value: "catalog/"
+  ArtifactsS3Bucket:
+    Type: AWS::S3::Bucket
+    DependsOn: CatalogUpdaterLambdaFunction
+    Properties:
+      BucketName: !Ref ArtifactsS3BucketName
+      NotificationConfiguration:
+        LambdaConfigurations:
+          -
+            Function: !GetAtt CatalogUpdaterLambdaFunction.Arn
+            Event: "s3:ObjectCreated:*"
+            Filter:
+              S3Key:
+                Rules:
+                  -
+                    Name: prefix
+                    Value: "catalog/"
+          -
+            Function: !GetAtt CatalogUpdaterLambdaFunction.Arn
+            Event: "s3:ObjectRemoved:*"
+            Filter:
+              S3Key:
+                Rules:
+                  -
+                    Name: prefix
+                    Value: "catalog/"
 
   CustomersTable:
     Type: AWS::DynamoDB::Table
@@ -477,14 +517,14 @@ Resources:
             Action:
             - apigateway:*
             Resource: '*'
-          #- Effect: Allow
-            #Action:
-            #- s3:GetObject
-            #Resource: !Join
-            #  - ''
-            #  - - 'arn:aws:s3:::'
-            #    - !Ref ArtifactsS3BucketName
-            #    - '/*'
+          - Effect: Allow
+            Action:
+            - s3:GetObject
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref ArtifactsS3BucketName
+                - '/*'
           - Effect: Allow
             Action:
             - aws-marketplace:ResolveCustomer
@@ -541,131 +581,131 @@ Resources:
             - logs:PutLogEvents
             Resource: arn:aws:logs:*:*:*
 
-  # CatalogUpdaterLambdaExecutionRole:
-  #   Type: AWS::IAM::Role
-  #   Properties:
-  #     AssumeRolePolicyDocument:
-  #       Version: '2012-10-17'
-  #       Statement:
-  #         Effect: Allow
-  #         Principal:
-  #           Service: lambda.amazonaws.com
-  #         Action: sts:AssumeRole
-  #     Path: '/'
-  #     Policies:
-  #     - PolicyName: root
-  #       PolicyDocument:
-  #         Version: '2012-10-17'
-  #         Statement:
-  #         - Effect: Allow
-  #           Action:
-  #           - logs:CreateLogGroup
-  #           - logs:CreateLogStream
-  #           - logs:PutLogEvents
-  #           Resource: arn:aws:logs:*:*:*
-  #         - Effect: Allow
-  #           Action:
-  #           - s3:ListBucket
-  #           Resource: 
-  #             - !Join
-  #               - ''
-  #               - - 'arn:aws:s3:::'
-  #                 - !Ref ArtifactsS3BucketName
-  #             - !Join
-  #               - ''
-  #               - - 'arn:aws:s3:::'
-  #                 - !Ref DevPortalSiteS3BucketName
-  #         - Effect: Allow
-  #           Action:
-  #           - s3:GetObject
-  #           - s3:PutObject
-  #           Resource: !Join
-  #             - ''
-  #             - - 'arn:aws:s3:::'
-  #               - !Ref ArtifactsS3BucketName
-  #               - '/*'
-  #         - Effect: Allow
-  #           Action: # scope this down
-  #           - apigateway:*
-  #           Resource: '*'
+  CatalogUpdaterLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+          Action: sts:AssumeRole
+      Path: '/'
+      Policies:
+      - PolicyName: root
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource: arn:aws:logs:*:*:*
+          - Effect: Allow
+            Action:
+            - s3:ListBucket
+            Resource: 
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref ArtifactsS3BucketName
+              - !Join
+                - ''
+                - - 'arn:aws:s3:::'
+                  - !Ref DevPortalSiteS3BucketName
+          - Effect: Allow
+            Action:
+            - s3:GetObject
+            - s3:PutObject
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref ArtifactsS3BucketName
+                - '/*'
+          - Effect: Allow
+            Action: # scope this down
+            - apigateway:*
+            Resource: '*'
 
-  # AssetUploaderLambdaExecutionRole:
-  #   Type: AWS::IAM::Role
-  #   Properties:
-  #     AssumeRolePolicyDocument:
-  #       Version: '2012-10-17'
-  #       Statement:
-  #         Effect: Allow
-  #         Principal:
-  #           Service: lambda.amazonaws.com
-  #         Action: sts:AssumeRole
-  #     Path: '/'
-  #     Policies:
-  #     - PolicyName: root
-  #       PolicyDocument:
-  #         Version: '2012-10-17'
-  #         Statement:
-  #         - Effect: Allow
-  #           Action:
-  #           - logs:CreateLogGroup
-  #           - logs:CreateLogStream
-  #           - logs:PutLogEvents
-  #           Resource: arn:aws:logs:*:*:*
-  #         - Effect: Allow
-  #           Action:
-  #           - s3:PutObject
-  #           Resource: !Join
-  #             - ''
-  #             - - 'arn:aws:s3:::'
-  #               - !Ref DevPortalSiteS3BucketName
-  #               - '/*'
-  #         - Effect: Allow
-  #           Action:
-  #           - s3:PutObjectAcl
-  #           Resource: !Join
-  #             - ''
-  #             - - 'arn:aws:s3:::'
-  #               - !Ref DevPortalSiteS3BucketName
-  #               - '/*'
-  #         - Effect: Allow
-  #           Action:
-  #           - s3:ListBucket
-  #           Resource: !Join
-  #             - ''
-  #             - - 'arn:aws:s3:::'
-  #               - !Ref DevPortalSiteS3BucketName
-  #         - Effect: Allow
-  #           Action:
-  #           - s3:DeleteObject
-  #           Resource: !Join
-  #             - ''
-  #             - - 'arn:aws:s3:::'
-  #               - !Ref DevPortalSiteS3BucketName
-  #               - '/*'
-  #         - Effect: Allow
-  #           Action:
-  #           - s3:DeleteObject
-  #           Resource: !Join
-  #             - ''
-  #             - - 'arn:aws:s3:::'
-  #               - !Ref ArtifactsS3BucketName
-  #               - '/*'
-  #         - Effect: Allow
-  #           Action:
-  #           - s3:ListBucket
-  #           Resource: !Join
-  #             - ''
-  #             - - 'arn:aws:s3:::'
-  #               - !Ref ArtifactsS3BucketName
-  #         - Effect: Allow
-  #           Action:
-  #           - s3:GetObject
-  #           - s3:PutObject
-  #           Resource: !Join
-  #             - ''
-  #             - - 'arn:aws:s3:::'
-  #               - !Ref ArtifactsS3BucketName
-  #               - '/*'
+  AssetUploaderLambdaExecutionRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          Effect: Allow
+          Principal:
+            Service: lambda.amazonaws.com
+          Action: sts:AssumeRole
+      Path: '/'
+      Policies:
+      - PolicyName: root
+        PolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+          - Effect: Allow
+            Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+            Resource: arn:aws:logs:*:*:*
+          - Effect: Allow
+            Action:
+            - s3:PutObject
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref DevPortalSiteS3BucketName
+                - '/*'
+          - Effect: Allow
+            Action:
+            - s3:PutObjectAcl
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref DevPortalSiteS3BucketName
+                - '/*'
+          - Effect: Allow
+            Action:
+            - s3:ListBucket
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref DevPortalSiteS3BucketName
+          - Effect: Allow
+            Action:
+            - s3:DeleteObject
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref DevPortalSiteS3BucketName
+                - '/*'
+          - Effect: Allow
+            Action:
+            - s3:DeleteObject
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref ArtifactsS3BucketName
+                - '/*'
+          - Effect: Allow
+            Action:
+            - s3:ListBucket
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref ArtifactsS3BucketName
+          - Effect: Allow
+            Action:
+            - s3:GetObject
+            - s3:PutObject
+            Resource: !Join
+              - ''
+              - - 'arn:aws:s3:::'
+                - !Ref ArtifactsS3BucketName
+                - '/*'
 
   ApiGatewayMarketplaceMeteringRole:
     Type: AWS::IAM::Role
@@ -759,8 +799,8 @@ Resources:
       Timeout: 30
       Environment:
         Variables:
-          #WEBSITE_BUCKET_NAME: !Ref DevPortalSiteS3BucketName
-          #StaticBucketName: !Ref ArtifactsS3BucketName
+          WEBSITE_BUCKET_NAME: !Ref DevPortalSiteS3BucketName
+          StaticBucketName: !Ref ArtifactsS3BucketName
           CustomersTableName: !Ref DevPortalCustomersTableName
 
       # Adds the API as a trigger
@@ -823,121 +863,121 @@ Resources:
       RefreshTokenValidity: 30
 
   # Cognito User Pool Custom Resource config
-  # CognitoUserPoolClientSettingsBackingFnRole:
-  #   Type: 'AWS::IAM::Role'
-  #   Properties:
-  #     AssumeRolePolicyDocument:
-  #       Version: '2012-10-17'
-  #       Statement:
-  #         -
-  #           Effect: Allow
-  #           Action: 'sts:AssumeRole'
-  #           Principal:
-  #             Service: lambda.amazonaws.com
-  #     Policies:
-  #       - PolicyName: WriteCloudWatchLogs
-  #         PolicyDocument: 
-  #           Version: '2012-10-17'
-  #           Statement: 
-  #             -
-  #               Effect: Allow
-  #               Action:
-  #                 - 'logs:CreateLogGroup'
-  #                 - 'logs:CreateLogStream'
-  #                 - 'logs:PutLogEvents'
-  #               Resource: 'arn:aws:logs:*:*:*'
-  #       - PolicyName: UpdateUserPoolClient
-  #         PolicyDocument: 
-  #           Version: '2012-10-17'
-  #           Statement: 
-  #             -
-  #               Effect: Allow
-  #               Action: 'cognito-idp:UpdateUserPoolClient'
-  #               Resource: 'arn:aws:cognito-idp:*:*:userpool/*'
+  CognitoUserPoolClientSettingsBackingFnRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          -
+            Effect: Allow
+            Action: 'sts:AssumeRole'
+            Principal:
+              Service: lambda.amazonaws.com
+      Policies:
+        - PolicyName: WriteCloudWatchLogs
+          PolicyDocument: 
+            Version: '2012-10-17'
+            Statement: 
+              -
+                Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: 'arn:aws:logs:*:*:*'
+        - PolicyName: UpdateUserPoolClient
+          PolicyDocument: 
+            Version: '2012-10-17'
+            Statement: 
+              -
+                Effect: Allow
+                Action: 'cognito-idp:UpdateUserPoolClient'
+                Resource: 'arn:aws:cognito-idp:*:*:userpool/*'
 
-  #CognitoUserPoolClientSettingsBackingFn:
-  #  Type: AWS::Serverless::Function
-  #  Properties:
-  #    Runtime: nodejs8.10
-  #    MemorySize: 128
-  #    Timeout: 300
-  #    CodeUri: ../lambdas/cfn-cognito-user-pools-client-settings
-  #    Handler: index.handler
-  #    Role: !GetAtt CognitoUserPoolClientSettingsBackingFnRole.Arn
+  CognitoUserPoolClientSettingsBackingFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs8.10
+      MemorySize: 128
+      Timeout: 300
+      CodeUri: ../lambdas/cfn-cognito-user-pools-client-settings
+      Handler: index.handler
+      Role: !GetAtt CognitoUserPoolClientSettingsBackingFnRole.Arn
 
-  #CognitoUserPoolClientSettings:
-  #  Type: AWS::CloudFormation::CustomResource
-  #  Condition: UseCognitoHostedUI
-  #  Properties:
-  #    Timeout: 360
-  #    ServiceToken: !GetAtt CognitoUserPoolClientSettingsBackingFn.Arn
-  #    UserPoolId: !Ref CognitoUserPool
-  #    UserPoolClientId: !Ref CognitoUserPoolClient
-  #    SupportedIdentityProviders: [ "COGNITO" ] # should (eventually) allow people to add values
-  #    CallbackURL: !Join ['', [ 'https://', !If [ UseCustomDomainName, !Ref CustomDomainName, !GetAtt DefaultCloudfrontDistribution.DomainName ], '/login' ]]
-  #    LogoutURL: !Join ['', [ 'https://', !If [ UseCustomDomainName, !Ref CustomDomainName, !GetAtt DefaultCloudfrontDistribution.DomainName ]]]
-  #    AllowedOAuthFlowsUserPoolClient: true
-  #    AllowedOAuthFlows: [ "implicit" ]
-  #    AllowedOAuthScopes: [ "openid" ]
+  CognitoUserPoolClientSettings:
+    Type: AWS::CloudFormation::CustomResource
+    Condition: UseCognitoHostedUI
+    Properties:
+      Timeout: 360
+      ServiceToken: !GetAtt CognitoUserPoolClientSettingsBackingFn.Arn
+      UserPoolId: !Ref CognitoUserPool
+      UserPoolClientId: !Ref CognitoUserPoolClient
+      SupportedIdentityProviders: [ "COGNITO" ] # should (eventually) allow people to add values
+      CallbackURL: !Join ['', [ 'https://', !If [ UseCustomDomainName, !Ref CustomDomainName, !GetAtt DefaultCloudfrontDistribution.DomainName ], '/login' ]]
+      LogoutURL: !Join ['', [ 'https://', !If [ UseCustomDomainName, !Ref CustomDomainName, !GetAtt DefaultCloudfrontDistribution.DomainName ]]]
+      AllowedOAuthFlowsUserPoolClient: true
+      AllowedOAuthFlows: [ "implicit" ]
+      AllowedOAuthScopes: [ "openid" ]
 
-  # CognitoUserPoolDomainBackingFnRole:
-  #   Type: 'AWS::IAM::Role'
-  #   Properties:
-  #     AssumeRolePolicyDocument:
-  #       Version: '2012-10-17'
-  #       Statement:
-  #         -
-  #           Effect: Allow
-  #           Action: 'sts:AssumeRole'
-  #           Principal:
-  #             Service: lambda.amazonaws.com
-  #     Policies:
-  #       - PolicyName: WriteCloudWatchLogs
-  #         PolicyDocument: 
-  #           Version: '2012-10-17'
-  #           Statement: 
-  #             -
-  #               Effect: Allow
-  #               Action:
-  #                 - 'logs:CreateLogGroup'
-  #                 - 'logs:CreateLogStream'
-  #                 - 'logs:PutLogEvents'
-  #               Resource: 'arn:aws:logs:*:*:*'
-  #       - PolicyName: ManageUserPoolDomain
-  #         PolicyDocument: 
-  #           Version: '2012-10-17'
-  #           Statement: 
-  #             -
-  #               Effect: Allow
-  #               Action: 'cognito-idp:CreateUserPoolDomain'
-  #               Resource: 'arn:aws:cognito-idp:*:*:userpool/*'
-  #             -
-  #               Effect: Allow
-  #               Action: 'cognito-idp:DeleteUserPoolDomain'
-  #               Resource: 'arn:aws:cognito-idp:*:*:userpool/*'
-  #             -
-  #               Effect: Allow
-  #               Action: 'cognito-idp:DescribeUserPoolDomain'
-  #               Resource: '*'
+  CognitoUserPoolDomainBackingFnRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          -
+            Effect: Allow
+            Action: 'sts:AssumeRole'
+            Principal:
+              Service: lambda.amazonaws.com
+      Policies:
+        - PolicyName: WriteCloudWatchLogs
+          PolicyDocument: 
+            Version: '2012-10-17'
+            Statement: 
+              -
+                Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource: 'arn:aws:logs:*:*:*'
+        - PolicyName: ManageUserPoolDomain
+          PolicyDocument: 
+            Version: '2012-10-17'
+            Statement: 
+              -
+                Effect: Allow
+                Action: 'cognito-idp:CreateUserPoolDomain'
+                Resource: 'arn:aws:cognito-idp:*:*:userpool/*'
+              -
+                Effect: Allow
+                Action: 'cognito-idp:DeleteUserPoolDomain'
+                Resource: 'arn:aws:cognito-idp:*:*:userpool/*'
+              -
+                Effect: Allow
+                Action: 'cognito-idp:DescribeUserPoolDomain'
+                Resource: '*'
 
-  #CognitoUserPoolDomainBackingFn:
-  #  Type: AWS::Serverless::Function
-  #  Properties:
-  #    Runtime: nodejs8.10
-  #    MemorySize: 128
-  #    Timeout: 300
-  #    CodeUri: ../lambdas/cfn-cognito-user-pools-domain
-  #    Handler: index.handler
-  #    Role: !GetAtt CognitoUserPoolDomainBackingFnRole.Arn
+  CognitoUserPoolDomainBackingFn:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: nodejs8.10
+      MemorySize: 128
+      Timeout: 300
+      CodeUri: ../lambdas/cfn-cognito-user-pools-domain
+      Handler: index.handler
+      Role: !GetAtt CognitoUserPoolDomainBackingFnRole.Arn
 
-  #CognitoUserPoolDomain:
-  #  Type: AWS::CloudFormation::CustomResource
-  #  Condition: UseCognitoHostedUI
-  #  Properties:
-  #    Timeout: 360
-  #    ServiceToken: !GetAtt CognitoUserPoolDomainBackingFn.Arn
-  #    UserPoolId: !Ref CognitoUserPool
-  #    Domain: !Ref CognitoDomainNameOrPrefix
+  CognitoUserPoolDomain:
+    Type: AWS::CloudFormation::CustomResource
+    Condition: UseCognitoHostedUI
+    Properties:
+      Timeout: 360
+      ServiceToken: !GetAtt CognitoUserPoolDomainBackingFn.Arn
+      UserPoolId: !Ref CognitoUserPool
+      Domain: !Ref CognitoDomainNameOrPrefix
   
   CognitoIdentityPool:
     Type: AWS::Cognito::IdentityPool
@@ -994,132 +1034,131 @@ Resources:
                 - /prod/*/*
       Path: '/'
 
-  # CatalogUpdaterLambdaFunction:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: ../lambdas/catalog-updater
-  #     Handler: index.handler
-  #     MemorySize: 128
-  #     Role: !GetAtt CatalogUpdaterLambdaExecutionRole.Arn
-  #     Runtime: nodejs8.10
-  #     Timeout: 20
-  #     Environment:
-  #       Variables:
-  #         BucketName: !Ref ArtifactsS3BucketName
+  CatalogUpdaterLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../lambdas/catalog-updater
+      Handler: index.handler
+      MemorySize: 128
+      Role: !GetAtt CatalogUpdaterLambdaExecutionRole.Arn
+      Runtime: nodejs8.10
+      Timeout: 20
+      Environment:
+        Variables:
+          BucketName: !Ref ArtifactsS3BucketName
 
-  # CatalogUpdaterLambdaPermissions:
-  #   Type: AWS::Lambda::Permission
-  #   Properties:
-  #     Action: "lambda:InvokeFunction"
-  #     FunctionName: !GetAtt CatalogUpdaterLambdaFunction.Arn
-  #     Principal: "s3.amazonaws.com"
-  #     SourceAccount: !Ref AWS::AccountId
+  CatalogUpdaterLambdaPermissions:
+    Type: AWS::Lambda::Permission
+    Properties:
+      Action: "lambda:InvokeFunction"
+      FunctionName: !GetAtt CatalogUpdaterLambdaFunction.Arn
+      Principal: "s3.amazonaws.com"
+      SourceAccount: !Ref AWS::AccountId
       #SourceArn: !GetAtt MyBucket.Arn
 
-  # StaticAssetUploaderLambdaFunction:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: ../lambdas/static-asset-uploader
-  #     Handler: index.handler
-  #     MemorySize: 512
-  #     Role: !GetAtt AssetUploaderLambdaExecutionRole.Arn
-  #     Runtime: nodejs8.10
-  #     Timeout: 300
-  #     Environment:
-  #       Variables:
-  #         StaticBucketName: !Ref ArtifactsS3BucketName
+  StaticAssetUploaderLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../lambdas/static-asset-uploader
+      Handler: index.handler
+      MemorySize: 512
+      Role: !GetAtt AssetUploaderLambdaExecutionRole.Arn
+      Runtime: nodejs8.10
+      Timeout: 300
+      Environment:
+        Variables:
+          StaticBucketName: !Ref ArtifactsS3BucketName
 
-  # StaticAssetUploader:
-  #   Type: AWS::CloudFormation::CustomResource
-  #   DependsOn: ArtifactsS3Bucket
-  #   Properties:
-  #     ServiceToken: !GetAtt StaticAssetUploaderLambdaFunction.Arn
-  #     BucketName: !Ref DevPortalSiteS3Bucket
-  #     RestApiId: !Ref ApiGatewayApi
-  #     Region: !Ref 'AWS::Region'
-  #     IdentityPoolId: !Ref CognitoIdentityPool
-  #     UserPoolId: !Ref CognitoUserPool
-  #     UserPoolClientId: !Ref CognitoUserPoolClient
-  #     UserPoolDomain: !If [ UseCognitoHostedUI, !GetAtt CognitoUserPoolDomain.FullUrl, '' ]
-  #     MarketplaceSuffix: !Ref MarketplaceSubscriptionTopicProductCode
-  #     RebuildToken: !Ref StaticAssetRebuildToken
-  #     RebuildMode: !Ref StaticAssetRebuildMode
+  StaticAssetUploader:
+    Type: AWS::CloudFormation::CustomResource
+    DependsOn: ArtifactsS3Bucket
+    Properties:
+      ServiceToken: !GetAtt StaticAssetUploaderLambdaFunction.Arn
+      BucketName: !Ref DevPortalSiteS3Bucket
+      RestApiId: !Ref ApiGatewayApi
+      Region: !Ref 'AWS::Region'
+      IdentityPoolId: !Ref CognitoIdentityPool
+      UserPoolId: !Ref CognitoUserPool
+      UserPoolClientId: !Ref CognitoUserPoolClient
+      UserPoolDomain: !If [ UseCognitoHostedUI, !GetAtt CognitoUserPoolDomain.FullUrl, '' ]
+      MarketplaceSuffix: !Ref MarketplaceSubscriptionTopicProductCode
+      RebuildToken: !Ref StaticAssetRebuildToken
+      RebuildMode: !Ref StaticAssetRebuildMode
 
-  #CustomDomainCloudfrontDistribution:
-  #  Type: AWS::CloudFront::Distribution
-  #  DependsOn: DevPortalSiteS3Bucket
-  #  Condition: UseCustomDomainName
-  #  Properties:
-  #    DistributionConfig:
-  #      Aliases:
-  #        - !Ref CustomDomainName
-  #        - !Join [ '', [ 'www.', !Ref CustomDomainName ] ]
-  #      DefaultCacheBehavior:
-  #        ForwardedValues:
-  #          QueryString: true
-  #        TargetOriginId: 'dev-portal-site-s3-bucket'
-  #        ViewerProtocolPolicy: redirect-to-https
-  #      DefaultRootObject: index.html
-  #      Enabled: true
-  #      Origins:
-  #        - DomainName: !Join ['', [!Ref DevPortalSiteS3BucketName, !FindInMap ['RegionSpecificConfig', !Ref 'AWS::Region', 's3Url']]]
-  #          Id: 'dev-portal-site-s3-bucket'
-  #          CustomOriginConfig:
-  #            OriginProtocolPolicy: 'http-only'
-  #      ViewerCertificate:
-  #        AcmCertificateArn: !Ref CustomDomainNameAcmCertArn
-  #        SslSupportMethod: 'sni-only'
+  CustomDomainCloudfrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    DependsOn: DevPortalSiteS3Bucket
+    Condition: UseCustomDomainName
+    Properties:
+      DistributionConfig:
+        Aliases:
+          - !Ref CustomDomainName
+          - !Join [ '', [ 'www.', !Ref CustomDomainName ] ]
+        DefaultCacheBehavior:
+          ForwardedValues:
+            QueryString: true
+          TargetOriginId: 'dev-portal-site-s3-bucket'
+          ViewerProtocolPolicy: redirect-to-https
+        DefaultRootObject: index.html
+        Enabled: true
+        Origins:
+          - DomainName: !Join ['', [!Ref DevPortalSiteS3BucketName, !FindInMap ['RegionSpecificConfig', !Ref 'AWS::Region', 's3Url']]]
+            Id: 'dev-portal-site-s3-bucket'
+            CustomOriginConfig:
+              OriginProtocolPolicy: 'http-only'
+        ViewerCertificate:
+          AcmCertificateArn: !Ref CustomDomainNameAcmCertArn
+          SslSupportMethod: 'sni-only'
 
-  #DefaultCloudfrontDistribution:
-  #  Type: AWS::CloudFront::Distribution
-  #  Condition: NoCustomDomainName
-  #  Properties:
-  #    DistributionConfig:
-  #      DefaultCacheBehavior:
-  #        ForwardedValues:
-  #          QueryString: true
-  #        TargetOriginId: 'dev-portal-site-s3-bucket'
-  #        ViewerProtocolPolicy: redirect-to-https
-  #      DefaultRootObject: index.html
-  #      Enabled: true
-  #      Origins:
-  #        - DomainName: !Join ['', [!Ref DevPortalSiteS3BucketName, !FindInMap ['RegionSpecificConfig', !Ref 'AWS::Region', 's3Url']]]
-  #          Id: 'dev-portal-site-s3-bucket'
-  #          CustomOriginConfig:
-  #            OriginProtocolPolicy: 'http-only'
+  DefaultCloudfrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Condition: NoCustomDomainName
+    Properties:
+      DistributionConfig:
+        DefaultCacheBehavior:
+          ForwardedValues:
+            QueryString: true
+          TargetOriginId: 'dev-portal-site-s3-bucket'
+          ViewerProtocolPolicy: redirect-to-https
+        DefaultRootObject: index.html
+        Enabled: true
+        Origins:
+          - DomainName: !Join ['', [!Ref DevPortalSiteS3BucketName, !FindInMap ['RegionSpecificConfig', !Ref 'AWS::Region', 's3Url']]]
+            Id: 'dev-portal-site-s3-bucket'
+            CustomOriginConfig:
+              OriginProtocolPolicy: 'http-only'
 
-  #CustomDomainDistributionAccessIdentity:
-  #  Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
-  #  Condition: UseCustomDomainName
-  #  Properties:
-  #    CloudFrontOriginAccessIdentityConfig:
-  #      Comment: !Sub 'CloudFront OAI for ${CustomDomainName}'
+  CustomDomainDistributionAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Condition: UseCustomDomainName
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: !Sub 'CloudFront OAI for ${CustomDomainName}'
 
-  #CustomDomainHostedZone:
-  #  Type: AWS::Route53::HostedZone
-  #  Condition: UseRoute53
-  #  Properties:
-  #    Name: !Join [ '', [ !Ref CustomDomainName, '.' ] ]
+  CustomDomainHostedZone:
+    Type: AWS::Route53::HostedZone
+    Condition: UseRoute53
+    Properties:
+      Name: !Join [ '', [ !Ref CustomDomainName, '.' ] ]
 
-  #CustomDomainRecordSet:
-  #  Type: AWS::Route53::RecordSetGroup
-  #  Condition: UseRoute53
-  #  Properties:
-  #    HostedZoneName: !Join [ '', [ !Ref CustomDomainName, '.' ] ]
-  #    RecordSets:
-  #      - Name: !Join [ '', [ !Ref CustomDomainName, '.' ] ]
-  #        Type: A
-  #        AliasTarget:
-  #          DNSName: !Join [ '', [ !GetAtt CustomDomainCloudfrontDistribution.DomainName, '.' ] ]
+  CustomDomainRecordSet:
+    Type: AWS::Route53::RecordSetGroup
+    Condition: UseRoute53
+    Properties:
+      HostedZoneName: !Join [ '', [ !Ref CustomDomainName, '.' ] ]
+      RecordSets:
+        - Name: !Join [ '', [ !Ref CustomDomainName, '.' ] ]
+          Type: A
+          AliasTarget:
+            DNSName: !Join [ '', [ !GetAtt CustomDomainCloudfrontDistribution.DomainName, '.' ] ]
             # this is a "magic string" for using CFN aliases; see this link:
             # https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-aliastarget.html
-  #          HostedZoneId: 'Z2FDTNDATAQYW2'
-  #      - Name: !Join [ '', [ 'www.', !Ref CustomDomainName, '.' ] ]
-  #        Type: A
-  #        AliasTarget:
-  #          DNSName: !Join [ '', [ !GetAtt CustomDomainCloudfrontDistribution.DomainName, '.' ] ]
-  #          HostedZoneId: 'Z2FDTNDATAQYW2'
-
+            HostedZoneId: 'Z2FDTNDATAQYW2'
+        - Name: !Join [ '', [ 'www.', !Ref CustomDomainName, '.' ] ]
+          Type: A
+          AliasTarget:
+            DNSName: !Join [ '', [ !GetAtt CustomDomainCloudfrontDistribution.DomainName, '.' ] ]
+            HostedZoneId: 'Z2FDTNDATAQYW2'
 Outputs:
   ApiUrl:
     Description: Invoke URL for your API. Clicking this link will perform a GET request
