@@ -20,7 +20,7 @@ function getCognitoIdentityId(req) {
 }*/
 //the front end logic guarantees that the plan exists
 function getUsagePlanFromCatalog(usagePlanId){
-    return usagePlanId
+    return Promise.resolve(usagePlanId)
 }
 
 function postSignIn(req, res) {
