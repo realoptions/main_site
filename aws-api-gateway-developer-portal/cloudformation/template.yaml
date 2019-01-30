@@ -33,6 +33,12 @@ Parameters:
     Type: String
     Description: The name for your Cognito Identity Pool.
     Default: "DevPortalUserPool"
+
+  AWSRegion:
+    Type: String
+    Description: The region to deploy to.
+    Default: "us-east-1"
+    
 Resources:
   ApiGatewayApi:
     Type: AWS::Serverless::Api
