@@ -535,8 +535,8 @@ Resources:
       UserPoolName: !Ref CognitoIdentityPoolName
       #LambdaConfig:
         #PreSignUp: !GetAtt CognitoUserPoolsConfirmationStrategyFunction.Arn
-      AliasAttributes:
-        - email
+      #AliasAttributes:
+      #  - email
       AutoVerifiedAttributes:
         - email
       Policies:
