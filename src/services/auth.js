@@ -82,7 +82,7 @@ const login = (email, password) => {
       cognitoUser
     }))
 }
-
+//consider UserNotConfirmedException
 const rethrowNoLoginError = err => {
   if (err.code !== 'UsernameExistsException') {
     throw err
