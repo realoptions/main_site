@@ -11,7 +11,7 @@ import {
   NO_LOGIN_ERROR,
   LOGIN_ERROR
 } from './constants'
-
+import API from '@aws-amplify/api'
 import {
   addSubscriptionLocal,
   deleteSubscriptionLocal,
@@ -107,10 +107,8 @@ describe('getSubscriptionUsage', () => {
     dispatch = jest.fn()
   })
   it('dispatches subscription usage if no error', () => {
-    const client = {
-      invokeApi: jest.fn(() => Promise.resolve({ data: 'hello' }))
-    }
-    return getSubscriptionUsage(dispatch)('plan', client)
+    API.get = jest.fn(() => Promise.resolve({ data: 'hello' }))
+    return getSubscriptionUsage(dispatch)('plan')
       .then(() => {
         return expect(dispatch.mock.calls.length).toEqual(2)
       })
@@ -127,10 +125,8 @@ describe('getSubscriptionUsage', () => {
       })
   })
   it('dispatches error if error', () => {
-    const client = {
-      invokeApi: jest.fn(() => Promise.reject('an error'))
-    }
-    getSubscriptionUsage(dispatch)('plan', client)
+    API.get = jest.fn(() => Promise.reject('an error'))
+    return getSubscriptionUsage(dispatch)('plan')
       .then(() => {
         return expect(dispatch.mock.calls.length).toEqual(1)
       })
@@ -159,9 +155,7 @@ describe('getPossibleSubscriptions', () => {
 
 describe('subscribeAndLogin', () => {
   let dispatch
-  let promiseFn = jest.fn(() =>
-    Promise.resolve(['usagePlan', 'client', 'user'])
-  )
+  let promiseFn = jest.fn(() => Promise.resolve(['usagePlan', 'user']))
   beforeEach(() => {
     dispatch = jest.fn()
   })
@@ -180,7 +174,7 @@ describe('subscribeAndLogin', () => {
       .then(() => {
         return expect(dispatch.mock.calls[1][0]).toEqual({
           type: UPDATE_AWS_CLIENT,
-          client: 'client',
+          //client: 'client',
           user: 'user'
         })
       })
@@ -199,7 +193,7 @@ describe('onPageLoad', () => {
           ]
         })
       })
-    auth.init = jest.fn(() => Promise.resolve(['usagePlan', 'client', 'user']))
+    auth.init = jest.fn(() => Promise.resolve(['usagePlan', 'user']))
   })
   it('correctly dispatches on no error', () => {
     const pageLoadInstance = onPageLoad(dispatch)
@@ -216,7 +210,7 @@ describe('onPageLoad', () => {
       .then(() => {
         return expect(dispatch.mock.calls[2][0]).toEqual({
           type: UPDATE_AWS_CLIENT,
-          client: 'client',
+          //client: 'client',
           user: 'user'
         })
       })
@@ -241,7 +235,7 @@ describe('onLogin', () => {
   })
   it('correctly dispatches on no error', () => {
     const logInInstance = onLogIn(dispatch)
-    fn = jest.fn(() => Promise.resolve(['usagePlan', 'client', 'user']))
+    fn = jest.fn(() => Promise.resolve(['usagePlan', 'user']))
     return logInInstance(fn, successFn)('my event')
       .then(() => {
         return expect(dispatch.mock.calls.length).toEqual(5)
@@ -270,7 +264,7 @@ describe('onLogin', () => {
       .then(() => {
         return expect(dispatch.mock.calls[2][0]).toEqual({
           type: UPDATE_AWS_CLIENT,
-          client: 'client',
+          //client: 'client',
           user: 'user'
         })
       })
@@ -329,29 +323,26 @@ describe('removePaidSubscription', () => {
     dispatch = jest.fn()
   })
   it('dispatches correctly with no error', () => {
-    const client = {
-      invokeApi: jest.fn(() => Promise.resolve({ data: 'hello' }))
-    }
+    API.put = jest.fn(() => Promise.resolve({ data: 'hello' }))
+    API.delete = jest.fn(() => Promise.resolve({ data: 'hello' }))
+
     const rps = removePaidSubscription(dispatch)
-    return rps('paidPlan', 'freePlan', client)()
+    return rps('paidPlan', 'freePlan')()
       .then(() => {
-        return expect(client.invokeApi.mock.calls.length).toEqual(2)
+        return expect(API.delete.mock.calls.length).toEqual(1)
       })
       .then(() => {
-        return expect(client.invokeApi.mock.calls[0][1]).toEqual(
+        return expect(API.put.mock.calls.length).toEqual(1)
+      })
+      .then(() => {
+        return expect(API.delete.mock.calls[0][1]).toEqual(
           '/subscriptions/paidPlan'
         )
       })
       .then(() => {
-        return expect(client.invokeApi.mock.calls[0][2]).toEqual('DELETE')
-      })
-      .then(() => {
-        return expect(client.invokeApi.mock.calls[1][1]).toEqual(
+        return expect(API.put.mock.calls[0][1]).toEqual(
           '/subscriptions/freePlan'
         )
-      })
-      .then(() => {
-        return expect(client.invokeApi.mock.calls[1][2]).toEqual('PUT')
       })
       .then(() => {
         return expect(dispatch.mock.calls.length).toEqual(5)
@@ -387,21 +378,17 @@ describe('removePaidSubscription', () => {
       })
   })
   it('dispatches correctly with error', () => {
-    const client = {
-      invokeApi: jest.fn(() => Promise.reject('error'))
-    }
+    //API.put=jest.fn(() => Promise.resolve({ data: 'hello' }))
+    API.delete = jest.fn(() => Promise.reject('error'))
     const rps = removePaidSubscription(dispatch)
-    return rps('paidPlan', 'freePlan', client)()
+    return rps('paidPlan', 'freePlan')()
       .then(() => {
-        return expect(client.invokeApi.mock.calls.length).toEqual(1)
+        return expect(API.delete.mock.calls.length).toEqual(1)
       })
       .then(() => {
-        return expect(client.invokeApi.mock.calls[0][1]).toEqual(
+        return expect(API.delete.mock.calls[0][1]).toEqual(
           '/subscriptions/paidPlan'
         )
-      })
-      .then(() => {
-        return expect(client.invokeApi.mock.calls[0][2]).toEqual('DELETE')
       })
       .then(() => {
         return expect(dispatch.mock.calls.length).toEqual(3)

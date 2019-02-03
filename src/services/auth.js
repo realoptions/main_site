@@ -1,36 +1,45 @@
-import AWS from 'aws-sdk'
-import { url, awsRegion } from './aws'
-import {
+//import AWS from 'aws-sdk'
+import Auth from '@aws-amplify/auth'
+
+//import API from '@aws-amplify/api'
+//import { url, awsRegion } from './aws'
+/*import {
   CognitoUserPool,
   CognitoUser,
   AuthenticationDetails
-} from 'amazon-cognito-identity-js'
-import {
+} from 'amazon-cognito-identity-js'*/
+/*import {
   cognitoIdentityPoolId,
   cognitoUserPoolId,
   cognitoClientId,
   cognitoRegion
 } from './aws'
-import apigClientFactory from 'aws-api-gateway-client'
-import {
-  signUp,
+import apigClientFactory from 'aws-api-gateway-client'*/
+/*import {
+  //signUp,
   credentialRefresh,
-  authenticateUser,
-  getSession
-} from './helpers/promisifyAuth'
+  //authenticateUser,
+  //getSession
+} from './helpers/promisifyAuth'*/
 
-import { registerFree, registerPaid, getSubscriptions } from './api-catalog'
+import {
+  registerFree,
+  registerPaid,
+  getSubscriptions,
+  showApiKeyPF
+} from './api-catalog'
+/*import auth from '../reducers/auth';
 
 const POOL_DATA = {
   UserPoolId: cognitoUserPoolId,
   ClientId: cognitoClientId
 }
 
-const COGNITO_LOGIN_KEY = `cognito-idp.${cognitoRegion}.amazonaws.com/${cognitoUserPoolId}`
+const COGNITO_LOGIN_KEY = `cognito-idp.${cognitoRegion}.amazonaws.com/${cognitoUserPoolId}`*/
 
 //returns promise
 //on success, returns client instance, else error
-const getClient = jwtToken => {
+/*const getClient = jwtToken => {
   const Logins = {
     [COGNITO_LOGIN_KEY]: jwtToken
   }
@@ -55,12 +64,27 @@ const getClient = jwtToken => {
       return apigClient
     })
   })
-}
+}*/
 
 //returns promise
 //if success, returns client instance and cognitorUser, else error
 const login = (email, password) => {
-  const authenticationData = {
+  return Auth.signUp({
+    username: email,
+    password,
+    attributes: {
+      email
+    }
+  }).then(user => {
+    console.log(user)
+    return user
+  }) /*({
+    user,
+    userConfirmed: boolean;
+    userSub: string;
+  }))*/
+
+  /*const authenticationData = {
     Username: email,
     Password: password
   }
@@ -79,14 +103,23 @@ const login = (email, password) => {
     .then(client => ({
       client,
       cognitoUser
-    }))
+    }))*/
 }
 
+/*
 const rethrowNoLoginError = err => {
   if (err.code !== 'UsernameExistsException') {
     throw err
   }
+}*/
+
+const userDoesNotExist = signUpIfUserDoesNotExist => err => {
+  if (err.code === 'UserNotFoundException') {
+    return signUpIfUserDoesNotExist()
+  } //UserNotConfirmedException
+  throw err
 }
+
 //export for testing
 //returns {isSubscribedPaid:bool, isSubscribedFree:bool}
 export const filterSubscriptions = ({ paidUsagePlanId, freeUsagePlanId }) => ({
@@ -138,11 +171,8 @@ export const conditionalSubscription = ({
   freeUsagePlanId,
   token,
   isFromMarketPlace
-}) => client => {
-  if (!client) {
-    return Promise.resolve()
-  }
-  return getSubscriptions(client)
+}) => API => {
+  return getSubscriptions(API)
     .then(
       filterSubscriptions({
         paidUsagePlanId,
@@ -158,16 +188,11 @@ export const conditionalSubscription = ({
         })
       ) {
         case NEED_TO_SUBSCRIBE_FREE:
-          return registerFree(freeUsagePlanId, client).then(
-            () => freeUsagePlanId
-          )
+          return registerFree(freeUsagePlanId).then(() => freeUsagePlanId)
         case NEED_TO_SUBSCRIBE_PAID:
-          return registerPaid(
-            paidUsagePlanId,
-            freeUsagePlanId,
-            token,
-            client
-          ).then(() => paidUsagePlanId)
+          return registerPaid(paidUsagePlanId, freeUsagePlanId, token).then(
+            () => paidUsagePlanId
+          )
         case IS_SUBSCRIBED_FREE:
           return Promise.resolve(freeUsagePlanId)
         case IS_SUBSCRIBED_PAID:
@@ -182,28 +207,44 @@ export const conditionalSubscription = ({
 /**Always "register" instead of logging in.
  * Login will just fail on already registered
  * and then login.
- * Returns [subscription, client, cognitoUser] */
+ * Returns [subscription, cognitoUser] */
+
+//returns
 export const register = ({
   paidUsagePlanId,
   freeUsagePlanId,
   token,
   isFromMarketPlace
 }) => {
-  const userPool = new CognitoUserPool(POOL_DATA)
+  //const userPool = new CognitoUserPool(POOL_DATA)
   const subscriptionInstance = conditionalSubscription({
     paidUsagePlanId,
     freeUsagePlanId,
     token,
     isFromMarketPlace
   })
-  return (email, password) => {
+  /*return (email, password) => {
     return signUp(userPool, email, password)
       .catch(rethrowNoLoginError)
       .then(() => login(email, password))
       .then(({ client, cognitoUser }) =>
         Promise.all([subscriptionInstance(client), client, cognitoUser])
       )
+  }*/
+  return (email, password) => {
+    return Auth.signIn(email, password) //if signin, then never get to singup
+      .then(user => {
+        console.log(user)
+        return Promise.all([subscriptionInstance(), user])
+      })
+      .catch(userDoesNotExist(() => login(email, password))) //user doesn't exist, then signup
   }
+  //.catch(rethrowNoLoginError)
+  // .then(() => login(email, password))
+  //.then(user=>Promise.all([subscriptionInstance(), user]))
+  /*.then(({ client, cognitoUser }) =>
+      Promise.all([subscriptionInstance(client), client, cognitoUser])
+    )*/
 }
 /**
  * Returns [subscription, client, cognitoUser] */
@@ -213,15 +254,17 @@ export const init = ({
   token,
   isFromMarketPlace
 }) => {
-  const userPool = new CognitoUserPool(POOL_DATA)
-  const cognitoUser = userPool.getCurrentUser()
+  //const userPool = new CognitoUserPool(POOL_DATA)
+  //const cognitoUser = userPool.getCurrentUser()
   const subscriptionInstance = conditionalSubscription({
     paidUsagePlanId,
     freeUsagePlanId,
     token,
     isFromMarketPlace
   })
-  return (cognitoUser
+  return subscriptionInstance()
+
+  /*return (cognitoUser
     ? getSession(cognitoUser).then(session => {
         const token = session.getIdToken().getJwtToken()
         return getClient(token)
@@ -229,17 +272,9 @@ export const init = ({
     : Promise.resolve()
   ).then(client =>
     Promise.all([subscriptionInstance(client), client, cognitoUser])
-  )
+  )*/
 }
 
-export const logout = cognitoUser => {
-  cognitoUser.signOut()
-  AWS.config.credentials.clearCachedId && AWS.config.credentials.clearCachedId() //to clear cache
-}
+export const logout = () => Auth.signOut()
 
-export const showApiKey = client =>
-  client
-    .invokeApi({}, '/apikey', 'GET', {}, {})
-    .then(({ data: { value } }) => value)
-
-const signIn = client => client.invokeApi({}, '/signin', 'POST', {}, {})
+//const signIn = client => client.invokeApi({}, '/signin', 'POST', {}, {})

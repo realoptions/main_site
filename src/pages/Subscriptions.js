@@ -64,7 +64,6 @@ export const Subscriptions = ({
   style,
   paid,
   free,
-  client,
   isSignedIn,
   getUsage,
   isUnRegistering,
@@ -77,7 +76,7 @@ export const Subscriptions = ({
         <SubscriptionCard title="Free Tier">
           {free.id && isSignedIn ? (
             <AsyncLoad
-              onLoad={() => getUsage(free.id, client)}
+              onLoad={() => getUsage(free.id)}
               render={renderUsage(free, free.isSubscribed)}
               loading={Loading}
             />
@@ -90,11 +89,11 @@ export const Subscriptions = ({
         <SubscriptionCard title="Paid Tier">
           {paid.id && isSignedIn ? (
             <AsyncLoad
-              onLoad={() => getUsage(paid.id, client)}
+              onLoad={() => getUsage(paid.id)}
               render={renderUsage(
                 paid,
                 paid.isSubscribed,
-                removePaidSubscription(paid.id, free.id, client),
+                removePaidSubscription(paid.id, free.id),
                 isUnRegistering,
                 error
               )}
@@ -127,7 +126,7 @@ Subscriptions.propTypes = {
     id: PropTypes.string,
     isSubscribed: PropTypes.bool
   }).isRequired,
-  client: PropTypes.object,
+  //client: PropTypes.object,
   isSignedIn: PropTypes.bool,
   getUsage: PropTypes.func.isRequired,
   isUnRegistering: PropTypes.bool.isRequired,
@@ -139,7 +138,7 @@ Subscriptions.propTypes = {
 
 const mapStateToProps = ({
   auth: { isSignedIn },
-  client,
+  //client,
   catalog: { paid, free },
   errors: { subscriptionError: error },
   loading: { isUnRegistering }
@@ -148,7 +147,7 @@ const mapStateToProps = ({
   error,
   paid,
   free,
-  client,
+  //client,
   isUnRegistering
 })
 

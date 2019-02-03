@@ -59,8 +59,8 @@ export const subscribeAndLogin = dispatch => {
   const addSubscription = addSubscriptionLocal(dispatch)
   const signIn = updateSignIn(dispatch)
   return fn =>
-    fn().then(([usagePlanId, client, cognitoUser]) =>
-      Promise.all([addSubscription(usagePlanId), signIn(client, cognitoUser)])
+    fn().then(([usagePlanId, cognitoUser]) =>
+      Promise.all([addSubscription(usagePlanId), signIn(cognitoUser)])
     )
 }
 
@@ -123,8 +123,8 @@ export const removePaidSubscription = dispatch => {
   }
 }
 
-export const getSubscriptionUsage = dispatch => (usagePlanId, client) =>
-  getUsage(usagePlanId, client)
+export const getSubscriptionUsage = dispatch => usagePlanId =>
+  getUsage(usagePlanId)
     .then(({ data }) => dispatch({ type: UPDATE_USAGE, value: data }))
     .then(noSubscribeError(dispatch))
     .catch(subscribeError(dispatch))

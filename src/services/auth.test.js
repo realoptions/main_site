@@ -3,7 +3,7 @@ import {
   handleSubscriptionLogic,
   conditionalSubscription
 } from './auth'
-
+import API from '@aws-amplify/api'
 describe('filterSubscriptions', () => {
   it('produces both false when empty array', () => {
     expect(
@@ -219,10 +219,8 @@ describe('conditionalSubscription', () => {
       token: undefined,
       isFromMarketPlace: false
     })
-    const client = {
-      invokeApi: jest.fn(() => Promise.resolve({ data: [{ id: 4 }] }))
-    }
-    return instSub(client).then(id => {
+    API.get = jest.fn(() => Promise.resolve({ data: [{ id: 4 }] }))
+    return instSub().then(id => {
       return expect(id).toEqual(4)
     })
   })
