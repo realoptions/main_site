@@ -38,7 +38,7 @@ Parameters:
     Type: String
     Description: The region to deploy to.
     Default: "us-east-1"
-    
+
 Resources:
   ApiGatewayApi:
     Type: AWS::Serverless::Api
@@ -529,7 +529,7 @@ Resources:
         PreSignUp: !GetAtt CognitoUserPoolsConfirmationStrategyFunction.Arn
       Policies:
         PasswordPolicy:
-          MinimumLength: 12
+          MinimumLength: 8
           RequireLowercase: true
           RequireNumbers: true
       Schema:

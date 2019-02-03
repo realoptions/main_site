@@ -6,5 +6,7 @@
 // Right now, it always returns true.
 
 exports.handler = (event, context, callback) => {
+    console.log(event)
+    console.log(context)
     event.response = { autoConfirmUser: true }; callback(null, event);
 }
