@@ -3,7 +3,8 @@ import { url, awsRegion } from './aws'
 import {
   CognitoUserPool,
   CognitoUser,
-  AuthenticationDetails
+  AuthenticationDetails,
+  CognitoUserAttribute
 } from 'amazon-cognito-identity-js'
 import {
   cognitoIdentityPoolId,
@@ -202,9 +203,7 @@ export const register = ({
       Name: 'email',
       Value: email
     }
-    const attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(
-      dataEmail
-    )
+    const attributeEmail = new CognitoUserAttribute(dataEmail)
     return signUp(userPool, email, password, [attributeEmail])
       .catch(rethrowNoLoginError)
       .then(() => login(email, password))
