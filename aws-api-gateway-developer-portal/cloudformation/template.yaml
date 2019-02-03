@@ -535,15 +535,10 @@ Resources:
       UserPoolName: !Ref CognitoIdentityPoolName
       #LambdaConfig:
         #PreSignUp: !GetAtt CognitoUserPoolsConfirmationStrategyFunction.Arn
-      EmailConfiguration: 
-        SourceArn: !Join #this is a test...it may not work
-        - ''
-        - - 'arn:aws:cognito-idp:'
-          - !Ref 'AWS::Region'
-          - ':'
-          - !Ref 'AWS::AccountId'
-          - ':userpool/'
-          - !Ref CognitoUserPool
+      AliasAttributes:
+        - email
+      AutoVerifiedAttributes:
+        - email
       Policies:
         PasswordPolicy:
           MinimumLength: 8
