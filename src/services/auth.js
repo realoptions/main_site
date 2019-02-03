@@ -196,8 +196,16 @@ export const register = ({
     token,
     isFromMarketPlace
   })
+
   return (email, password) => {
-    return signUp(userPool, email, password)
+    const dataEmail = {
+      Name: 'email',
+      Value: email
+    }
+    const attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(
+      dataEmail
+    )
+    return signUp(userPool, email, password, [attributeEmail])
       .catch(rethrowNoLoginError)
       .then(() => login(email, password))
       .then(({ client, cognitoUser }) =>
