@@ -234,6 +234,7 @@ export const init = ({
 
 export const logout = cognitoUser => {
   cognitoUser.signOut()
+  AWS.config.credentials.clearCachedId() //to clear cache
 }
 
 export const showApiKey = client =>

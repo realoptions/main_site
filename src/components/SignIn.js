@@ -55,7 +55,7 @@ export const SignIn = ({
         <Input autoFocus type="email" name="email" id="emailId" />
       </FormGroup>
       <FormGroup>
-        <Label for="passwordId">Password</Label>
+        <Label for="passwordId">Password (8+ characters)</Label>
         <Input type="password" name="password" id="passwordId" minLength="8" />
       </FormGroup>
       {isLoggingIn ? (

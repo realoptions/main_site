@@ -454,22 +454,30 @@ Resources:
       Principal: sns.amazonaws.com
       SourceArn: !Join
         - ''
-        - - 'arn:aws:sns:us-east-1:287250355862:aws-mp-subscription-notification-'
-          - !Ref MarketplaceSubscriptionTopicProductCode
-
-  LambdaSNSExecutionTestPermission:
-    Type: AWS::Lambda::Permission
-    Properties:
-      Action: lambda:InvokeFunction
-      FunctionName: !GetAtt SubscriptionListenerLambdaFunction.Arn
-      Principal: sns.amazonaws.com
-      SourceArn: !Join
-        - ''
         - - 'arn:aws:sns:'
           - !Ref 'AWS::Region'
           - ':'
           - !Ref 'AWS::AccountId'
-          - ':marketplace-test-topic'
+          - ':aws-mp-subscription-notification-'
+          - !Ref MarketplaceSubscriptionTopicProductCode
+      #SourceArn: !Join
+      #  - ''
+      #  - - 'arn:aws:sns:us-east-1:287250355862:aws-mp-subscription-notification-'
+      #    - !Ref MarketplaceSubscriptionTopicProductCode
+
+  #LambdaSNSExecutionTestPermission:
+  #  Type: AWS::Lambda::Permission
+  #  Properties:
+  #    Action: lambda:InvokeFunction
+  #    FunctionName: !GetAtt SubscriptionListenerLambdaFunction.Arn
+  #    Principal: sns.amazonaws.com
+  #    SourceArn: !Join
+  #      - ''
+  #      - - 'arn:aws:sns:'
+  #        - !Ref 'AWS::Region'
+  #        - ':'
+  #        - !Ref 'AWS::AccountId'
+  #        - ':marketplace-test-topic'
 
   DevPortalLambdaFunction:
     Type: AWS::Serverless::Function
@@ -525,13 +533,20 @@ Resources:
     Type: AWS::Cognito::UserPool
     Properties:
       UserPoolName: !Ref CognitoIdentityPoolName
-      LambdaConfig:
-        PreSignUp: !GetAtt CognitoUserPoolsConfirmationStrategyFunction.Arn
+      #LambdaConfig:
+        #PreSignUp: !GetAtt CognitoUserPoolsConfirmationStrategyFunction.Arn
+      EmailConfiguration: 
+        SourceArn: !Join #this is a test...it may not work
+        - ''
+        - - 'arn:aws:cognito-idp:'
+          - !Ref 'AWS::Region'
+          - ':'
+          - !Ref 'AWS::AccountId'
+          - ':userpool/'
+          - !Ref CognitoUserPool
       Policies:
         PasswordPolicy:
           MinimumLength: 8
-          RequireLowercase: true
-          RequireNumbers: true
       Schema:
         - AttributeDataType: String
           Name: email
