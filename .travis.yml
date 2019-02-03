@@ -28,10 +28,16 @@ script:
   - productCode=$(node ./scripts/outputProductCode)
   - wget -O ./scripts/catalog.json $url/catalog
   - paidId=$(node ./scripts/outputPaidUsageId)
+  - userPoolId=$(node ./scripts/outputUserPoolId)
+  - appName=$(node ./scripts/outputAppPage)
   - >
     aws apigateway update-usage-plan \
       --usage-plan-id $paidId --patch-operations \
       "[{ \"path\" : \"/productCode\", \"value\" : \"$productCode\", \"op\" : \"replace\" }]";
+  - >
+    aws create-user-pool-domain \
+      --domain $appName \
+      --user-pool-id $userPoolId;
   - for i in {1..5}; do wget -O ./scripts/releases.json https://api.github.com/repos/phillyfan1138/option_price_faas/releases/latest?access_token=$GITHUB_TOKEN && break || sleep 10; done 
   - tag=$(node ./scripts/outputTag) # if this errors, it will throw and stop the build
   - echo "REACT_APP_TAG=$tag" >> .env # creates tag for the main site to know which docs to grab

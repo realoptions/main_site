@@ -22,12 +22,7 @@ import apigClientFactory from 'aws-api-gateway-client'*/
   //getSession
 } from './helpers/promisifyAuth'*/
 
-import {
-  registerFree,
-  registerPaid,
-  getSubscriptions,
-  showApiKeyPF
-} from './api-catalog'
+import { registerFree, registerPaid, getSubscriptions } from './api-catalog'
 /*import auth from '../reducers/auth';
 
 const POOL_DATA = {
