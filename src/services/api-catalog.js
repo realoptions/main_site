@@ -1,37 +1,40 @@
 import { url } from './aws'
-
+import { API_NAME } from './configureAws'
+import API from '@aws-amplify/api'
 const convertJson = res => res.json()
 export const getCatalog = () =>
   fetch(`${url}/catalog`)
     .then(convertJson)
     .then(({ items }) => items)
 
-export const registerFree = (usagePlanId, client) =>
-  client.invokeApi({}, `/subscriptions/${usagePlanId}`, 'PUT', {}, {})
+export const registerFree = usagePlanId =>
+  API.put(API_NAME, `/subscriptions/${usagePlanId}`)
 
-const marketPlaceSubscribe = (usagePlanId, token, client) =>
-  client.invokeApi(
+const marketPlaceSubscribe = (usagePlanId, token) =>
+  API.put(API_NAME, `/marketplace-subscriptions/${usagePlanId}`, {
+    body: { token }
+  })
+/*client.invokeApi(
     {},
     `/marketplace-subscriptions/${usagePlanId}`,
     'PUT',
     {},
     { token }
+  )*/
+
+//has to happen in order (cant do it in parallel)
+export const registerPaid = (paidUsagePlanId, freeUsagePlanId, token) =>
+  removeSubscription(freeUsagePlanId).then(() =>
+    marketPlaceSubscribe(paidUsagePlanId, token)
   )
 
 //has to happen in order (cant do it in parallel)
-export const registerPaid = (paidUsagePlanId, freeUsagePlanId, token, client) =>
-  removeSubscription(freeUsagePlanId, client).then(() =>
-    marketPlaceSubscribe(paidUsagePlanId, token, client)
-  )
+export const unregisterPaid = (paidUsagePlanId, freeUsagePlanId) =>
+  removeSubscription(paidUsagePlanId).then(() => registerFree(freeUsagePlanId))
 
-//has to happen in order (cant do it in parallel)
-export const unregisterPaid = (paidUsagePlanId, freeUsagePlanId, client) =>
-  removeSubscription(paidUsagePlanId, client).then(() =>
-    registerFree(freeUsagePlanId, client)
-  )
-
-const removeSubscription = (usagePlanId, client) =>
-  client.invokeApi({}, `/subscriptions/${usagePlanId}`, 'DELETE', {}, {})
+const removeSubscription = usagePlanId =>
+  API.delete(API_NAME, `/subscriptions/${usagePlanId}`)
+//client.invokeApi({}, `/subscriptions/${usagePlanId}`, 'DELETE', {}, {})
 
 //exported for testing
 export const getCurrentMonth = (date = new Date()) => {
@@ -43,15 +46,27 @@ export const getCurrentMonth = (date = new Date()) => {
   end = end.toJSON().split('T')[0]
   return { start, end }
 }
-
-export const getUsage = (usagePlanId, client) =>
-  client.invokeApi(
+const additionalParameters = {
+  queryStringParameters: {
+    // OPTIONAL
+    queryParams: getCurrentMonth()
+  }
+}
+export const getUsage = usagePlanId =>
+  API.get(API_NAME, `/subscriptions/${usagePlanId}/usage`, additionalParameters)
+/* client.invokeApi(
     {},
     `/subscriptions/${usagePlanId}/usage`,
     'GET',
     { queryParams: getCurrentMonth() },
     {}
   )
+*/
+export const getSubscriptions = () => API.get(API_NAME, '/subscriptions')
 
-export const getSubscriptions = client =>
-  client.invokeApi({}, '/subscriptions', 'GET', {}, {})
+export const showApiKey = () =>
+  API.get(API_NAME, '/apikey').then(({ data: { value } }) => value)
+/*client
+    .invokeApi({}, '/apikey', 'GET', {}, {})
+    .then(({ data: { value } }) => value)*/
+//client.invokeApi({}, '/subscriptions', 'GET', {}, {})

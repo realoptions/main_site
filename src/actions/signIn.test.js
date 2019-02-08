@@ -23,12 +23,12 @@ describe('updateSignIn', () => {
     dispatch = jest.fn()
   })
   it('dispatches event when provided a client and user', () => {
-    updateSignIn(dispatch)('hello', 'goodbye')
+    updateSignIn(dispatch)('hello')
     expect(dispatch.mock.calls.length).toEqual(1)
     expect(dispatch.mock.calls[0][0]).toEqual({
       type: UPDATE_AWS_CLIENT,
-      client: 'hello',
-      user: 'goodbye'
+      //client: 'hello',
+      user: 'hello'
     })
   })
 })

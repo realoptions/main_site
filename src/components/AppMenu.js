@@ -9,113 +9,39 @@ import {
   NavbarBrand,
   Nav,
   NavItem,
+  DropdownToggle,
+  DropdownItem,
+  DropdownMenu,
+  UncontrolledDropdown,
   NavLink
 } from 'reactstrap'
+import SocialSpan from './SocialSpan'
 import Logo from '../Logo.js'
 import {
   HOME,
   DEVELOPERS,
   PRODUCTS,
-  REGISTER,
-  LOGIN,
   MARKETPLACE,
   SUBSCRIPTIONS,
   DEMO
 } from '../routes/names'
 import { menuBarHeight } from '../styles/menu'
-import Loading from './Loading'
-import AsyncLoad from './AsyncLoad'
 //import { init } from '../services/auth'
-import { updateLogOut } from '../actions/signIn'
 import { toggleNavBar } from '../actions/menu'
-import { onPageLoad } from '../actions/subscriptions.js'
 
-const mapStateToPropsLogOut = ({ auth: { cognitoUser } }) => ({
-  cognitoUser
-})
-const mapDispatchToPropsLogOut = dispatch => ({
-  updateLogOut: updateLogOut(dispatch)
-})
-//exported for testing
-export const LogOut = connect(
-  mapStateToPropsLogOut,
-  mapDispatchToPropsLogOut
-)(({ updateLogOut, cognitoUser, history }) => (
-  <NavLink
-    href="#"
-    onClick={() => {
-      updateLogOut(cognitoUser)
-      if (history.location.pathname !== HOME) {
-        history.push(HOME)
-      }
-    }}
-  >
-    Log Out
-  </NavLink>
-))
-LogOut.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-    location: PropTypes.shape({
-      pathname: PropTypes.string.isRequired
-    }).isRequired
-  }).isRequired
+const handleSocialLogin = user => {
+  console.log(user)
 }
 
-const mapStateToPropsLogInOrOut = ({
-  auth: { isFromMarketPlace, token, isSignedIn },
-  catalog: {
-    free: { id: freeUsagePlanId }
-  }
-}) => ({
-  isFromMarketPlace,
-  token,
-  isSignedIn,
-  freeUsagePlanId
-})
-
-const mapDispatchToPropsLogInOrOut = dispatch => ({
-  onPageLoad: onPageLoad(dispatch)
-})
-
-export const LogInOrOut = connect(
-  mapStateToPropsLogInOrOut,
-  mapDispatchToPropsLogInOrOut
-)(
-  ({
-    onPageLoad,
-    token,
-    isFromMarketPlace,
-    freeUsagePlanId,
-    isSignedIn,
-    history
-  }) => (
-    <AsyncLoad
-      onLoad={onPageLoad({
-        token,
-        isFromMarketPlace
-      })}
-      loading={Loading}
-      requiredObject={freeUsagePlanId !== undefined}
-      render={() =>
-        isSignedIn ? (
-          <LogOut history={history} />
-        ) : (
-          <NavLink to={LOGIN} tag={Link}>
-            Log In
-          </NavLink>
-        )
-      }
-    />
-  )
-)
-LogInOrOut.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired
-  }).isRequired
+const handleSocialLoginFailure = err => {
+  console.error(err)
 }
+const FACEBOOK_APP_ID = '1672160866222878'
+const GOOGLE_APP_ID =
+  '117231459701-omruogcepkcm1kfanp39g94n5qjptcc9.apps.googleusercontent.com'
+const GITHUB_APP_ID = '3d5d9ef81f3e1e43c1ff'
 //the "purchase" link will go to amazon web store
-export const AppMenu = ({ toggleNavBar, isSignedIn, isOpen, history }) => (
+export const AppMenu = ({ toggleNavBar, isSignedIn, isOpen }) => (
   <Navbar color="light" light expand="md">
     <NavbarBrand>
       <Logo
@@ -159,15 +85,44 @@ export const AppMenu = ({ toggleNavBar, isSignedIn, isOpen, history }) => (
             </NavLink>
           </NavItem>
         ) : null}
-        <NavItem>
-          <LogInOrOut history={history} />
-        </NavItem>
         {isSignedIn ? null : (
-          <NavItem>
-            <NavLink to={REGISTER} tag={Link}>
-              Sign Up
-            </NavLink>
-          </NavItem>
+          <UncontrolledDropdown nav inNavbar>
+            <DropdownToggle nav caret>
+              Log In
+            </DropdownToggle>
+            <DropdownMenu right>
+              <DropdownItem>
+                <SocialSpan
+                  provider="facebook"
+                  appId={FACEBOOK_APP_ID}
+                  onLoginSuccess={handleSocialLogin}
+                  onLoginFailure={handleSocialLoginFailure}
+                >
+                  Login with Facebook
+                </SocialSpan>
+              </DropdownItem>
+              <DropdownItem>
+                <SocialSpan
+                  provider="google"
+                  appId={GOOGLE_APP_ID}
+                  onLoginSuccess={handleSocialLogin}
+                  onLoginFailure={handleSocialLoginFailure}
+                >
+                  Login with Google
+                </SocialSpan>
+              </DropdownItem>
+              <DropdownItem>
+                <SocialSpan
+                  provider="github"
+                  appId={GITHUB_APP_ID}
+                  onLoginSuccess={handleSocialLogin}
+                  onLoginFailure={handleSocialLoginFailure}
+                >
+                  Login with GitHub
+                </SocialSpan>
+              </DropdownItem>
+            </DropdownMenu>
+          </UncontrolledDropdown>
         )}
       </Nav>
     </Collapse>
@@ -176,10 +131,7 @@ export const AppMenu = ({ toggleNavBar, isSignedIn, isOpen, history }) => (
 AppMenu.propTypes = {
   toggleNavBar: PropTypes.func.isRequired,
   isSignedIn: PropTypes.bool,
-  isOpen: PropTypes.bool.isRequired,
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired
-  }).isRequired
+  isOpen: PropTypes.bool.isRequired
 }
 
 const mapStateToProps = ({ auth: { isSignedIn }, menu }) => ({

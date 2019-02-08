@@ -1,47 +1,8 @@
-language: python
-python:
-  - "3.6"
-
-cache:
-  directories:
-  - node_modules
-
-before_install:
-- wget -qO- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
-- nvm install 8
-- node --version
-
-before_script: 
-  - pip install awscli
-  - pip install aws-sam-cli
-  - aws configure set region us-east-1
-  - npm run copy-package
-  - cd aws-api-gateway-developer-portal
-  - npm run install
-  - npm run package
-  - npm run deploy
-  - cd ..
+language: node_js
+node_js:
+  - "8.10"
 
 script:
-  - node ./scripts/getStackFeatures dev-portal #creates .env and ./scripts/awsInfrastructure.json
-  - url=$(node ./scripts/outputUrl)
-  - productCode=$(node ./scripts/outputProductCode)
-  - wget -O ./scripts/catalog.json $url/catalog
-  - paidId=$(node ./scripts/outputPaidUsageId)
-  - userPoolId=$(node ./scripts/outputUserPoolId)
-  - >
-    aws apigateway update-usage-plan \
-      --usage-plan-id $paidId --patch-operations \
-      "[{ \"path\" : \"/productCode\", \"value\" : \"$productCode\", \"op\" : \"replace\" }]";
-  - >
-    aws cognito-idp update-user-pool \
-      --user-pool-id $userPoolId --verification-message-template \
-      "{ \"DefaultEmailOption\": \"CONFIRM_WITH_LINK\"}";
-  - for i in {1..5}; do wget -O ./scripts/releases.json https://api.github.com/repos/phillyfan1138/option_price_faas/releases/latest?access_token=$GITHUB_TOKEN && break || sleep 10; done 
-  - tag=$(node ./scripts/outputTag) # if this errors, it will throw and stop the build
-  - echo "REACT_APP_TAG=$tag" >> .env # creates tag for the main site to know which docs to grab
-  - echo "SKIP_PREFLIGHT_CHECK=true" >> .env # skips check for module interactions
-  - cat .env
   - npm install
   - npm test -- --coverage
   - npm run build
@@ -52,6 +13,10 @@ script:
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
+
+before_deploy:
+  - npm install -g serverless
+  - sls deploy
 
 deploy:
   - provider: pages

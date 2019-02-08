@@ -10,10 +10,10 @@ import {
 } from './constants'
 import { logout } from '../services/auth'
 
-export const updateSignIn = dispatch => (client, user) =>
+export const updateSignIn = dispatch => user =>
   dispatch({
     type: UPDATE_AWS_CLIENT,
-    client,
+    //client,
     user
   })
 

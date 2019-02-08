@@ -2,7 +2,7 @@
 
 # dependencies
 /node_modules
-
+node_modules
 # testing
 /coverage
 
@@ -24,3 +24,5 @@ yarn-error.log*
 releases.json
 awsInfrastructure.json
 catalog.json
+amplify
+.serverless
