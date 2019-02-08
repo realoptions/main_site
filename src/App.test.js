@@ -7,17 +7,16 @@ import { Provider } from 'react-redux'
 import { mount } from 'enzyme'
 import Loading from './components/Loading'
 import configureStore from 'redux-mock-store'
-import { BrowserRouter as Router, MemoryRouter } from 'react-router-dom'
-import SuccessMarketPlaceRegister from './pages/SuccessMarketPlaceRegister'
-import Register from './pages/Register'
+import { MemoryRouter } from 'react-router-dom'
 import FrontPage from './pages/FrontPage'
 import Products from './pages/Products'
 import Subscriptions from './pages/Subscriptions'
 import Developers from './pages/Developers'
 import * as Swagger from './components/Swagger' //overwride swagger
+import * as SocialSpan from './components/SocialSpan'
 import { REGISTER } from './routes/names'
 Swagger.default = () => <div />
-
+SocialSpan.default = () => <div />
 const mockStore = configureStore([])
 //note that there will be not be any actual API calls if catalog.free.id is defined at this level
 describe('app', () => {
@@ -133,40 +132,6 @@ describe('app', () => {
     )
     expect(app.find('.app').length).toEqual(1)
     expect(app.find(Loading).length).toEqual(0)
-  })
-
-  it('renders register if not signed in and initial path is to register', () => {
-    const initialState = {
-      auth: {
-        isFromMarketPlace: true,
-        isSignedIn: false
-      },
-      catalog: {
-        free: {
-          id: '123',
-          quota: { period: 'month' }
-        },
-        paid: {
-          quota: { period: 'month' },
-          isSubscribed: false
-        }
-      },
-      menu: false,
-      loading: {
-        isLoggingIn: false
-      },
-      errors: {}
-    }
-    const store = mockStore(initialState)
-    const app = mount(
-      <Provider store={store}>
-        <MemoryRouter initialEntries={[REGISTER]}>
-          <App />
-        </MemoryRouter>
-      </Provider>
-    )
-
-    expect(app.find(Register).length).toEqual(1)
   })
 })
 
