@@ -1,0 +1,9 @@
+{
+  "name": "api_lambdas",
+  "version": "0.0.1",
+  "description": "api management lambdas",
+  "main": "handler.js",
+  "license": "Apache-2.0",
+  "dependencies": {},
+  "devDependencies": {}
+}

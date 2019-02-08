@@ -1,0 +1,52 @@
+service: finside-main-site
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  stage: prd
+package: 
+  exclude:
+     - ./**
+  include: # Specify the directories and files which should be included in the deployment package
+    - lambdas/**
+functions:
+  createApiKeyAndSubscribe:
+    handler: lambdas/handler.createApiKeyAndSubscribe 
+    events:
+      - http:
+          path: /apikey
+          method: post
+          cors: true
+  getUsagePlans:
+    handler: lambdas/handler.getUsagePlans 
+    events:
+      - http:
+          path: /usageplan
+          method: get
+          cors: true
+  getApiKey:
+    handler: lambdas/handler.getApiKey 
+    events:
+      - http:
+          path: /apikey/{customerId}
+          method: get
+          cors: true
+          request:
+            parameters:
+              paths:
+                customerId: true
+  getUsage:
+    handler: lambdas/handler.getApiKey 
+    events:
+      - http:
+          path: /usageplan/{customerId}/{usagePlanId}
+          method: get
+          cors: true
+          request:
+            parameters:
+              paths:
+                customerId: true
+                usagePlanId: true
+              querystrings:
+                end: true
+                start: true

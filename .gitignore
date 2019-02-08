@@ -2,7 +2,7 @@
 
 # dependencies
 /node_modules
-
+node_modules
 # testing
 /coverage
 
@@ -25,3 +25,4 @@ releases.json
 awsInfrastructure.json
 catalog.json
 amplify
+.serverless
