@@ -10,9 +10,9 @@ import {
   Nav,
   NavItem,
   DropdownToggle,
-  DropdownItem,
   DropdownMenu,
   UncontrolledDropdown,
+  //Dropdown,
   NavLink
 } from 'reactstrap'
 import SocialSpan from './SocialSpan'
@@ -91,36 +91,30 @@ export const AppMenu = ({ toggleNavBar, isSignedIn, isOpen }) => (
               Log In
             </DropdownToggle>
             <DropdownMenu right>
-              <DropdownItem>
-                <SocialSpan
-                  provider="facebook"
-                  appId={FACEBOOK_APP_ID}
-                  onLoginSuccess={handleSocialLogin}
-                  onLoginFailure={handleSocialLoginFailure}
-                >
-                  Login with Facebook
-                </SocialSpan>
-              </DropdownItem>
-              <DropdownItem>
-                <SocialSpan
-                  provider="google"
-                  appId={GOOGLE_APP_ID}
-                  onLoginSuccess={handleSocialLogin}
-                  onLoginFailure={handleSocialLoginFailure}
-                >
-                  Login with Google
-                </SocialSpan>
-              </DropdownItem>
-              <DropdownItem>
-                <SocialSpan
-                  provider="github"
-                  appId={GITHUB_APP_ID}
-                  onLoginSuccess={handleSocialLogin}
-                  onLoginFailure={handleSocialLoginFailure}
-                >
-                  Login with GitHub
-                </SocialSpan>
-              </DropdownItem>
+              <SocialSpan
+                provider="facebook"
+                appId={FACEBOOK_APP_ID}
+                onLoginSuccess={handleSocialLogin}
+                onLoginFailure={handleSocialLoginFailure}
+              >
+                Login with Facebook
+              </SocialSpan>
+              <SocialSpan
+                provider="google"
+                appId={GOOGLE_APP_ID}
+                onLoginSuccess={handleSocialLogin}
+                onLoginFailure={handleSocialLoginFailure}
+              >
+                Login with Google
+              </SocialSpan>
+              <SocialSpan
+                provider="github"
+                appId={GITHUB_APP_ID}
+                onLoginSuccess={handleSocialLogin}
+                onLoginFailure={handleSocialLoginFailure}
+              >
+                Login with GitHub
+              </SocialSpan>
             </DropdownMenu>
           </UncontrolledDropdown>
         )}
