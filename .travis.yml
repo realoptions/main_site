@@ -17,7 +17,7 @@ before_script:
   - aws configure set region us-east-1
   - npm run copy-package
   - cd aws-api-gateway-developer-portal
-  - npm run install
+  - npm ci
   - npm run package
   - npm run deploy
   - cd ..
@@ -28,7 +28,6 @@ script:
   - productCode=$(node ./scripts/outputProductCode)
   - wget -O ./scripts/catalog.json $url/catalog
   - paidId=$(node ./scripts/outputPaidUsageId)
-  - userPoolId=$(node ./scripts/outputUserPoolId)
   - >
     aws apigateway update-usage-plan \
       --usage-plan-id $paidId --patch-operations \
