@@ -454,16 +454,8 @@ Resources:
       Principal: sns.amazonaws.com
       SourceArn: !Join
         - ''
-        - - 'arn:aws:sns:'
-          - !Ref 'AWS::Region'
-          - ':'
-          - !Ref 'AWS::AccountId'
-          - ':aws-mp-subscription-notification-'
+        - - 'arn:aws:sns:us-east-1:287250355862:aws-mp-subscription-notification-'
           - !Ref MarketplaceSubscriptionTopicProductCode
-      #SourceArn: !Join
-      #  - ''
-      #  - - 'arn:aws:sns:us-east-1:287250355862:aws-mp-subscription-notification-'
-      #    - !Ref MarketplaceSubscriptionTopicProductCode
 
   #LambdaSNSExecutionTestPermission:
   #  Type: AWS::Lambda::Permission
