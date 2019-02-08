@@ -24,3 +24,4 @@ yarn-error.log*
 releases.json
 awsInfrastructure.json
 catalog.json
+amplify

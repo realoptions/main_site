@@ -8,6 +8,7 @@
     "@aws-amplify/auth": "^1.2.15",
     "@aws-amplify/core": "^1.0.22",
     "amazon-cognito-identity-js": "^3.0.3",
+    "aws-amplify": "^1.1.19",
     "aws-api-gateway-client": "^0.2.16",
     "aws-sdk": "^2.325.0",
     "bootstrap": "^4.1.3",
