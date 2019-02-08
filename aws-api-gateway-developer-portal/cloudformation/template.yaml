@@ -529,7 +529,8 @@ Resources:
         #PreSignUp: !GetAtt CognitoUserPoolsConfirmationStrategyFunction.Arn
       #AliasAttributes:
       #  - email
-      UsernameAttributes: [email]
+      UsernameAttributes: 
+        - email
       AutoVerifiedAttributes:
         - email
       Policies:
