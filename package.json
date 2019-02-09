@@ -4,25 +4,19 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@aws-amplify/api": "^1.0.26",
-    "@aws-amplify/auth": "^1.2.15",
-    "@aws-amplify/core": "^1.0.22",
-    "amazon-cognito-identity-js": "^3.0.3",
-    "aws-amplify": "^1.1.19",
-    "aws-api-gateway-client": "^0.2.16",
-    "aws-sdk": "^2.325.0",
     "bootstrap": "^4.1.3",
     "gh-pages": "^2.0.0",
     "node-sass": "^4.9.3",
-    "react": "^16.5.1",
-    "react-dom": "^16.5.1",
+    "react": "^16.8.1",
+    "react-dom": "^16.8.1",
+    "react-facebook-login": "^4.1.1",
+    "react-google-login": "^5.0.2",
     "react-redux": "^5.0.7",
     "react-router-dom": "^4.3.1",
     "react-scripts": "^2.1.3",
-    "react-social-login": "^3.4.4",
     "reactstrap": "^6.4.0",
     "redux": "^4.0.0",
-    "swagger-ui": "^3.20.6"
+    "swagger-ui": "^3.20.7"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -52,8 +46,8 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "enzyme": "^3.7.0",
-    "enzyme-adapter-react-16": "^1.6.0",
+    "enzyme": "^3.8.0",
+    "enzyme-adapter-react-16": "^1.9.0",
     "jest-fetch-mock": "^1.6.6",
     "prop-types": "^15.6.2",
     "redux-mock-store": "^1.5.3",

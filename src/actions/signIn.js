@@ -1,6 +1,6 @@
 import {
   UPDATE_AWS_CLIENT,
-  LOGOUT,
+  //LOGOUT,
   IS_LOGGING_IN,
   LOGIN_ERROR,
   UPDATE_API_KEY,
@@ -8,7 +8,7 @@ import {
   NO_API_ERROR,
   NO_LOGIN_ERROR
 } from './constants'
-import { logout } from '../services/auth'
+//import { logout } from '../services/auth'
 
 export const updateSignIn = dispatch => user =>
   dispatch({
@@ -17,10 +17,10 @@ export const updateSignIn = dispatch => user =>
     user
   })
 
-export const updateLogOut = dispatch => user => {
+/*export const updateLogOut = dispatch => user => {
   logout(user)
   dispatch({ type: LOGOUT })
-}
+}*/
 
 export const loginError = dispatch => err =>
   dispatch({
