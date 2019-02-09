@@ -16,7 +16,7 @@ import {
 } from 'reactstrap'
 import { GoogleItem, FacebookItem, logout } from './SocialSpan'
 import Logo from '../Logo.js'
-import { HOME, DEVELOPERS, PRODUCTS, MARKETPLACE, DEMO } from '../routes/names'
+import { HOME, DEVELOPERS, PRODUCTS, DEMO } from '../routes/names'
 import { menuBarHeight } from '../styles/menu'
 //import { init } from '../services/auth'
 import { setEmail } from '../actions/email'
@@ -124,11 +124,6 @@ export const AppMenu = ({
             </NavLink>
           </NavItem>
           <NavItem>
-            <NavLink to={MARKETPLACE} tag={Link}>
-              Purchase
-            </NavLink>
-          </NavItem>
-          <NavItem>
             <NavLink to={DEMO} tag={Link}>
               Demo
             </NavLink>
@@ -148,7 +143,11 @@ export const AppMenu = ({
           )}
           {profilePicture ? (
             <NavItem>
-              <NavLink onClick={() => logout().then(resetAll)} tag="a">
+              <NavLink
+                onClick={() => logout().then(resetAll)}
+                tag={Link}
+                to="#"
+              >
                 Sign Out
               </NavLink>
             </NavItem>

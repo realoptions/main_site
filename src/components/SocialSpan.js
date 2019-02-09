@@ -15,8 +15,9 @@ const facebookHoc = ({ email, name, picture }) => ({
   provider: 'facebook'
 })
 
-const googleHoc = res => ({
-  ...res,
+const googleHoc = ({ profileObj }) => ({
+  ...profileObj,
+  profilePicture: profileObj.imageUrl,
   provider: 'google'
 })
 
