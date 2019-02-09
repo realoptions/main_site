@@ -8,7 +8,7 @@ const stackName=`${service}-${stage}`
 exec(`aws cloudformation describe-stacks --stack-name "${stackName}"`, (err, stdout, stderr)=>{
     const error=err||stderr
     if(error){
-        return console.log(error)
+        return console.error(error)
     }
     const result=JSON.parse(stdout).Stacks.find(({StackName})=>StackName===stackName)
     console.log(result.Outputs.find(({OutputKey})=>OutputKey==="ServiceEndpoint").OutputValue)

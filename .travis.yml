@@ -6,6 +6,7 @@ script:
   - npm install
   - url=$(node ./scripts/getApiUrl)
   - echo "REACT_APP_ApiUrl=$url" >.env
+  - cat .env
   - npm test -- --coverage
   - npm run build
   - cd build
