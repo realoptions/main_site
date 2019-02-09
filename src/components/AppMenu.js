@@ -12,32 +12,72 @@ import {
   DropdownToggle,
   DropdownMenu,
   UncontrolledDropdown,
-  //Dropdown,
   NavLink
 } from 'reactstrap'
 import { GoogleItem, FacebookItem } from './SocialSpan'
 import Logo from '../Logo.js'
-import {
-  HOME,
-  DEVELOPERS,
-  PRODUCTS,
-  MARKETPLACE,
-  SUBSCRIPTIONS,
-  DEMO
-} from '../routes/names'
+import { HOME, DEVELOPERS, PRODUCTS, MARKETPLACE, DEMO } from '../routes/names'
 import { menuBarHeight } from '../styles/menu'
 //import { init } from '../services/auth'
-import { toggleNavBar } from '../actions/menu'
+import { setEmail } from '../actions/email'
+import { setApiKey } from '../actions/apiKey'
+import { setProfilePicture } from '../actions/profilePicture'
+import { setUsagePlan } from '../actions/usagePlan'
+import {
+  createApiKeyAndSubscribe,
+  getUsagePlans
+} from '../services/api-middleware'
 
-//const handleSocialLogin = user => {
-////console.log(user)
-//{_profile:{email, firstName, lastName, id, name, profilePicUrl}}
+//exported for testing
+export const getApplicablePlan = plans => {
+  console.log(plans)
+  return plans.find(v => !v.plan.includes('Admin')).key
+}
+const avatarStyle = {
+  verticalAlign: 'middle',
+  width: menuBarHeight,
+  height: menuBarHeight,
+  borderRadius: '50%'
+}
+const Avatar = ({ url }) => <img src={url} style={avatarStyle} alt="profile" />
 
-//}
+const handleSocialLogin = ({
+  setUsagePlan,
+  setApiKey,
+  setEmail,
+  setProfilePicture
+}) => providerHoc => res => {
+  console.log(res)
+  const { email, profilePicture } = providerHoc(res)
+  console.log(email)
+  console.log(profilePicture)
+  setEmail(email)
+  setProfilePicture(profilePicture)
+  return getUsagePlans()
+    .then(data => {
+      const plan = getApplicablePlan(data)
+      return Promise.all([
+        setUsagePlan(plan),
+        createApiKeyAndSubscribe(email, plan)
+      ])
+    })
+    .then(([_, { keyValue }]) => setApiKey(keyValue))
+}
 
-export const AppMenu = ({ isSignedIn }) => {
+export const AppMenu = ({
+  profilePicture,
+  setUsagePlan,
+  setApiKey,
+  setEmail,
+  setProfilePicture
+}) => {
   const [open, setOpen] = useState(false)
-  //const [loginState, setLoginState]=useState('logOut')
+  const onLogin = handleSocialLogin({
+    setUsagePlan,
+    setApiKey,
+    setEmail,
+    setProfilePicture
+  })
   return (
     <Navbar color="light" light expand="md">
       <NavbarBrand>
@@ -75,42 +115,47 @@ export const AppMenu = ({ isSignedIn }) => {
               Demo
             </NavLink>
           </NavItem>
-          {isSignedIn ? (
-            <NavItem>
-              <NavLink to={SUBSCRIPTIONS} tag={Link}>
-                Subscriptions
-              </NavLink>
-            </NavItem>
-          ) : null}
-          {isSignedIn ? null : (
+          {profilePicture ? null : (
             <UncontrolledDropdown nav inNavbar>
               <DropdownToggle nav caret>
                 Log In
               </DropdownToggle>
               <DropdownMenu right>
-                <GoogleItem>Login with Google</GoogleItem>
-                <FacebookItem>Login with Facebook</FacebookItem>
+                <GoogleItem onLogin={onLogin}>Login with Google</GoogleItem>
+                <FacebookItem onLogin={onLogin}>
+                  Login with Facebook
+                </FacebookItem>
               </DropdownMenu>
             </UncontrolledDropdown>
           )}
+          {open && profilePicture ? <NavItem>Sign out</NavItem> : null}
         </Nav>
+        {profilePicture && !open ? (
+          <NavbarBrand>
+            <Avatar url={profilePicture} />
+          </NavbarBrand>
+        ) : null}
       </Collapse>
     </Navbar>
   )
 }
 AppMenu.propTypes = {
-  toggleNavBar: PropTypes.func.isRequired,
-  isSignedIn: PropTypes.bool,
-  isOpen: PropTypes.bool.isRequired
+  profilePicture: PropTypes.string,
+  setUsagePlan: PropTypes.func.isRequired,
+  setApiKey: PropTypes.func.isRequired,
+  setEmail: PropTypes.func.isRequired,
+  setProfilePicture: PropTypes.func.isRequired
 }
 
-const mapStateToProps = ({ auth: { isSignedIn }, menu }) => ({
-  isSignedIn,
-  isOpen: menu
+const mapStateToProps = ({ profilePicture }) => ({
+  profilePicture
 })
 
 const mapDispatchToProps = dispatch => ({
-  toggleNavBar: toggleNavBar(dispatch)
+  setApiKey: setApiKey(dispatch),
+  setEmail: setEmail(dispatch),
+  setProfilePicture: setProfilePicture(dispatch),
+  setUsagePlan: setUsagePlan(dispatch)
 })
 export default connect(
   mapStateToProps,

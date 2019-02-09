@@ -8,39 +8,19 @@ const FACEBOOK_APP_ID = '1672160866222878'
 const GOOGLE_APP_ID =
   '117231459701-omruogcepkcm1kfanp39g94n5qjptcc9.apps.googleusercontent.com'
 
-/**<GoogleLogin
-    clientId="658977310896-knrl3gka66fldh83dao2rhgbblmd4un9.apps.googleusercontent.com"
-    render={renderProps => (
-      <button onClick={renderProps.onClick}>This is my custom Google button</button>
-    )}
-    buttonText="Login"
-    onSuccess={responseGoogle}
-    onFailure={responseGoogle}
-  /> */
-
-/**<FacebookLogin
-    appId="1088597931155576"
-    autoLoad={true}
-    fields="name,email,picture"
-    onClick={componentClicked}
-    callback={responseFacebook} /> */
-const response = provider => res => {
-  console.log(res)
-  console.log(provider)
-}
-
 const facebookHoc = ({ email, name, picture }) => ({
   email,
   name,
-  picture: picture.data.url,
+  profilePicture: picture.data.url,
   provider: 'facebook'
 })
 
-const exampleResponse = providerHoc => res => {
-  console.log(providerHoc(res))
-}
+const googleHoc = res => ({
+  ...res,
+  provider: 'google'
+})
 
-export const GoogleItem = ({ children, ...props }) => (
+export const GoogleItem = ({ children, onLogin, ...props }) => (
   <GoogleLogin
     clientId={GOOGLE_APP_ID}
     render={({ onClick }) => (
@@ -49,19 +29,20 @@ export const GoogleItem = ({ children, ...props }) => (
       </DropdownItem>
     )}
     buttonText="Login"
-    onSuccess={response('google')}
-    onFailure={response('google')}
+    onSuccess={onLogin(googleHoc)}
+    onFailure={data => console.log(data)}
   />
 )
 GoogleItem.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
+  onLogin: PropTypes.func.isRequired
 }
-export const FacebookItem = ({ children, ...props }) => (
+export const FacebookItem = ({ children, onLogin, ...props }) => (
   <FacebookLogin
     appId={FACEBOOK_APP_ID}
     autoLoad={true}
     fields="name,email,picture"
-    callback={exampleResponse(facebookHoc)}
+    callback={onLogin(facebookHoc)}
     render={({ onClick }) => (
       <DropdownItem onClick={onClick} {...props} tag="span">
         {children}
@@ -70,5 +51,6 @@ export const FacebookItem = ({ children, ...props }) => (
   />
 )
 FacebookItem.propTypes = {
-  children: PropTypes.node.isRequired
+  children: PropTypes.node.isRequired,
+  onLogin: PropTypes.func.isRequired
 }
