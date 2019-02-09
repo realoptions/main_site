@@ -8,6 +8,7 @@ import Products from './pages/Products'
 
 import { HOME, PRODUCTS, DEVELOPERS, DEMO } from './routes/names'
 import Demo from './pages/Demo'
+import Switch from 'react-router-dom/Switch'
 
 //Amplify.configure(awsConfig)
 //note that the route has to include AppMenu even though AppMenu doesn't use "page".
@@ -15,11 +16,13 @@ import Demo from './pages/Demo'
 const App = () => (
   <div className="app">
     <Route path="/:page" component={AppMenu} />
-    <Redirect from="/" exact to={HOME} />
-    <Route exact path={HOME} component={FrontPage} />
-    <Route path={PRODUCTS} component={Products} />
-    <Route path={DEVELOPERS} component={Developers} />
-    <Route path={DEMO} component={Demo} />
+    <Switch>
+      <Route exact path={HOME} component={FrontPage} />
+      <Route path={PRODUCTS} component={Products} />
+      <Route path={DEVELOPERS} component={Developers} />
+      <Route path={DEMO} component={Demo} />
+      <Redirect from="/" exact to={HOME} />
+    </Switch>
   </div>
 )
 
