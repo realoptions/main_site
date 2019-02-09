@@ -1,7 +1,6 @@
 import React from 'react'
 import { Container, Row, Col } from 'reactstrap'
 import { REGISTER } from '../routes/names'
-import Pricing from '../components/Pricing'
 import { Link } from 'react-router-dom'
 const padding = { paddingTop: 40, paddingBottom: 20 }
 const githubUrl = 'https://github.com/realoptions'
@@ -59,6 +58,5 @@ export default () => (
         </p>
       </Col>
     </Row>
-    <Pricing />
   </Container>
 )

@@ -1,64 +1,48 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap'
 import { connect } from 'react-redux'
-import { toggleOpen } from '../actions/modal'
 import AsyncLoad from './AsyncLoad'
-import { showApiKey } from '../services/api-catalog'
+import { getUsage } from '../services/api-middleware'
 import Loading from './Loading'
 import PropTypes from 'prop-types'
-import { updateApiKey, apiError, noApiError } from '../actions/signIn'
-const mapStateToProps = ({
-  modal: { isOpen },
-  auth: { apiKey, isSignedIn }
-  //client
-}) => ({
-  isOpen,
-  apiKey,
-  //client,
-  isSignedIn
+const mapStateToProps = ({ email, usagePlan, apiKey }) => ({
+  email,
+  usagePlan,
+  apiKey
 })
-const mapDispatchToProps = dispatch => ({
-  toggleOpen: toggleOpen(dispatch),
-  onLoad: () =>
-    showApiKey()
-      .then(updateApiKey(dispatch))
-      .then(noApiError(dispatch))
-      .catch(apiError(dispatch))
-})
-export const ApiModal = ({
-  style,
-  isOpen,
-  toggleOpen,
-  apiKey,
-  client,
-  onLoad,
-  isSignedIn
-}) => [
-  isSignedIn ? (
-    <Button onClick={toggleOpen} key="button" style={style}>
-      View API Key
-    </Button>
-  ) : null,
-  <Modal key="modal" isOpen={isOpen} toggle={toggleOpen}>
-    <ModalHeader>API Key</ModalHeader>
-    <AsyncLoad
-      requiredObject={apiKey}
-      onLoad={() => onLoad(client)}
-      loading={Loading}
-      render={() => <ModalBody>{apiKey}</ModalBody>}
-    />
-  </Modal>
-]
+
+export const ApiModal = ({ style, email, apiKey, usagePlan }) => {
+  const [isOpen, toggleOpen] = useState(false)
+  const [usage, setUsage] = useState(false)
+  return [
+    email && usagePlan && apiKey ? (
+      <Button onClick={() => toggleOpen(!isOpen)} key="button" style={style}>
+        View API Key
+      </Button>
+    ) : null,
+    <Modal key="modal" isOpen={isOpen} toggle={() => toggleOpen(!isOpen)}>
+      <ModalHeader>API Key</ModalHeader>
+      <ModalBody>
+        {apiKey}
+        <AsyncLoad
+          requiredObject={usage}
+          onLoad={() =>
+            getUsage(email, usagePlan).then(data => {
+              console.log(data)
+              setUsage(data)
+            })
+          }
+          loading={Loading}
+          render={() => <span>{usage}</span>}
+        />
+      </ModalBody>
+    </Modal>
+  ]
+}
 ApiModal.propTypes = {
   style: PropTypes.object,
-  isOpen: PropTypes.bool.isRequired,
-  toggleOpen: PropTypes.func.isRequired,
+  email: PropTypes.string,
   apiKey: PropTypes.string,
-  //client: PropTypes.object,
-  onLoad: PropTypes.func.isRequired,
-  isSignedIn: PropTypes.bool
+  usagePlan: PropTypes.string
 }
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ApiModal)
+export default connect(mapStateToProps)(ApiModal)

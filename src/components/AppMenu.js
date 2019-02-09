@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { NavLink as Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
@@ -12,129 +12,150 @@ import {
   DropdownToggle,
   DropdownMenu,
   UncontrolledDropdown,
-  //Dropdown,
   NavLink
 } from 'reactstrap'
-import SocialSpan from './SocialSpan'
+import { GoogleItem, FacebookItem } from './SocialSpan'
 import Logo from '../Logo.js'
-import {
-  HOME,
-  DEVELOPERS,
-  PRODUCTS,
-  MARKETPLACE,
-  SUBSCRIPTIONS,
-  DEMO
-} from '../routes/names'
+import { HOME, DEVELOPERS, PRODUCTS, MARKETPLACE, DEMO } from '../routes/names'
 import { menuBarHeight } from '../styles/menu'
 //import { init } from '../services/auth'
-import { toggleNavBar } from '../actions/menu'
+import { setEmail } from '../actions/email'
+import { setApiKey } from '../actions/apiKey'
+import { setProfilePicture } from '../actions/profilePicture'
+import { setUsagePlan } from '../actions/usagePlan'
+import {
+  createApiKeyAndSubscribe,
+  getUsagePlans
+} from '../services/api-middleware'
 
-const handleSocialLogin = user => {
-  console.log(user)
+//exported for testing
+export const getApplicablePlan = plans => {
+  console.log(plans)
+  return plans.find(v => !v.plan.includes('Admin')).key
+}
+const avatarStyle = {
+  verticalAlign: 'middle',
+  width: menuBarHeight,
+  height: menuBarHeight,
+  borderRadius: '50%'
+}
+const Avatar = ({ url }) => <img src={url} style={avatarStyle} alt="profile" />
+
+const handleSocialLogin = ({
+  setUsagePlan,
+  setApiKey,
+  setEmail,
+  setProfilePicture
+}) => providerHoc => res => {
+  console.log(res)
+  const { email, profilePicture } = providerHoc(res)
+  console.log(email)
+  console.log(profilePicture)
+  setEmail(email)
+  setProfilePicture(profilePicture)
+  return getUsagePlans()
+    .then(data => {
+      const plan = getApplicablePlan(data)
+      return Promise.all([
+        setUsagePlan(plan),
+        createApiKeyAndSubscribe(email, plan)
+      ])
+    })
+    .then(([_, { keyValue }]) => setApiKey(keyValue))
 }
 
-const handleSocialLoginFailure = err => {
-  console.error(err)
-}
-const FACEBOOK_APP_ID = '1672160866222878'
-const GOOGLE_APP_ID =
-  '117231459701-omruogcepkcm1kfanp39g94n5qjptcc9.apps.googleusercontent.com'
-const GITHUB_APP_ID = '3d5d9ef81f3e1e43c1ff'
-//the "purchase" link will go to amazon web store
-export const AppMenu = ({ toggleNavBar, isSignedIn, isOpen }) => (
-  <Navbar color="light" light expand="md">
-    <NavbarBrand>
-      <Logo
-        height={menuBarHeight}
-        width={menuBarHeight}
-        className="logo-primary"
-      />
-    </NavbarBrand>
-    <NavbarToggler onClick={toggleNavBar} />
-    <Collapse isOpen={isOpen} navbar>
-      <Nav className="ml-auto" navbar>
-        <NavItem>
-          <NavLink to={HOME} tag={Link}>
-            Home
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink to={PRODUCTS} tag={Link}>
-            Products
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink to={DEVELOPERS} tag={Link}>
-            Developers
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink to={MARKETPLACE} tag={Link}>
-            Purchase
-          </NavLink>
-        </NavItem>
-        <NavItem>
-          <NavLink to={DEMO} tag={Link}>
-            Demo
-          </NavLink>
-        </NavItem>
-        {isSignedIn ? (
+export const AppMenu = ({
+  profilePicture,
+  setUsagePlan,
+  setApiKey,
+  setEmail,
+  setProfilePicture
+}) => {
+  const [open, setOpen] = useState(false)
+  const onLogin = handleSocialLogin({
+    setUsagePlan,
+    setApiKey,
+    setEmail,
+    setProfilePicture
+  })
+  return (
+    <Navbar color="light" light expand="md">
+      <NavbarBrand>
+        <Logo
+          height={menuBarHeight}
+          width={menuBarHeight}
+          className="logo-primary"
+        />
+      </NavbarBrand>
+      <NavbarToggler onClick={() => setOpen(!open)} />
+      <Collapse isOpen={open} navbar>
+        <Nav className="ml-auto" navbar>
           <NavItem>
-            <NavLink to={SUBSCRIPTIONS} tag={Link}>
-              Subscriptions
+            <NavLink to={HOME} tag={Link}>
+              Home
             </NavLink>
           </NavItem>
+          <NavItem>
+            <NavLink to={PRODUCTS} tag={Link}>
+              Products
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink to={DEVELOPERS} tag={Link}>
+              Developers
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink to={MARKETPLACE} tag={Link}>
+              Purchase
+            </NavLink>
+          </NavItem>
+          <NavItem>
+            <NavLink to={DEMO} tag={Link}>
+              Demo
+            </NavLink>
+          </NavItem>
+          {profilePicture ? null : (
+            <UncontrolledDropdown nav inNavbar>
+              <DropdownToggle nav caret>
+                Log In
+              </DropdownToggle>
+              <DropdownMenu right>
+                <GoogleItem onLogin={onLogin}>Login with Google</GoogleItem>
+                <FacebookItem onLogin={onLogin}>
+                  Login with Facebook
+                </FacebookItem>
+              </DropdownMenu>
+            </UncontrolledDropdown>
+          )}
+          {open && profilePicture ? <NavItem>Sign out</NavItem> : null}
+        </Nav>
+        {profilePicture && !open ? (
+          <NavbarBrand>
+            <Avatar url={profilePicture} />
+          </NavbarBrand>
         ) : null}
-        {isSignedIn ? null : (
-          <UncontrolledDropdown nav inNavbar>
-            <DropdownToggle nav caret>
-              Log In
-            </DropdownToggle>
-            <DropdownMenu right>
-              <SocialSpan
-                provider="facebook"
-                appId={FACEBOOK_APP_ID}
-                onLoginSuccess={handleSocialLogin}
-                onLoginFailure={handleSocialLoginFailure}
-              >
-                Login with Facebook
-              </SocialSpan>
-              <SocialSpan
-                provider="google"
-                appId={GOOGLE_APP_ID}
-                onLoginSuccess={handleSocialLogin}
-                onLoginFailure={handleSocialLoginFailure}
-              >
-                Login with Google
-              </SocialSpan>
-              <SocialSpan
-                provider="github"
-                appId={GITHUB_APP_ID}
-                onLoginSuccess={handleSocialLogin}
-                onLoginFailure={handleSocialLoginFailure}
-              >
-                Login with GitHub
-              </SocialSpan>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-        )}
-      </Nav>
-    </Collapse>
-  </Navbar>
-)
+      </Collapse>
+    </Navbar>
+  )
+}
 AppMenu.propTypes = {
-  toggleNavBar: PropTypes.func.isRequired,
-  isSignedIn: PropTypes.bool,
-  isOpen: PropTypes.bool.isRequired
+  profilePicture: PropTypes.string,
+  setUsagePlan: PropTypes.func.isRequired,
+  setApiKey: PropTypes.func.isRequired,
+  setEmail: PropTypes.func.isRequired,
+  setProfilePicture: PropTypes.func.isRequired
 }
 
-const mapStateToProps = ({ auth: { isSignedIn }, menu }) => ({
-  isSignedIn,
-  isOpen: menu
+const mapStateToProps = ({ profilePicture }) => ({
+  profilePicture
 })
 
 const mapDispatchToProps = dispatch => ({
-  toggleNavBar: toggleNavBar(dispatch)
+  setApiKey: setApiKey(dispatch),
+  setEmail: setEmail(dispatch),
+  setProfilePicture: setProfilePicture(dispatch),
+  setUsagePlan: setUsagePlan(dispatch)
 })
 export default connect(
   mapStateToProps,

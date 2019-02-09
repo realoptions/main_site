@@ -2,9 +2,7 @@ import React from 'react'
 import { Jumbotron, Container } from 'reactstrap'
 import { Link } from 'react-router-dom'
 import { PRODUCTS } from '../routes/names'
-import Pricing from '../components/Pricing'
 const heightStyle = { minHeight: '100vh' }
-const paddingTop = { paddingTop: 20 }
 export default () => [
   <Jumbotron
     style={heightStyle}
@@ -44,17 +42,6 @@ export default () => [
         For more information on the models see the{' '}
         <Link to={PRODUCTS}>products page</Link>.
       </p>
-    </Container>
-  </Jumbotron>,
-  <Jumbotron
-    style={heightStyle}
-    key="pricing"
-    fluid
-    className="bg-dark light-text no-margin"
-  >
-    <Container>
-      <h1 className="display-3">Pricing</h1>
-      <Pricing style={paddingTop} />
     </Container>
   </Jumbotron>
 ]
