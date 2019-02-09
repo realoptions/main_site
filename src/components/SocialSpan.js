@@ -54,3 +54,52 @@ FacebookItem.propTypes = {
   children: PropTypes.node.isRequired,
   onLogin: PropTypes.func.isRequired
 }
+
+const logoutFB = () =>
+  new Promise((res, rej) => {
+    if (window.FB && window.FB.logout) {
+      console.log(window.FB)
+      try {
+        window.FB.logout(response => {
+          console.log(response)
+          res(response)
+        })
+      } catch (err) {
+        console.log(err)
+        res()
+        //rej(err)
+      }
+      /*response=>{
+      console.log(response)
+      res(response)
+    }).catch(err=>console.log(err))*/
+    } else {
+      res()
+    }
+  })
+const logoutGoogle = () => {
+  if (window.gapi) {
+    const auth2 = window.gapi.auth2.getAuthInstance()
+    if (auth2 && auth2.signOut) {
+      return auth2
+        .signOut()
+        .then(auth2.disconnect())
+        .catch(err => {
+          console.log(err)
+        })
+    }
+    return Promise.resolve()
+  } else {
+    return Promise.resolve()
+  }
+}
+
+export const logout = () => {
+  return Promise.all([logoutFB(), logoutGoogle()])
+    .then(() => {
+      localStorage.clear()
+    })
+    .catch(err => {
+      console.log(err)
+    })
+}

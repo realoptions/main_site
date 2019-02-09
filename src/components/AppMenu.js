@@ -14,7 +14,7 @@ import {
   UncontrolledDropdown,
   NavLink
 } from 'reactstrap'
-import { GoogleItem, FacebookItem } from './SocialSpan'
+import { GoogleItem, FacebookItem, logout } from './SocialSpan'
 import Logo from '../Logo.js'
 import { HOME, DEVELOPERS, PRODUCTS, MARKETPLACE, DEMO } from '../routes/names'
 import { menuBarHeight } from '../styles/menu'
@@ -64,6 +64,18 @@ const handleSocialLogin = ({
     .then(([_, { keyValue }]) => setApiKey(keyValue))
 }
 
+const reset = ({
+  setUsagePlan,
+  setApiKey,
+  setEmail,
+  setProfilePicture
+}) => () => {
+  setUsagePlan('')
+  setApiKey('')
+  setEmail('')
+  setProfilePicture('')
+}
+
 export const AppMenu = ({
   profilePicture,
   setUsagePlan,
@@ -73,6 +85,12 @@ export const AppMenu = ({
 }) => {
   const [open, setOpen] = useState(false)
   const onLogin = handleSocialLogin({
+    setUsagePlan,
+    setApiKey,
+    setEmail,
+    setProfilePicture
+  })
+  const resetAll = reset({
     setUsagePlan,
     setApiKey,
     setEmail,
@@ -128,7 +146,13 @@ export const AppMenu = ({
               </DropdownMenu>
             </UncontrolledDropdown>
           )}
-          {open && profilePicture ? <NavItem>Sign out</NavItem> : null}
+          {profilePicture ? (
+            <NavItem>
+              <NavLink onClick={() => logout().then(resetAll)} tag="a">
+                Sign Out
+              </NavLink>
+            </NavItem>
+          ) : null}
         </Nav>
         {profilePicture && !open ? (
           <NavbarBrand>
