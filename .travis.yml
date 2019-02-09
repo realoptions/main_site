@@ -13,6 +13,7 @@ before_install:
 
 before_script: 
   - pip install awscli
+  - aws configure set region us-east-1
 
 script:
   - npm install
