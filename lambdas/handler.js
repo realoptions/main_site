@@ -40,7 +40,7 @@ const facebookProvider=authorization=>new Promise((resolve, rej)=>{
     })
 })
 
-const generatePolicy=(provider, resource, effect)=>({
+const generatePolicy=(provider, effect)=>({
     "principalId": provider, // The principal user identification associated with the token sent by the client.
     "policyDocument": {
       "Version": "2012-10-17",
@@ -48,7 +48,7 @@ const generatePolicy=(provider, resource, effect)=>({
         {
           "Action": "apigateway:*",
           "Effect": effect,//"Allow|Deny",
-          "Resource": resource
+          "Resource": "*"
         }
       ]
     },
@@ -74,15 +74,16 @@ const authorize=(authorization, provider)=>{
     }
 }
 module.exports.authorize=(event, _context, callback)=>{
-    const {authorizationToken, methodArn}=event
+    const {authorizationToken}=event
     const [provider, authorization]=authorizationToken.split(" ")
     console.log("this is authorization: ", authorization)
     console.log("this is provider: ", provider)
     return authorize(authorization, provider)
-        .then(res=>{
-            callback(null, generatePolicy(provider, methodArn, 'Allow'))
+        .then(()=>{
+            callback(null, generatePolicy(provider, 'Allow'))
         })
         .catch(err=>{
+            console.log(`Authorize has the following error: ${err}`)
             callback("Unauthorized")
             //callback(null, generatePolicy(provider, event.methodArn, 'Deny'))
         })
