@@ -49,7 +49,7 @@ const generatePolicy=(provider, effect)=>({
           "Action": [
               "apigateway:*",
               "execute-api:*",
-              "sts:AssumeRole"
+              "lambda:*"
           ],
           "Effect": effect,//"Allow|Deny",
           "Resource": "*"
