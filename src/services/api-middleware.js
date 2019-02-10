@@ -1,11 +1,37 @@
 import { url } from './aws'
 const jsonRes = res => res.json()
-export const createApiKeyAndSubscribe = (email, usagePlanId) =>
+export const createApiKeyAndSubscribe = ({
+  email,
+  usagePlanId,
+  token,
+  provider
+}) =>
   fetch(`${url}/apikey`, {
     method: 'POST',
-    body: JSON.stringify({ customerId: email, usagePlanId })
+    body: JSON.stringify({ customerId: email, usagePlanId }),
+    headers: new Headers({
+      Authorization: token,
+      provider
+    })
   }).then(jsonRes)
-export const getUsagePlans = () => fetch(`${url}/usageplan`).then(jsonRes)
-export const getApiKey = email => fetch(`${url}/apikey/${email}`).then(jsonRes)
-export const getUsage = (email, usagePlanId) =>
-  fetch(`${url}/usageplan/${email}/${usagePlanId}`).then(jsonRes)
+export const getUsagePlans = ({ token, provider }) =>
+  fetch(`${url}/usageplan`, {
+    headers: new Headers({
+      Authorization: token,
+      provider
+    })
+  }).then(jsonRes)
+export const getApiKey = ({ email, token, provider }) =>
+  fetch(`${url}/apikey/${email}`, {
+    headers: new Headers({
+      Authorization: token,
+      provider
+    })
+  }).then(jsonRes)
+export const getUsage = ({ email, usagePlanId, token, provider }) =>
+  fetch(`${url}/usageplan/${email}/${usagePlanId}`, {
+    headers: new Headers({
+      Authorization: token,
+      provider
+    })
+  }).then(jsonRes)

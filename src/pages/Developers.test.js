@@ -11,14 +11,13 @@ it('shallowly renders', () => {
 })
 it('fully mounts', () => {
   const initialState = {
-    modal: {
-      isOpen: true
+    clientInformation: {
+      email: 'hello',
+      provider: 'google',
+      token: 'hello'
     },
-    auth: {
-      isSignedIn: true,
-      apiKey: 'hello'
-    },
-    client: {}
+    usagePlan: 'hello',
+    apiKey: 'hello'
   }
   const store = mockStore(initialState)
   Swagger.default = () => <div />

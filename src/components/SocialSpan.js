@@ -4,21 +4,23 @@ import GoogleLogin from 'react-google-login'
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
 import { DropdownItem } from 'reactstrap'
 import PropTypes from 'prop-types'
-const FACEBOOK_APP_ID = '1672160866222878'
-const GOOGLE_APP_ID =
-  '117231459701-omruogcepkcm1kfanp39g94n5qjptcc9.apps.googleusercontent.com'
-
-const facebookHoc = ({ email, name, picture }) => ({
+const GOOGLE_APP_ID = process.env.REACT_APP_GoogleClientID
+const FACEBOOK_APP_ID = process.env.REACT_APP_FacebookAppID
+const GOOGLE_PROVIDER = 'google'
+const FACEBOOK_PROVIDER = 'facebook'
+const facebookHoc = ({ email, name, picture, accessToken }) => ({
   email,
   name,
   profilePicture: picture.data.url,
-  provider: 'facebook'
+  provider: FACEBOOK_PROVIDER,
+  token: accessToken
 })
 
-const googleHoc = ({ profileObj }) => ({
+const googleHoc = ({ profileObj, tokenId }) => ({
   ...profileObj,
   profilePicture: profileObj.imageUrl,
-  provider: 'google'
+  provider: GOOGLE_PROVIDER,
+  token: tokenId
 })
 
 export const GoogleItem = ({ children, onLogin, ...props }) => (
@@ -94,9 +96,22 @@ const logoutGoogle = () => {
     return Promise.resolve()
   }
 }
+const logoutProvider = provider => {
+  switch (provider) {
+    case GOOGLE_PROVIDER: {
+      return logoutGoogle()
+    }
+    case FACEBOOK_PROVIDER: {
+      return logoutFB()
+    }
+    default: {
+      return Promise.reject('No provider')
+    }
+  }
+}
 
-export const logout = () => {
-  return Promise.all([logoutFB(), logoutGoogle()])
+export const logout = provider => {
+  return logoutProvider(provider)
     .then(() => {
       localStorage.clear()
     })

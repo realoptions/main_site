@@ -26,3 +26,4 @@ awsInfrastructure.json
 catalog.json
 amplify
 .serverless
+*clientInfo.json

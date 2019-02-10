@@ -1,11 +1,9 @@
 import apiKey from './apiKey'
-import email from './email'
+import clientInformation from './clientInformation'
 import usagePlan from './usagePlan'
-import profilePicture from './profilePicture'
 import { combineReducers } from 'redux'
 export default combineReducers({
   apiKey,
-  email,
-  profilePicture,
+  clientInformation,
   usagePlan
 })

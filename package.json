@@ -18,6 +18,8 @@
     "redux": "^4.0.0",
     "swagger-ui": "^3.20.7"
   },
+  "GoogleClientID":"117231459701-omruogcepkcm1kfanp39g94n5qjptcc9.apps.googleusercontent.com",
+  "FacebookAppID":"1672160866222878",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

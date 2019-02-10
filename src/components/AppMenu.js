@@ -19,9 +19,8 @@ import Logo from '../Logo.js'
 import { HOME, DEVELOPERS, PRODUCTS, DEMO } from '../routes/names'
 import { menuBarHeight } from '../styles/menu'
 //import { init } from '../services/auth'
-import { setEmail } from '../actions/email'
 import { setApiKey } from '../actions/apiKey'
-import { setProfilePicture } from '../actions/profilePicture'
+import { setClientInformation } from '../actions/clientInformation'
 import { setUsagePlan } from '../actions/usagePlan'
 import {
   createApiKeyAndSubscribe,
@@ -44,57 +43,52 @@ const Avatar = ({ url }) => <img src={url} style={avatarStyle} alt="profile" />
 const handleSocialLogin = ({
   setUsagePlan,
   setApiKey,
-  setEmail,
-  setProfilePicture
+  setClientInformation
 }) => providerHoc => res => {
   console.log(res)
-  const { email, profilePicture } = providerHoc(res)
+  const { email, profilePicture, token, provider } = providerHoc(res)
   console.log(email)
   console.log(profilePicture)
-  setEmail(email)
-  setProfilePicture(profilePicture)
-  return getUsagePlans()
+  setClientInformation({
+    email,
+    provider,
+    token,
+    profilePicture
+  })
+  return getUsagePlans({ token, provider })
     .then(data => {
       const plan = getApplicablePlan(data)
       return Promise.all([
         setUsagePlan(plan),
-        createApiKeyAndSubscribe(email, plan)
+        createApiKeyAndSubscribe({ email, plan, token, provider })
       ])
     })
     .then(([_, { keyValue }]) => setApiKey(keyValue))
 }
 
-const reset = ({
-  setUsagePlan,
-  setApiKey,
-  setEmail,
-  setProfilePicture
-}) => () => {
+const reset = ({ setUsagePlan, setApiKey, setClientInformation }) => () => {
   setUsagePlan('')
   setApiKey('')
-  setEmail('')
-  setProfilePicture('')
+  setClientInformation() //back to default
 }
 
 export const AppMenu = ({
   profilePicture,
+  provider,
   setUsagePlan,
   setApiKey,
-  setEmail,
-  setProfilePicture
+  setClientInformation
 }) => {
   const [open, setOpen] = useState(false)
   const onLogin = handleSocialLogin({
     setUsagePlan,
     setApiKey,
-    setEmail,
-    setProfilePicture
+    setClientInformation
   })
   const resetAll = reset({
     setUsagePlan,
     setApiKey,
-    setEmail,
-    setProfilePicture
+    setClientInformation
   })
   return (
     <Navbar color="light" light expand="md">
@@ -144,7 +138,7 @@ export const AppMenu = ({
           {profilePicture ? (
             <NavItem>
               <NavLink
-                onClick={() => logout().then(resetAll)}
+                onClick={() => logout(provider).then(resetAll)}
                 tag={Link}
                 to="#"
               >
@@ -164,20 +158,22 @@ export const AppMenu = ({
 }
 AppMenu.propTypes = {
   profilePicture: PropTypes.string,
+  provider: PropTypes.string,
   setUsagePlan: PropTypes.func.isRequired,
   setApiKey: PropTypes.func.isRequired,
-  setEmail: PropTypes.func.isRequired,
-  setProfilePicture: PropTypes.func.isRequired
+  setClientInformation: PropTypes.func.isRequired
 }
 
-const mapStateToProps = ({ profilePicture }) => ({
-  profilePicture
+const mapStateToProps = ({
+  clientInformation: { profilePicture, provider }
+}) => ({
+  profilePicture,
+  provider
 })
 
 const mapDispatchToProps = dispatch => ({
   setApiKey: setApiKey(dispatch),
-  setEmail: setEmail(dispatch),
-  setProfilePicture: setProfilePicture(dispatch),
+  setClientInformation: setClientInformation(dispatch),
   setUsagePlan: setUsagePlan(dispatch)
 })
 export default connect(

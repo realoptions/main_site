@@ -11,7 +11,7 @@ describe('AppMenu', () => {
       <AppMenu
         setUsagePlan={genericFn}
         setApiKey={genericFn}
-        setEmail={genericFn}
+        setClientInformation={genericFn}
         setProfilePicture={genericFn}
       />
     )
@@ -23,7 +23,7 @@ describe('AppMenu', () => {
         profilePicture="hello"
         setUsagePlan={genericFn}
         setApiKey={genericFn}
-        setEmail={genericFn}
+        setClientInformation={genericFn}
         setProfilePicture={genericFn}
       />
     )
@@ -35,7 +35,7 @@ describe('AppMenu', () => {
         profilePicture="hello"
         setUsagePlan={genericFn}
         setApiKey={genericFn}
-        setEmail={genericFn}
+        setClientInformation={genericFn}
         setProfilePicture={genericFn}
       />
     )
@@ -48,7 +48,7 @@ describe('AppMenu', () => {
       <AppMenu
         setUsagePlan={genericFn}
         setApiKey={genericFn}
-        setEmail={genericFn}
+        setClientInformation={genericFn}
         setProfilePicture={genericFn}
       />
     )
