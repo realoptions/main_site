@@ -46,7 +46,7 @@ const generatePolicy=(provider, resource, effect)=>({
       "Version": "2012-10-17",
       "Statement": [
         {
-          "Action": "execute-api:Invoke",
+          "Action": "apigateway:*",
           "Effect": effect,//"Allow|Deny",
           "Resource": resource
         }
