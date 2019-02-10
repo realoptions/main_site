@@ -9,10 +9,13 @@ const successResponse=(body={})=>({
     statusCode: 200,
     body: JSON.stringify(body)
 })
-const errResponse=err=>({
-    statusCode: 500,
-    body: JSON.stringify({err})
-})
+const errResponse=err=>{
+    console.log(`Error! ${err}`)
+    return ({
+        statusCode: 500,
+        body: JSON.stringify({err})
+    })
+}
 const client = new OAuth2Client(GOOGLE_APP_ID)
 const googleProvider=authorization=>{
     return client.verifyIdToken({
@@ -71,10 +74,13 @@ const authorize=(authorization, provider)=>{
     }
 }
 module.exports.authorize=(event, _context, callback)=>{
-    const {authorization, provider}=event.headers
+    const {authorizationToken, methodArn}=event
+    const [provider, authorization]=authorizationToken.split(" ")
+    console.log("this is authorization: ", authorization)
+    console.log("this is provider: ", provider)
     return authorize(authorization, provider)
         .then(res=>{
-            callback(null, generatePolicy(provider, event.methodArn, 'Allow'))
+            callback(null, generatePolicy(provider, methodArn, 'Allow'))
         })
         .catch(err=>{
             callback("Unauthorized")
@@ -111,6 +117,7 @@ module.exports.getUsagePlans = (_event, _context, callback) =>{
         if(err){
             return callback(null, errResponse(err))
         }
+        console.log(`Success!  ${catalog}`)
         return callback(null, successResponse(catalog))
     })
 }
@@ -118,7 +125,7 @@ module.exports.getApiKey = (event, _context, callback) =>{
     const {customerId}=event.pathParameters
     const errHoc=err=>callback(null, errResponse(err))
     const successHoc=body=>callback(null, successResponse(body))
-    customersController.getApiKeyForCustomer(customerId, errFunc, (data) => {
+    customersController.getApiKeyForCustomer(customerId, errHoc, (data) => {
         if (data.items.length === 0) {
             errHoc('No API Key!')
         } else {

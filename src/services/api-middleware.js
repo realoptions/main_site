@@ -10,28 +10,24 @@ export const createApiKeyAndSubscribe = ({
     method: 'POST',
     body: JSON.stringify({ customerId: email, usagePlanId }),
     headers: new Headers({
-      Authorization: token,
-      provider
+      Authorization: `${provider} ${token}`
     })
   }).then(jsonRes)
 export const getUsagePlans = ({ token, provider }) =>
   fetch(`${url}/usageplan`, {
     headers: new Headers({
-      Authorization: token,
-      provider
+      Authorization: `${provider} ${token}`
     })
   }).then(jsonRes)
 export const getApiKey = ({ email, token, provider }) =>
   fetch(`${url}/apikey/${email}`, {
     headers: new Headers({
-      Authorization: token,
-      provider
+      Authorization: `${provider} ${token}`
     })
   }).then(jsonRes)
 export const getUsage = ({ email, usagePlanId, token, provider }) =>
   fetch(`${url}/usageplan/${email}/${usagePlanId}`, {
     headers: new Headers({
-      Authorization: token,
-      provider
+      Authorization: `${provider} ${token}`
     })
   }).then(jsonRes)

@@ -57,6 +57,7 @@ const handleSocialLogin = ({
   })
   return getUsagePlans({ token, provider })
     .then(data => {
+      console.log(data)
       const plan = getApplicablePlan(data)
       return Promise.all([
         setUsagePlan(plan),
@@ -84,7 +85,7 @@ export const AppMenu = ({
     setUsagePlan,
     setApiKey,
     setClientInformation
-  })
+  }).catch(err => console.log(err))
   const resetAll = reset({
     setUsagePlan,
     setApiKey,
