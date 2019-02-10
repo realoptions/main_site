@@ -74,12 +74,14 @@ const authorize=(authorization, provider)=>{
     }
 }
 module.exports.authorize=(event, _context, callback)=>{
-    const {authorizationToken}=event
+    const {authorizationToken, methodArn}=event
     const [provider, authorization]=authorizationToken.split(" ")
     console.log("this is authorization: ", authorization)
     console.log("this is provider: ", provider)
+    console.log("this is methodArn: ", methodArn)
     return authorize(authorization, provider)
         .then(()=>{
+            console.log('Request is authorized')
             callback(null, generatePolicy(provider, 'Allow'))
         })
         .catch(err=>{
