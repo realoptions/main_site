@@ -33,7 +33,7 @@ script:
   - cd lambdas
   - echo "{\"GoogleClientID\":\"$googleClientId\", \"FacebookAppID\":\"$facebookAppId\"}" > clientInfo.json
   - npm install --only=prod
-  - 
+  - cd ..
 
 after_success:
   - bash <(curl -s https://codecov.io/bash)
