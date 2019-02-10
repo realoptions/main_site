@@ -65,6 +65,7 @@ const handleSocialLogin = ({
       ])
     })
     .then(([_, { keyValue }]) => setApiKey(keyValue))
+    .catch(err => console.log(err))
 }
 
 const reset = ({ setUsagePlan, setApiKey, setClientInformation }) => () => {
@@ -85,7 +86,7 @@ export const AppMenu = ({
     setUsagePlan,
     setApiKey,
     setClientInformation
-  }).catch(err => console.log(err))
+  })
   const resetAll = reset({
     setUsagePlan,
     setApiKey,
