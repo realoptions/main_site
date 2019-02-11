@@ -5,15 +5,22 @@ const getBodyFromEvent=event=>JSON.parse(event.body)
 const {OAuth2Client} = require('google-auth-library')
 const {GoogleAppID:GOOGLE_APP_ID}=require('./clientInfo.json')
 const https=require('https')
+const corsHeaders={
+    'Access-Control-Allow-Origin' : '*', // Required for CORS support to work
+    'Access-Control-Allow-Credentials' : true, // Required for cookies, authorization headers with HTTPS 
+    'Content-Type': 'application/json',
+}
 const successResponse=(body={})=>({
     statusCode: 200,
-    body: JSON.stringify(body)
+    body: JSON.stringify(body),
+    headers: corsHeaders
 })
 const errResponse=err=>{
     console.log(`Error! ${err}`)
     return ({
         statusCode: 500,
-        body: JSON.stringify({err})
+        body: JSON.stringify({err}),
+        headers:corsHeaders
     })
 }
 const client = new OAuth2Client(GOOGLE_APP_ID)
