@@ -30,7 +30,7 @@ import {
 //exported for testing
 export const getApplicablePlan = plans => {
   console.log(plans)
-  return plans.find(v => !v.plan.includes('Admin')).key
+  return plans.find(v => !v.name.includes('Admin')).id
 }
 const avatarStyle = {
   verticalAlign: 'middle',
@@ -56,9 +56,10 @@ const handleSocialLogin = ({
     profilePicture
   })
   return getUsagePlans({ token, provider })
-    .then(data => {
-      console.log(data)
-      const plan = getApplicablePlan(data)
+    .then(({ items }) => {
+      console.log(items)
+      const plan = getApplicablePlan(items)
+      console.log(plan)
       return Promise.all([
         setUsagePlan(plan),
         createApiKeyAndSubscribe({ email, plan, token, provider })

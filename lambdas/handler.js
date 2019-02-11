@@ -124,7 +124,7 @@ module.exports.getUsagePlans = (_event, _context, callback) =>{
         if(err){
             return callback(null, errResponse(err))
         }
-        console.log(`Success!  ${catalog}`)
+        console.log('Success!')
         return callback(null, successResponse(catalog))
     })
 }
