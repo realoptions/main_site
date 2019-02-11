@@ -56,9 +56,9 @@ const handleSocialLogin = ({
     profilePicture
   })
   return getUsagePlans({ token, provider })
-    .then(({ items }) => {
-      console.log(items)
-      const plan = getApplicablePlan(items)
+    .then(plans => {
+      console.log(plans)
+      const plan = getApplicablePlan(plans)
       console.log(plan)
       return Promise.all([
         setUsagePlan(plan),
