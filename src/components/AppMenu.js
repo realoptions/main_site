@@ -56,10 +56,10 @@ const handleSocialLogin = ({
     profilePicture
   })
   return getUsagePlans({ token, provider })
-    .then(plans => {
+    .then(({ items }) => {
       console.log(plans)
-      const plan = getApplicablePlan(plans)
-      console.log(plan)
+      const plan = getApplicablePlan(items)
+      console.log(items)
       return Promise.all([
         setUsagePlan(plan),
         createApiKeyAndSubscribe({ email, plan, token, provider })
