@@ -28,10 +28,9 @@ import {
 } from '../services/api-middleware'
 
 //exported for testing
-export const getApplicablePlan = plans => {
-  console.log(plans)
-  return plans.find(v => !v.name.includes('Admin')).id
-}
+export const getApplicablePlan = plans =>
+  plans.find(v => !v.name.includes('Admin')).id
+
 const avatarStyle = {
   verticalAlign: 'middle',
   width: menuBarHeight,
@@ -57,9 +56,9 @@ const handleSocialLogin = ({
   })
   return getUsagePlans({ token, provider })
     .then(({ items }) => {
-      console.log(plans)
-      const plan = getApplicablePlan(items)
       console.log(items)
+      const plan = getApplicablePlan(items)
+      console.log(plan)
       return Promise.all([
         setUsagePlan(plan),
         createApiKeyAndSubscribe({ email, plan, token, provider })
