@@ -1,5 +1,5 @@
 import { url } from './aws'
-const jsonRes = res => res.text()
+const jsonRes = res => res.json()
 export const createApiKeyAndSubscribe = ({
   email,
   usagePlanId,
