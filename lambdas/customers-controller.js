@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 'use strict'
-const AWS = require('aws-sdk')
+//const AWS = require('aws-sdk')
 
-const apigateway = new AWS.APIGateway()
+//const apigateway = new AWS.APIGateway()
 
-module.exports.createApiKey=(cognitoIdentityId, error, callback)=>{
+module.exports.createApiKey=(apigateway, cognitoIdentityId, error, callback)=>{
     console.log(`Creating API Key for customer ${cognitoIdentityId}`)
 
     // set the name to the cognito identity ID so we can query API Key for the cognito identity
@@ -22,12 +22,12 @@ module.exports.createApiKey=(cognitoIdentityId, error, callback)=>{
             console.log('createApiKey error', error)
             error(err)
         } else {
-            updateCustomerApiKeyId(cognitoIdentityId, data.id, error, () => callback(data))
+            callback(data)
         }
     })
 }
 
-module.exports.createUsagePlanKey=(keyId, usagePlanId, error, callback)=>{
+module.exports.createUsagePlanKey=(apigateway, keyId, usagePlanId, error, callback)=>{
     console.log(`Creating usage plan key for key id ${keyId} and usagePlanId ${usagePlanId}`)
 
     const params = {
@@ -41,7 +41,7 @@ module.exports.createUsagePlanKey=(keyId, usagePlanId, error, callback)=>{
     })
 }
 
-module.exports.getApiKeyForCustomer=(cognitoIdentityId, error, callback)=>{
+const getApiKeyForCustomer=(apigateway, cognitoIdentityId, error, callback)=>{
     console.log(`Getting API Key for customer  ${cognitoIdentityId}`)
     const params = {
         limit: 1,
@@ -53,11 +53,11 @@ module.exports.getApiKeyForCustomer=(cognitoIdentityId, error, callback)=>{
         else callback(data)
     })
 }
-
-module.exports.getUsagePlansForCustomer=(cognitoIdentityId, error, callback)=>{
+module.exports.getApiKeyForCustomer=getApiKeyForCustomer
+module.exports.getUsagePlansForCustomer=(apigateway, cognitoIdentityId, error, callback)=>{
     console.log(`Getting API Key for customer ${cognitoIdentityId}`)
 
-    getApiKeyForCustomer(cognitoIdentityId, error, (data) => {
+    getApiKeyForCustomer(apigateway, cognitoIdentityId, error, (data) => {
         if (data.items.length === 0) {
             callback({data : {}})
         } else {

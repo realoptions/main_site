@@ -1,6 +1,6 @@
 const customersController = require('./customers-controller.js')
 const AWS = require('aws-sdk')
-const apigateway = new AWS.APIGateway()
+
 const getBodyFromEvent=event=>JSON.parse(event.body)
 const {OAuth2Client} = require('google-auth-library')
 const {GoogleAppID:GOOGLE_APP_ID}=require('./clientInfo.json')
@@ -106,27 +106,29 @@ module.exports.createApiKeyAndSubscribe = (event, _context, callback) =>{
     const {customerId, usagePlanId}=getBodyFromEvent(event)
     const errHoc=err=>callback(null, errResponse(err))
     const successHoc=body=>callback(null, successResponse(body))
-    customersController.getApiKeyForCustomer(customerId, errHoc, (data) => {
+    const apigateway = new AWS.APIGateway()
+    customersController.getApiKeyForCustomer(apigateway, customerId, errHoc, (data) => {
         console.log(`Get Api Key data ${JSON.stringify(data)}`)
         if (data.items.length === 0) {
             console.log(`No API Key found for customer ${customerId}`)
-            customersController.createApiKey(customerId, errHoc, (createData) => {
+            customersController.createApiKey(apigateway, customerId, errHoc, (createData) => {
                 console.log(`Create API Key data: ${createData}`)
                 const {id:keyId, value:keyValue} = createData
                 console.log(`Got key ID ${keyId}`)
-                customersController.createUsagePlanKey(keyId, usagePlanId, errHoc, ()=>{
+                customersController.createUsagePlanKey(apigateway, keyId, usagePlanId, errHoc, ()=>{
                     successHoc({keyId, keyValue})
                 })
             })
         } else {
             const {id:keyId, value:keyValue}  = data.items[0]
-            customersController.createUsagePlanKey(keyId, usagePlanId, errHoc, ()=>{
+            customersController.createUsagePlanKey(apigateway, keyId, usagePlanId, errHoc, ()=>{
                 successHoc({keyId, keyValue})
             })
         }
     })
 }
 module.exports.getUsagePlans = (_event, _context, callback) =>{
+    const apigateway = new AWS.APIGateway()
     apigateway.getUsagePlans({limit:500}, (err, catalog)=>{
         if(err){
             return callback(null, errResponse(err))
@@ -139,7 +141,8 @@ module.exports.getApiKey = (event, _context, callback) =>{
     const {customerId}=event.pathParameters
     const errHoc=err=>callback(null, errResponse(err))
     const successHoc=body=>callback(null, successResponse(body))
-    customersController.getApiKeyForCustomer(customerId, errHoc, (data) => {
+    const apigateway = new AWS.APIGateway()
+    customersController.getApiKeyForCustomer(apigateway, customerId, errHoc, (data) => {
         if (data.items.length === 0) {
             errHoc('No API Key!')
         } else {
@@ -153,7 +156,8 @@ module.exports.getUsage = (event, _context, callback) =>{
     const {end, start}=event.queryStringParameters
     const errHoc=err=>callback(null, errResponse(err))
     const successHoc=body=>callback(null, successResponse(body))
-    customersController.getApiKeyForCustomer(customerId, errHoc, (data) => {
+    const apigateway = new AWS.APIGateway()
+    customersController.getApiKeyForCustomer(apigateway, customerId, errHoc, (data) => {
         const keyId = data.items[0].id
         const params = {
             endDate: end,
@@ -169,6 +173,5 @@ module.exports.getUsage = (event, _context, callback) =>{
                 successHoc(usageData)
             }
         })
-    })
-    
+    })    
 }
