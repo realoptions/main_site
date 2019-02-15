@@ -1,4 +1,4 @@
-import { AppMenu } from './AppMenu'
+import { AppMenu, getApplicablePlan } from './AppMenu'
 import React from 'react'
 import { NavLink, DropdownToggle } from 'reactstrap'
 import { shallow } from 'enzyme'
@@ -56,5 +56,23 @@ describe('AppMenu', () => {
       appMenu.find(DropdownToggle).findWhere(link => link.text() === 'Log In')
         .length
     ).toEqual(1)
+  })
+})
+
+describe('getApplicablePlan', () => {
+  it('finds first element that does not contain admin when single element', () => {
+    const plans = [{ name: 'hello', id: '5' }]
+    expect(getApplicablePlan(plans)).toEqual('5')
+  })
+  it('finds first element that does not contain admin when multiple elements', () => {
+    const plans = [
+      { name: 'sdfsfAdmin', id: '5' },
+      { name: 'somthing', id: '6' }
+    ]
+    expect(getApplicablePlan(plans)).toEqual('6')
+  })
+  it('returns empty if everything is Admin', () => {
+    const plans = [{ name: 'sdfsfAdmin', id: '5' }, { name: 'Admin', id: '6' }]
+    expect(getApplicablePlan(plans)).toEqual(undefined)
   })
 })

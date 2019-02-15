@@ -43,7 +43,7 @@ export const ApiModal = ({
           onLoad={() =>
             getUsage({
               email,
-              usagePlan: usagePlanId,
+              usagePlanId: usagePlan,
               provider,
               token,
               ...getCurrentMonth()

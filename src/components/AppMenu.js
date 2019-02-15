@@ -27,9 +27,10 @@ import {
   getUsagePlans
 } from '../services/apiMiddleware'
 
+const idOrUndefined = obj => (obj ? obj.id : undefined)
 //exported for testing
 export const getApplicablePlan = plans =>
-  plans.find(v => !v.name.includes('Admin')).id
+  idOrUndefined(plans.find(v => !v.name.includes('Admin')))
 
 const avatarStyle = {
   verticalAlign: 'middle',
@@ -56,9 +57,10 @@ const handleSocialLogin = ({
   })
   return getUsagePlans({ token, provider })
     .then(({ items }) => {
-      console.log(items)
       const usagePlanId = getApplicablePlan(items)
-      console.log(usagePlanId)
+      if (!usagePlanId) {
+        return Promise.reject('No applicable usage plan')
+      }
       return Promise.all([
         setUsagePlan(usagePlanId),
         createApiKeyAndSubscribe({ email, usagePlanId, token, provider })
