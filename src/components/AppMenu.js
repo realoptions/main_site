@@ -57,11 +57,11 @@ const handleSocialLogin = ({
   return getUsagePlans({ token, provider })
     .then(({ items }) => {
       console.log(items)
-      const plan = getApplicablePlan(items)
-      console.log(plan)
+      const usagePlanId = getApplicablePlan(items)
+      console.log(usagePlanId)
       return Promise.all([
-        setUsagePlan(plan),
-        createApiKeyAndSubscribe({ email, plan, token, provider })
+        setUsagePlan(usagePlanId),
+        createApiKeyAndSubscribe({ email, usagePlanId, token, provider })
       ])
     })
     .then(([_, { keyValue }]) => setApiKey(keyValue))

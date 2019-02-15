@@ -28,7 +28,7 @@ functions:
     handler: lambdas/handler.getUsagePlans 
     events:
       - http:
-          path: /usageplan
+          path: /usageplans
           method: get
           cors: true
           authorizer: authorizerFunc
@@ -48,7 +48,7 @@ functions:
     handler: lambdas/handler.getApiKey 
     events:
       - http:
-          path: /usageplan/{customerId}/{usagePlanId}
+          path: /usage/{customerId}/{usagePlanId}
           method: get
           cors: true
           authorizer: authorizerFunc

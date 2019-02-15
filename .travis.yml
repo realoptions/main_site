@@ -16,7 +16,7 @@ before_script:
   - aws configure set region us-east-1
 
 script:
-  - npm install
+  - npm ci
   - url=$(node ./scripts/getApiUrl)
   - googleClientId=$(node ./scripts/getGoogleId)
   - facebookAppId=$(node ./scripts/getFacebookId)
