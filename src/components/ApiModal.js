@@ -2,7 +2,8 @@ import React, { useState } from 'react'
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap'
 import { connect } from 'react-redux'
 import AsyncLoad from './AsyncLoad'
-import { getUsage } from '../services/api-middleware'
+import { getUsage } from '../services/apiMiddleware'
+import { getCurrentMonth } from '../services/dateHandlers'
 import Loading from './Loading'
 import PropTypes from 'prop-types'
 const mapStateToProps = ({
@@ -40,7 +41,13 @@ export const ApiModal = ({
         <AsyncLoad
           requiredObject={usage}
           onLoad={() =>
-            getUsage({ email, usagePlan, provider, token }).then(data => {
+            getUsage({
+              email,
+              usagePlan,
+              provider,
+              token,
+              ...getCurrentMonth()
+            }).then(data => {
               console.log(data)
               setUsage(data)
             })

@@ -36,6 +36,7 @@ script:
   - cd lambdas
   - echo "{\"GoogleClientID\":\"$googleClientId\", \"FacebookAppID\":\"$facebookAppId\"}" > clientInfo.json
   - npm install --only=prod
+  - npm test
   - cd ..
 
 after_success:

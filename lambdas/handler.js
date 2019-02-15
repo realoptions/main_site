@@ -1,6 +1,7 @@
 const customersController = require('./customers-controller.js')
 const AWS = require('aws-sdk')
 const apigateway = new AWS.APIGateway()
+module.exports.apigateway=apigateway
 const getBodyFromEvent=event=>JSON.parse(event.body)
 const {OAuth2Client} = require('google-auth-library')
 const {GoogleAppID:GOOGLE_APP_ID}=require('./clientInfo.json')
@@ -85,11 +86,8 @@ const authorize=(authorization, provider)=>{
     }
 }
 module.exports.authorize=(event, _context, callback)=>{
-    const {authorizationToken, methodArn}=event
+    const {authorizationToken}=event
     const [provider, authorization]=authorizationToken.split(" ")
-    console.log("this is authorization: ", authorization)
-    console.log("this is provider: ", provider)
-    console.log("this is methodArn: ", methodArn)
     return authorize(authorization, provider)
         .then(()=>{
             console.log('Request is authorized')
@@ -106,21 +104,21 @@ module.exports.createApiKeyAndSubscribe = (event, _context, callback) =>{
     const {customerId, usagePlanId}=getBodyFromEvent(event)
     const errHoc=err=>callback(null, errResponse(err))
     const successHoc=body=>callback(null, successResponse(body))
-    customersController.getApiKeyForCustomer(customerId, errHoc, (data) => {
+    customersController.getApiKeyForCustomer(apigateway, customerId, errHoc, (data) => {
         console.log(`Get Api Key data ${JSON.stringify(data)}`)
         if (data.items.length === 0) {
             console.log(`No API Key found for customer ${customerId}`)
-            customersController.createApiKey(customerId, errHoc, (createData) => {
-                console.log(`Create API Key data: ${createData}`)
+            customersController.createApiKey(apigateway, customerId, errHoc, (createData) => {
                 const {id:keyId, value:keyValue} = createData
                 console.log(`Got key ID ${keyId}`)
-                customersController.createUsagePlanKey(keyId, usagePlanId, errHoc, ()=>{
+                console.log(`Got key value ${keyValue}`)
+                customersController.createUsagePlanKey(apigateway, keyId, usagePlanId, errHoc, ()=>{
                     successHoc({keyId, keyValue})
                 })
             })
         } else {
             const {id:keyId, value:keyValue}  = data.items[0]
-            customersController.createUsagePlanKey(keyId, usagePlanId, errHoc, ()=>{
+            customersController.createUsagePlanKey(apigateway, keyId, usagePlanId, errHoc, ()=>{
                 successHoc({keyId, keyValue})
             })
         }
@@ -139,13 +137,12 @@ module.exports.getApiKey = (event, _context, callback) =>{
     const {customerId}=event.pathParameters
     const errHoc=err=>callback(null, errResponse(err))
     const successHoc=body=>callback(null, successResponse(body))
-    customersController.getApiKeyForCustomer(customerId, errHoc, (data) => {
+    customersController.getApiKeyForCustomer(apigateway, customerId, errHoc, (data) => {
         if (data.items.length === 0) {
-            errHoc('No API Key!')
-        } else {
-            const {value:keyValue, id:keyId}  = data.items[0]
-            successHoc({keyId, keyValue})
-        }
+            return errHoc('No API Key!')
+        } 
+        const {value:keyValue, id:keyId}  = data.items[0]
+        successHoc({keyId, keyValue})
     })
 }
 module.exports.getUsage = (event, _context, callback) =>{
@@ -153,7 +150,10 @@ module.exports.getUsage = (event, _context, callback) =>{
     const {end, start}=event.queryStringParameters
     const errHoc=err=>callback(null, errResponse(err))
     const successHoc=body=>callback(null, successResponse(body))
-    customersController.getApiKeyForCustomer(customerId, errHoc, (data) => {
+    customersController.getApiKeyForCustomer(apigateway, customerId, errHoc, (data) => {
+        if (data.items.length === 0) {
+            return errHoc('No API Key!')
+        }
         const keyId = data.items[0].id
         const params = {
             endDate: end,
@@ -164,11 +164,10 @@ module.exports.getUsage = (event, _context, callback) =>{
         }
         apigateway.getUsage(params, (err, usageData) => {
             if (err) {
-                errHoc(ee)
+                errHoc(err)
             } else {
                 successHoc(usageData)
             }
         })
-    })
-    
+    })    
 }
