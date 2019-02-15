@@ -41,7 +41,7 @@ module.exports.createUsagePlanKey=(apigateway, keyId, usagePlanId, error, callba
     })
 }
 
-const getApiKeyForCustomer=(apigateway, cognitoIdentityId, error, callback)=>{
+module.exports.getApiKeyForCustomer=(apigateway, cognitoIdentityId, error, callback)=>{
     console.log(`Getting API Key for customer  ${cognitoIdentityId}`)
     const params = {
         limit: 1,
@@ -51,25 +51,5 @@ const getApiKeyForCustomer=(apigateway, cognitoIdentityId, error, callback)=>{
     apigateway.getApiKeys(params, (err, data) => {
         if (err) error(err)
         else callback(data)
-    })
-}
-module.exports.getApiKeyForCustomer=getApiKeyForCustomer
-module.exports.getUsagePlansForCustomer=(apigateway, cognitoIdentityId, error, callback)=>{
-    console.log(`Getting API Key for customer ${cognitoIdentityId}`)
-
-    getApiKeyForCustomer(apigateway, cognitoIdentityId, error, (data) => {
-        if (data.items.length === 0) {
-            callback({data : {}})
-        } else {
-            const keyId = data.items[0].id
-            const params = {
-                keyId,
-                limit: 1000
-            }
-            apigateway.getUsagePlans(params, (err, usagePlansData) => {
-                if (err) error(err)
-                else callback(usagePlansData)
-            })
-        }
     })
 }

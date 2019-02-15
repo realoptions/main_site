@@ -61,6 +61,7 @@ const handleSocialLogin = ({
       if (!usagePlanId) {
         return Promise.reject('No applicable usage plan')
       }
+      console.log(usagePlanId)
       return Promise.all([
         setUsagePlan(usagePlanId),
         createApiKeyAndSubscribe({ email, usagePlanId, token, provider })

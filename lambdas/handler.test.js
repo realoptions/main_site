@@ -11,6 +11,7 @@ describe('createApiKeyAndSubscribe', ()=>{
         apigateway.getApiKeys=jest.fn((_a1, cb)=>cb(null, {items:[]}))
         apigateway.createApiKey=jest.fn((_a1, cb)=>cb(null, {id:'hello', value:'value'}))
         apigateway.createUsagePlanKey=jest.fn((_a1, cb)=>cb(null, {}))
+        apigateway.getUsagePlans=jest.fn((_a1, cb)=>cb(null, ['plan']))
         const event={
             body:JSON.stringify({
                 customerId:'123',
@@ -25,14 +26,40 @@ describe('createApiKeyAndSubscribe', ()=>{
             expect(apigateway.getApiKeys.mock.calls.length).toEqual(1)
             expect(apigateway.createApiKey.mock.calls.length).toEqual(1)
             expect(apigateway.createUsagePlanKey.mock.calls.length).toEqual(1)
+            expect(apigateway.getUsagePlans.mock.calls.length).toEqual(0)
             done()
         })
         
     })
-    it('returns api key if api key exists', done=>{
+    it('returns api key if api key exists and already subscribed', done=>{
         apigateway.getApiKeys=jest.fn((_a1, cb)=>cb(null, {items:[{id:'hello', value:'value'}]}))
         apigateway.createApiKey=jest.fn((_a1, cb)=>cb(null, {id:'hello', value:'value'}))
         apigateway.createUsagePlanKey=jest.fn((_a1, cb)=>cb(null, {}))
+        apigateway.getUsagePlans=jest.fn((_a1, cb)=>cb(null, ['plan']))
+        const event={
+            body:JSON.stringify({
+                customerId:'123',
+                usagePlanId:'345'
+            })         
+        }
+        createApiKeyAndSubscribe(event, null, (_err, result)=>{
+            const pr=JSON.parse(result.body)
+            const {keyId, keyValue}=pr
+            expect(keyId).toEqual('hello')
+            expect(keyValue).toEqual('value')
+            expect(apigateway.getApiKeys.mock.calls.length).toEqual(1)
+            expect(apigateway.createApiKey.mock.calls.length).toEqual(0)
+            expect(apigateway.createUsagePlanKey.mock.calls.length).toEqual(0)
+            expect(apigateway.getUsagePlans.mock.calls.length).toEqual(1)
+            done()
+        })
+        
+    })
+    it('returns api key if api key exists and not subscribed', done=>{
+        apigateway.getApiKeys=jest.fn((_a1, cb)=>cb(null, {items:[{id:'hello', value:'value'}]}))
+        apigateway.createApiKey=jest.fn((_a1, cb)=>cb(null, {id:'hello', value:'value'}))
+        apigateway.createUsagePlanKey=jest.fn((_a1, cb)=>cb(null, {}))
+        apigateway.getUsagePlans=jest.fn((_a1, cb)=>cb(null, []))
         const event={
             body:JSON.stringify({
                 customerId:'123',
@@ -47,6 +74,7 @@ describe('createApiKeyAndSubscribe', ()=>{
             expect(apigateway.getApiKeys.mock.calls.length).toEqual(1)
             expect(apigateway.createApiKey.mock.calls.length).toEqual(0)
             expect(apigateway.createUsagePlanKey.mock.calls.length).toEqual(1)
+            expect(apigateway.getUsagePlans.mock.calls.length).toEqual(1)
             done()
         })
         
@@ -55,6 +83,8 @@ describe('createApiKeyAndSubscribe', ()=>{
         apigateway.getApiKeys=jest.fn((_a1, cb)=>cb('error', null))
         apigateway.createApiKey=jest.fn((_a1, cb)=>cb(null, {id:'hello', value:'value'}))
         apigateway.createUsagePlanKey=jest.fn((_a1, cb)=>cb(null, {}))
+        apigateway.getUsagePlans=jest.fn((_a1, cb)=>cb(null, []))
+
         const event={
             body:JSON.stringify({
                 customerId:'123',
@@ -67,6 +97,7 @@ describe('createApiKeyAndSubscribe', ()=>{
             expect(apigateway.getApiKeys.mock.calls.length).toEqual(1)
             expect(apigateway.createApiKey.mock.calls.length).toEqual(0)
             expect(apigateway.createUsagePlanKey.mock.calls.length).toEqual(0)
+            expect(apigateway.getUsagePlans.mock.calls.length).toEqual(0)
             done()
         })
         
@@ -75,6 +106,8 @@ describe('createApiKeyAndSubscribe', ()=>{
         apigateway.getApiKeys=jest.fn((_a1, cb)=>cb(null, {items:[]}))
         apigateway.createApiKey=jest.fn((_a1, cb)=>cb('error', null))
         apigateway.createUsagePlanKey=jest.fn((_a1, cb)=>cb(null, {}))
+        apigateway.getUsagePlans=jest.fn((_a1, cb)=>cb(null, []))
+
         const event={
             body:JSON.stringify({
                 customerId:'123',
@@ -87,6 +120,7 @@ describe('createApiKeyAndSubscribe', ()=>{
             expect(apigateway.getApiKeys.mock.calls.length).toEqual(1)
             expect(apigateway.createApiKey.mock.calls.length).toEqual(1)
             expect(apigateway.createUsagePlanKey.mock.calls.length).toEqual(0)
+            expect(apigateway.getUsagePlans.mock.calls.length).toEqual(0)
             done()
         })
         
@@ -94,7 +128,9 @@ describe('createApiKeyAndSubscribe', ()=>{
     it('handles error at third function', done=>{
         apigateway.getApiKeys=jest.fn((_a1, cb)=>cb(null, {items:[]}))
         apigateway.createApiKey=jest.fn((_a1, cb)=>cb(null, {id:'hello', value:'value'}))
-        apigateway.createUsagePlanKey=jest.fn((_a1, cb)=>cb('error', {}))
+        apigateway.createUsagePlanKey=jest.fn((_a1, cb)=>cb('error', {}))        
+        apigateway.getUsagePlans=jest.fn((_a1, cb)=>cb(null, []))
+
         const event={
             body:JSON.stringify({
                 customerId:'123',
@@ -107,6 +143,7 @@ describe('createApiKeyAndSubscribe', ()=>{
             expect(apigateway.getApiKeys.mock.calls.length).toEqual(1)
             expect(apigateway.createApiKey.mock.calls.length).toEqual(1)
             expect(apigateway.createUsagePlanKey.mock.calls.length).toEqual(1)
+            expect(apigateway.getUsagePlans.mock.calls.length).toEqual(0)
             done()
         })
         
@@ -115,6 +152,8 @@ describe('createApiKeyAndSubscribe', ()=>{
         apigateway.getApiKeys=jest.fn((_a1, cb)=>cb(null, {items:[{id:'hello', value:'value'}]}))
         apigateway.createApiKey=jest.fn((_a1, cb)=>cb(null, {id:'hello', value:'value'}))
         apigateway.createUsagePlanKey=jest.fn((_a1, cb)=>cb('error', {}))
+        apigateway.getUsagePlans=jest.fn((_a1, cb)=>cb(null, []))
+
         const event={
             body:JSON.stringify({
                 customerId:'123',
@@ -127,6 +166,30 @@ describe('createApiKeyAndSubscribe', ()=>{
             expect(apigateway.getApiKeys.mock.calls.length).toEqual(1)
             expect(apigateway.createApiKey.mock.calls.length).toEqual(0)
             expect(apigateway.createUsagePlanKey.mock.calls.length).toEqual(1)
+            expect(apigateway.getUsagePlans.mock.calls.length).toEqual(1)
+            done()
+        })
+        
+    })
+    it('handles error at fourth function', done=>{
+        apigateway.getApiKeys=jest.fn((_a1, cb)=>cb(null, {items:[{id:'hello', value:'value'}]}))
+        apigateway.createApiKey=jest.fn((_a1, cb)=>cb(null, {id:'hello', value:'value'}))
+        apigateway.createUsagePlanKey=jest.fn((_a1, cb)=>cb(null, {}))
+        apigateway.getUsagePlans=jest.fn((_a1, cb)=>cb('error', ))
+
+        const event={
+            body:JSON.stringify({
+                customerId:'123',
+                usagePlanId:'345'
+            })         
+        }
+        createApiKeyAndSubscribe(event, null, (_err, result)=>{
+            const pr=JSON.parse(result.body)
+            expect(pr.err).toEqual('error')
+            expect(apigateway.getApiKeys.mock.calls.length).toEqual(1)
+            expect(apigateway.createApiKey.mock.calls.length).toEqual(0)
+            expect(apigateway.createUsagePlanKey.mock.calls.length).toEqual(0)
+            expect(apigateway.getUsagePlans.mock.calls.length).toEqual(1)
             done()
         })
         

@@ -118,9 +118,18 @@ module.exports.createApiKeyAndSubscribe = (event, _context, callback) =>{
             })
         } else {
             const {id:keyId, value:keyValue}  = data.items[0]
-            customersController.createUsagePlanKey(apigateway, keyId, usagePlanId, errHoc, ()=>{
-                successHoc({keyId, keyValue})
+            apigateway.getUsagePlans({limit:500, keyId}, (err, subscribedPlans)=>{
+                if(err){
+                    return callback(null, errResponse(err))
+                }
+                if(subscribedPlans.length===0){
+                    return customersController.createUsagePlanKey(apigateway, keyId, usagePlanId, errHoc, ()=>{
+                        successHoc({keyId, keyValue})
+                    })
+                }
+                return successHoc({keyId, keyValue})
             })
+            
         }
     })
 }
