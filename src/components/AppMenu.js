@@ -25,7 +25,7 @@ import { setUsagePlan } from '../actions/usagePlan'
 import {
   createApiKeyAndSubscribe,
   getUsagePlans
-} from '../services/api-middleware'
+} from '../services/apiMiddleware'
 
 //exported for testing
 export const getApplicablePlan = plans =>

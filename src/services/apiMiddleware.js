@@ -25,8 +25,8 @@ export const getApiKey = ({ email, token, provider }) =>
       Authorization: `${provider} ${token}`
     })
   }).then(jsonRes)
-export const getUsage = ({ email, usagePlanId, token, provider }) =>
-  fetch(`${url}/usageplan/${email}/${usagePlanId}`, {
+export const getUsage = ({ email, usagePlanId, token, provider, start, end }) =>
+  fetch(`${url}/usageplan/${email}/${usagePlanId}?end=${end}&start=${start}`, {
     headers: new Headers({
       Authorization: `${provider} ${token}`
     })

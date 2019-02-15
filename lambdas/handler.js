@@ -86,7 +86,7 @@ const authorize=(authorization, provider)=>{
     }
 }
 module.exports.authorize=(event, _context, callback)=>{
-    const {authorizationToken, methodArn}=event
+    const {authorizationToken}=event
     const [provider, authorization]=authorizationToken.split(" ")
     return authorize(authorization, provider)
         .then(()=>{
@@ -109,9 +109,9 @@ module.exports.createApiKeyAndSubscribe = (event, _context, callback) =>{
         if (data.items.length === 0) {
             console.log(`No API Key found for customer ${customerId}`)
             customersController.createApiKey(apigateway, customerId, errHoc, (createData) => {
-                console.log(`Create API Key data: ${createData}`)
                 const {id:keyId, value:keyValue} = createData
                 console.log(`Got key ID ${keyId}`)
+                console.log(`Got key value ${keyValue}`)
                 customersController.createUsagePlanKey(apigateway, keyId, usagePlanId, errHoc, ()=>{
                     successHoc({keyId, keyValue})
                 })
@@ -139,11 +139,10 @@ module.exports.getApiKey = (event, _context, callback) =>{
     const successHoc=body=>callback(null, successResponse(body))
     customersController.getApiKeyForCustomer(apigateway, customerId, errHoc, (data) => {
         if (data.items.length === 0) {
-            errHoc('No API Key!')
-        } else {
-            const {value:keyValue, id:keyId}  = data.items[0]
-            successHoc({keyId, keyValue})
-        }
+            return errHoc('No API Key!')
+        } 
+        const {value:keyValue, id:keyId}  = data.items[0]
+        successHoc({keyId, keyValue})
     })
 }
 module.exports.getUsage = (event, _context, callback) =>{
@@ -152,6 +151,9 @@ module.exports.getUsage = (event, _context, callback) =>{
     const errHoc=err=>callback(null, errResponse(err))
     const successHoc=body=>callback(null, successResponse(body))
     customersController.getApiKeyForCustomer(apigateway, customerId, errHoc, (data) => {
+        if (data.items.length === 0) {
+            return errHoc('No API Key!')
+        }
         const keyId = data.items[0].id
         const params = {
             endDate: end,
@@ -162,7 +164,7 @@ module.exports.getUsage = (event, _context, callback) =>{
         }
         apigateway.getUsage(params, (err, usageData) => {
             if (err) {
-                errHoc(ee)
+                errHoc(err)
             } else {
                 successHoc(usageData)
             }
