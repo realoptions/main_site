@@ -32,33 +32,21 @@ functions:
           method: get
           cors: true
           authorizer: authorizerFunc
-  getApiKey:
-    handler: lambdas/handler.getApiKey 
-    events:
-      - http:
-          path: /apikey/{customerId}
-          method: get
-          cors: true
-          authorizer: authorizerFunc
-          request:
-            parameters:
-              paths:
-                customerId: true
   getUsage:
     handler: lambdas/handler.getApiKey 
     events:
       - http:
-          path: /usage/{customerId}/{usagePlanId}
+          path: /usage/{usagePlanId}
           method: get
           cors: true
           authorizer: authorizerFunc
           request:
             parameters:
               paths:
-                customerId: true
                 usagePlanId: true
               querystrings:
                 end: true
                 start: true
+                customerId: true
   authorizerFunc:
     handler: lambdas/handler.authorize

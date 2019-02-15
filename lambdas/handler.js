@@ -142,21 +142,10 @@ module.exports.getUsagePlans = (_event, _context, callback) =>{
         return callback(null, successResponse(catalog))
     })
 }
-module.exports.getApiKey = (event, _context, callback) =>{
-    const {customerId}=event.pathParameters
-    const errHoc=err=>callback(null, errResponse(err))
-    const successHoc=body=>callback(null, successResponse(body))
-    customersController.getApiKeyForCustomer(apigateway, customerId, errHoc, (data) => {
-        if (data.items.length === 0) {
-            return errHoc('No API Key!')
-        } 
-        const {value:keyValue, id:keyId}  = data.items[0]
-        successHoc({keyId, keyValue})
-    })
-}
+
 module.exports.getUsage = (event, _context, callback) =>{
-    const {customerId, usagePlanId}=event.pathParameters
-    const {end, start}=event.queryStringParameters
+    const {usagePlanId}=event.pathParameters
+    const {customerId, end, start}=event.queryStringParameters
     const errHoc=err=>callback(null, errResponse(err))
     const successHoc=body=>callback(null, successResponse(body))
     customersController.getApiKeyForCustomer(apigateway, customerId, errHoc, (data) => {

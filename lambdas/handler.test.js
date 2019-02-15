@@ -1,7 +1,6 @@
 const {
     createApiKeyAndSubscribe, 
     getUsagePlans,
-    getApiKey,
     getUsage,
     apigateway
 }=require('./handler')
@@ -216,55 +215,6 @@ describe('getUsagePlans', ()=>{
         })
     })
     
-})
-
-describe('getApiKey', ()=>{
-    it('returns api key if it exists', done=>{
-        apigateway.getApiKeys=jest.fn((_a1, cb)=>cb(null, {items:[{id:'hello', value:'value'}]}))
-        const event={
-            pathParameters:{
-                customerId:'123',
-            }         
-        }
-        getApiKey(event, null, (_err, result)=>{
-            const pr=JSON.parse(result.body)
-            const {keyValue, keyId}=pr
-            expect(keyValue).toEqual('value')
-            expect(keyId).toEqual('hello')
-            expect(apigateway.getApiKeys.mock.calls.length).toEqual(1)
-            done()
-        })
-    })
-    it('errors if api key does not exists', done=>{
-        apigateway.getApiKeys=jest.fn((_a1, cb)=>cb(null, {items:[]}))
-        const event={
-            pathParameters:{
-                customerId:'123',
-            }         
-        }
-        getApiKey(event, null, (_err, result)=>{
-            const pr=JSON.parse(result.body)
-            const {err}=pr
-            expect(err).toEqual('No API Key!')
-            expect(apigateway.getApiKeys.mock.calls.length).toEqual(1)
-            done()
-        })
-    })
-    it('handles error', done=>{
-        apigateway.getApiKeys=jest.fn((_a1, cb)=>cb('error', null))
-        const event={
-            pathParameters:{
-                customerId:'123',
-            }         
-        }
-        getApiKey(event, null, (_err, result)=>{
-            const pr=JSON.parse(result.body)
-            const {err}=pr
-            expect(err).toEqual('error')
-            expect(apigateway.getApiKeys.mock.calls.length).toEqual(1)
-            done()
-        })
-    })
 })
 
 describe('getUsage', ()=>{
