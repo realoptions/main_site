@@ -35,8 +35,10 @@ script:
   - cd ..
   - cd lambdas
   - echo "{\"GoogleClientID\":\"$googleClientId\", \"FacebookAppID\":\"$facebookAppId\"}" > clientInfo.json
-  - npm install --only=prod
-  - npm test
+  - npm ci #to install dev dependencies includes jest
+  - npm test 
+  - rm -r node_modules #to uninstall dev dependencies for smaller lambda
+  - npm ci --only=production #does not includes jest
   - cd ..
 
 after_success:
