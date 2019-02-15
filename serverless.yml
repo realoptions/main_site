@@ -33,7 +33,7 @@ functions:
           cors: true
           authorizer: authorizerFunc
   getUsage:
-    handler: lambdas/handler.getApiKey 
+    handler: lambdas/handler.getUsage 
     events:
       - http:
           path: /usage/{usagePlanId}
