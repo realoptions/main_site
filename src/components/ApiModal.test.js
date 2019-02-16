@@ -7,7 +7,7 @@ it('renders without error', () => {
   const modal = shallow(<ApiModal />)
   expect(modal).toBeDefined()
 })
-it('renders button when signed in', () => {
+it('renders open button and copy button when signed in', () => {
   const modal = shallow(
     <ApiModal
       email="myemail"
@@ -21,9 +21,9 @@ it('renders button when signed in', () => {
       apiKey="key"
     />
   )
-  expect(modal.find(Button).length).toEqual(1)
+  expect(modal.find(Button).length).toEqual(2)
 })
-it('does not render button when notsigned in', () => {
+it('only shows copy button when not signed in', () => {
   const modal = shallow(<ApiModal />)
-  expect(modal.find(Button).length).toEqual(0)
+  expect(modal.find(Button).length).toEqual(1)
 })
