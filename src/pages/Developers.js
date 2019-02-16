@@ -5,13 +5,13 @@ import ApiModal from '../components/ApiModal'
 
 const paddingTop = { paddingTop: 20 }
 const style = { float: 'left' }
-export default () => [
+export default () => (
   <Container key="container">
     <Row>
       <Col style={paddingTop}>
         <ApiModal style={style} />
+        <Swagger key="swagger" />
       </Col>
     </Row>
-  </Container>,
-  <Swagger key="swagger" />
-]
+  </Container>
+)

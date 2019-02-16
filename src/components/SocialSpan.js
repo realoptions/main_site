@@ -42,7 +42,7 @@ GoogleItem.propTypes = {
 export const FacebookItem = ({ children, onLogin, ...props }) => (
   <FacebookLogin
     appId={FACEBOOK_APP_ID}
-    autoLoad={true}
+    //autoLoad={true}
     fields="name,email,picture"
     callback={onLogin(facebookHoc)}
     render={({ onClick }) => (
@@ -62,7 +62,6 @@ const logoutFB = () =>
     if (window.FB && window.FB.logout) {
       try {
         window.FB.logout(response => {
-          console.log(response)
           res(response)
         })
       } catch (err) {
