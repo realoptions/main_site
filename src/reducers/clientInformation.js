@@ -1,11 +1,5 @@
 import { UPDATE_CLIENT_INFORMATION } from '../actions/constants'
-
-const defaultClient = {
-  email: '',
-  profilePicture: '',
-  token: '',
-  provider: ''
-}
+import { defaultClient } from '../actions/clientInformation'
 
 export default (state = defaultClient, action) => {
   switch (action.type) {

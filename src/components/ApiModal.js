@@ -29,33 +29,37 @@ export const ApiModal = ({
 }) => {
   const [isOpen, toggleOpen] = useState(false)
   const [usage, setUsage] = useState('')
+  const toggle = () => {
+    toggleOpen(!isOpen)
+    setUsage('')
+  }
+  const onLoad = () =>
+    getUsage({
+      email,
+      usagePlanId: usagePlan.id,
+      provider,
+      token,
+      ...getCurrentMonth()
+    }).then(({ items }) => {
+      setUsage(
+        `Used ${convertUsage(items)} out of ${
+          usagePlan.quota.limit
+        } per ${usagePlan.quota.period.toLowerCase()}.`
+      )
+    })
   return [
     email && usagePlan && apiKey ? (
-      <Button onClick={() => toggleOpen(!isOpen)} key="button" style={style}>
+      <Button onClick={toggle} key="button" style={style}>
         View API Key
       </Button>
     ) : null,
-    <Modal key="modal" isOpen={isOpen} toggle={() => toggleOpen(!isOpen)}>
+    <Modal key="modal" isOpen={isOpen} toggle={toggle}>
       <ModalHeader>API Key</ModalHeader>
       <ModalBody>
         {apiKey}
         <AsyncLoad
           requiredObject={usage}
-          onLoad={() =>
-            getUsage({
-              email,
-              usagePlanId: usagePlan.id,
-              provider,
-              token,
-              ...getCurrentMonth()
-            }).then(data => {
-              setUsage(
-                `Used ${convertUsage(data.items)} out of ${
-                  usagePlan.quota.limit
-                } per ${usagePlan.quota.period.toLowerCase()}.`
-              )
-            })
-          }
+          onLoad={onLoad}
           loading={Loading}
           render={() => (
             <>

@@ -1,5 +1,4 @@
 import React from 'react'
-//import SocialLogin from 'react-social-login'
 import GoogleLogin from 'react-google-login'
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
 import { DropdownItem } from 'reactstrap'
@@ -59,9 +58,8 @@ FacebookItem.propTypes = {
 }
 
 const logoutFB = () =>
-  new Promise((res, rej) => {
+  new Promise(res => {
     if (window.FB && window.FB.logout) {
-      console.log(window.FB)
       try {
         window.FB.logout(response => {
           console.log(response)
@@ -70,12 +68,7 @@ const logoutFB = () =>
       } catch (err) {
         console.log(err)
         res()
-        //rej(err)
       }
-      /*response=>{
-      console.log(response)
-      res(response)
-    }).catch(err=>console.log(err))*/
     } else {
       res()
     }
