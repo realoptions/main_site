@@ -16,7 +16,7 @@ export default () => [
         For decades, the same financial models have been programmed and
         re-programmed at every bank. We are changing that. Combining
         state-of-the-art modeling with modern REST APIs, our models as a service
-        provides robust, scalable infrastructure at a bargain price.
+        provides robust, scalable infrastructure.
       </p>
     </Container>
   </Jumbotron>,
