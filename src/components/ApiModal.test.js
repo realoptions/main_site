@@ -9,7 +9,17 @@ it('renders without error', () => {
 })
 it('renders button when signed in', () => {
   const modal = shallow(
-    <ApiModal email="myemail" usagePlan="usage" apiKey="key" />
+    <ApiModal
+      email="myemail"
+      usagePlan={{
+        id: 'hello',
+        quota: {
+          limit: 5,
+          period: 'DAY'
+        }
+      }}
+      apiKey="key"
+    />
   )
   expect(modal.find(Button).length).toEqual(1)
 })

@@ -6,6 +6,7 @@ import { getUsage } from '../services/apiMiddleware'
 import { getCurrentMonth } from '../services/dateHandlers'
 import Loading from './Loading'
 import PropTypes from 'prop-types'
+import { convertUsage } from '../services/usagePlan'
 const mapStateToProps = ({
   clientInformation: { email, provider, token },
   usagePlan,
@@ -27,7 +28,7 @@ export const ApiModal = ({
   usagePlan
 }) => {
   const [isOpen, toggleOpen] = useState(false)
-  const [usage, setUsage] = useState(false)
+  const [usage, setUsage] = useState('')
   return [
     email && usagePlan && apiKey ? (
       <Button onClick={() => toggleOpen(!isOpen)} key="button" style={style}>
@@ -43,17 +44,25 @@ export const ApiModal = ({
           onLoad={() =>
             getUsage({
               email,
-              usagePlanId: usagePlan,
+              usagePlanId: usagePlan.id,
               provider,
               token,
               ...getCurrentMonth()
             }).then(data => {
-              console.log(data)
-              setUsage(data)
+              setUsage(
+                `Used ${convertUsage(data.items)} out of ${
+                  usagePlan.quota.limit
+                } per ${usagePlan.quota.period.toLowerCase()}.`
+              )
             })
           }
           loading={Loading}
-          render={() => <span>{usage}</span>}
+          render={() => (
+            <>
+              <br />
+              <span>{usage}</span>
+            </>
+          )}
         />
       </ModalBody>
     </Modal>
@@ -63,6 +72,12 @@ ApiModal.propTypes = {
   style: PropTypes.object,
   email: PropTypes.string,
   apiKey: PropTypes.string,
-  usagePlan: PropTypes.string
+  usagePlan: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    quota: PropTypes.shape({
+      limit: PropTypes.number.isRequired,
+      period: PropTypes.string.isRequired
+    }).isRequired
+  })
 }
 export default connect(mapStateToProps)(ApiModal)

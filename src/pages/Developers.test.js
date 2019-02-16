@@ -16,7 +16,13 @@ it('fully mounts', () => {
       provider: 'google',
       token: 'hello'
     },
-    usagePlan: 'hello',
+    usagePlan: {
+      id: 'hello',
+      quota: {
+        limit: 5,
+        period: 'DAY'
+      }
+    },
     apiKey: 'hello'
   }
   const store = mockStore(initialState)

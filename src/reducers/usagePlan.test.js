@@ -3,7 +3,7 @@ import { UPDATE_USAGE_PLAN } from '../actions/constants'
 
 it('sets usageplan to empty string when no state', () => {
   const state = usagePlan(undefined, { type: 'test' })
-  expect(state).toEqual('')
+  expect(state).toEqual(null)
 })
 it('sets usageplan to string when action provided and no state', () => {
   const state = usagePlan(undefined, {

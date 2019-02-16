@@ -18,7 +18,6 @@ import { GoogleItem, FacebookItem, logout } from './SocialSpan'
 import Logo from '../Logo.js'
 import { HOME, DEVELOPERS, PRODUCTS, DEMO } from '../routes/names'
 import { menuBarHeight } from '../styles/menu'
-//import { init } from '../services/auth'
 import { setApiKey } from '../actions/apiKey'
 import { setClientInformation } from '../actions/clientInformation'
 import { setUsagePlan } from '../actions/usagePlan'
@@ -26,11 +25,7 @@ import {
   createApiKeyAndSubscribe,
   getUsagePlans
 } from '../services/apiMiddleware'
-
-const idOrUndefined = obj => (obj ? obj.id : undefined)
-//exported for testing
-export const getApplicablePlan = plans =>
-  idOrUndefined(plans.find(v => !v.name.includes('Admin')))
+import { getApplicablePlan } from '../services/usagePlan'
 
 const avatarStyle = {
   verticalAlign: 'middle',
@@ -45,10 +40,7 @@ const handleSocialLogin = ({
   setApiKey,
   setClientInformation
 }) => providerHoc => res => {
-  console.log(res)
   const { email, profilePicture, token, provider } = providerHoc(res)
-  console.log(email)
-  console.log(profilePicture)
   setClientInformation({
     email,
     provider,
@@ -57,14 +49,18 @@ const handleSocialLogin = ({
   })
   return getUsagePlans({ token, provider })
     .then(({ items }) => {
-      const usagePlanId = getApplicablePlan(items)
-      if (!usagePlanId) {
+      const usagePlan = getApplicablePlan(items)
+      if (!usagePlan) {
         return Promise.reject('No applicable usage plan')
       }
-      console.log(usagePlanId)
       return Promise.all([
-        setUsagePlan(usagePlanId),
-        createApiKeyAndSubscribe({ email, usagePlanId, token, provider })
+        setUsagePlan(usagePlan),
+        createApiKeyAndSubscribe({
+          email,
+          usagePlanId: usagePlan.id,
+          token,
+          provider
+        })
       ])
     })
     .then(([_, { keyValue }]) => setApiKey(keyValue))
@@ -72,7 +68,7 @@ const handleSocialLogin = ({
 }
 
 const reset = ({ setUsagePlan, setApiKey, setClientInformation }) => () => {
-  setUsagePlan('')
+  setUsagePlan() //back to default
   setApiKey('')
   setClientInformation() //back to default
 }

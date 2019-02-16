@@ -33,4 +33,4 @@ export const getUsage = ({ email, usagePlanId, token, provider, start, end }) =>
         Authorization: `${provider} ${token}`
       })
     }
-  ).then(jsonRes) //returns {data:}
+  ).then(jsonRes) //returns {}
