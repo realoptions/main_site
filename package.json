@@ -8,7 +8,7 @@
     "gh-pages": "^2.0.0",
     "node-sass": "^4.9.3",
     "query-string": "^6.2.0",
-    "react": "^16.8.1",
+    "react": "^16.8.2",
     "react-dom": "^16.8.1",
     "react-facebook-login": "^4.1.1",
     "react-google-login": "^5.0.2",
@@ -17,7 +17,7 @@
     "react-scripts": "^2.1.5",
     "reactstrap": "^6.4.0",
     "redux": "^4.0.0",
-    "swagger-ui": "^3.20.7"
+    "swagger-ui": "^3.20.8"
   },
   "GoogleClientID": "117231459701-omruogcepkcm1kfanp39g94n5qjptcc9.apps.googleusercontent.com",
   "FacebookAppID": "1672160866222878",
