@@ -7,6 +7,7 @@ import { getCurrentMonth } from '../services/dateHandlers'
 import Loading from './Loading'
 import PropTypes from 'prop-types'
 import { convertUsage } from '../services/usagePlan'
+import { copyToClipboard } from '../services/copyToClipboard'
 const mapStateToProps = ({
   clientInformation: { email, provider, token },
   usagePlan,
@@ -29,6 +30,7 @@ export const ApiModal = ({
 }) => {
   const [isOpen, toggleOpen] = useState(false)
   const [usage, setUsage] = useState('')
+  const [copyText, setCopied] = useState('Copy to clipboard')
   const toggle = () => {
     toggleOpen(!isOpen)
     setUsage('')
@@ -42,11 +44,15 @@ export const ApiModal = ({
       ...getCurrentMonth()
     }).then(({ items }) => {
       setUsage(
-        `Used ${convertUsage(items)} out of ${
+        `Used ${convertUsage(items)} API calls out of ${
           usagePlan.quota.limit
         } per ${usagePlan.quota.period.toLowerCase()}.`
       )
     })
+  const copyKey = () => {
+    copyToClipboard(apiKey)
+    setCopied('Copied!')
+  }
   return [
     email && usagePlan && apiKey ? (
       <Button onClick={toggle} key="button" style={style}>
@@ -57,6 +63,8 @@ export const ApiModal = ({
       <ModalHeader>API Key</ModalHeader>
       <ModalBody>
         {apiKey}
+        <br />
+        <Button onClick={copyKey}>{copyText}</Button>
         <AsyncLoad
           requiredObject={usage}
           onLoad={onLoad}
