@@ -10,22 +10,23 @@ import {
   Nav,
   NavItem,
   DropdownToggle,
+  DropdownItem,
   DropdownMenu,
   UncontrolledDropdown,
   NavLink
 } from 'reactstrap'
-import { GoogleItem, FacebookItem, logout } from './SocialSpan'
+import {
+  GoogleItem,
+  FacebookItem,
+  logout,
+  handleSocialLogin
+} from './SocialSpan'
 import Logo from '../Logo.js'
 import { HOME, DEVELOPERS, PRODUCTS, DEMO } from '../routes/names'
 import { menuBarHeight } from '../styles/menu'
 import { setApiKey } from '../actions/apiKey'
 import { setClientInformation } from '../actions/clientInformation'
 import { setUsagePlan } from '../actions/usagePlan'
-import {
-  createApiKeyAndSubscribe,
-  getUsagePlans
-} from '../services/apiMiddleware'
-import { getApplicablePlan } from '../services/usagePlan'
 
 const avatarStyle = {
   verticalAlign: 'middle',
@@ -34,38 +35,6 @@ const avatarStyle = {
   borderRadius: '50%'
 }
 const Avatar = ({ url }) => <img src={url} style={avatarStyle} alt="profile" />
-
-const handleSocialLogin = ({
-  setUsagePlan,
-  setApiKey,
-  setClientInformation
-}) => providerHoc => res => {
-  const { email, profilePicture, token, provider } = providerHoc(res)
-  setClientInformation({
-    email,
-    provider,
-    token,
-    profilePicture
-  })
-  return getUsagePlans({ token, provider })
-    .then(({ items }) => {
-      const usagePlan = getApplicablePlan(items)
-      if (!usagePlan) {
-        return Promise.reject('No applicable usage plan')
-      }
-      return Promise.all([
-        setUsagePlan(usagePlan),
-        createApiKeyAndSubscribe({
-          email,
-          usagePlanId: usagePlan.id,
-          token,
-          provider
-        })
-      ])
-    })
-    .then(([_, { keyValue }]) => setApiKey(keyValue))
-    .catch(err => console.log(err))
-}
 
 const reset = ({ setUsagePlan, setApiKey, setClientInformation }) => () => {
   setUsagePlan() //back to default
@@ -129,10 +98,22 @@ export const AppMenu = ({
                 Log In
               </DropdownToggle>
               <DropdownMenu right>
-                <GoogleItem onLogin={onLogin}>Login with Google</GoogleItem>
-                <FacebookItem onLogin={onLogin}>
-                  Login with Facebook
-                </FacebookItem>
+                <GoogleItem
+                  onLogin={onLogin}
+                  render={({ onClick }) => (
+                    <DropdownItem onClick={onClick} tag="span">
+                      Login with Google
+                    </DropdownItem>
+                  )}
+                />
+                <FacebookItem
+                  onLogin={onLogin}
+                  render={({ onClick }) => (
+                    <DropdownItem onClick={onClick} tag="span">
+                      Login with Facebook
+                    </DropdownItem>
+                  )}
+                />
               </DropdownMenu>
             </UncontrolledDropdown>
           )}
@@ -140,8 +121,8 @@ export const AppMenu = ({
             <NavItem>
               <NavLink
                 onClick={() => logout(provider).then(resetAll)}
-                tag={Link}
                 to="#"
+                tag={Link}
               >
                 Sign Out
               </NavLink>
