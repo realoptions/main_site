@@ -17,7 +17,7 @@
     "react-scripts": "^3.0.1",
     "reactstrap": "^6.4.0",
     "redux": "^4.0.0",
-    "swagger-ui": "^3.22.2"
+    "swagger-ui": "^3.23.0"
   },
   "GoogleClientID": "117231459701-omruogcepkcm1kfanp39g94n5qjptcc9.apps.googleusercontent.com",
   "FacebookAppID": "1672160866222878",
