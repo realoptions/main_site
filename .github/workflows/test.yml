@@ -1,0 +1,17 @@
+name: test
+on: [push]
+
+jobs:
+    prerelease:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v1
+            - name: test coverage
+              run: |
+                npm ci 
+                npm test -- --coverage
+                cd lambdas
+                npm ci
+                npm test -- --coverage
+                cd ..
+                bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }}

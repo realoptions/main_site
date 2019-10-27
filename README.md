@@ -2,8 +2,8 @@
 | :---------------: | :-----------------: |
 | ![lin-badge]      | ![cov-badge]        |
 
-[lin-badge]: https://travis-ci.org/realoptions/main_site.svg "Travis build status"
-[lin-link]:  https://travis-ci.org/realoptions/main_site "Travis build status"
+[lin-badge]: https://github.com/realoptions/main_site/workflows/test/badge.svg
+[lin-link]:  https://github.com/realoptions/main_site/actions
 [cov-badge]: https://codecov.io/gh/realoptions/main_site/branch/master/graph/badge.svg
 [cov-link]:  https://codecov.io/gh/realoptions/main_site
 
