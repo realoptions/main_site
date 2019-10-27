@@ -12,10 +12,10 @@ jobs:
             - name: test
               run: |
                 npm ci 
-                npm test -- --coverage
+                npm test
                 cd lambdas
                 npm ci
-                npm test -- --coverage
+                npm test
                 cd ..
             - name: setup for deploy
               run: |

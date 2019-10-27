@@ -6,7 +6,7 @@
   "dependencies": {
     "bootstrap": "^4.3.1",
     "gh-pages": "^2.0.0",
-    "node-sass": "^4.9.3",
+    "node-sass": "^4.13.0",
     "query-string": "^6.2.0",
     "react": "^16.8.2",
     "react-dom": "^16.8.1",
@@ -17,7 +17,7 @@
     "react-scripts": "^3.0.1",
     "reactstrap": "^6.4.0",
     "redux": "^4.0.0",
-    "swagger-ui": "^3.23.0"
+    "swagger-ui": "^3.24.0"
   },
   "GoogleClientID": "117231459701-omruogcepkcm1kfanp39g94n5qjptcc9.apps.googleusercontent.com",
   "FacebookAppID": "1672160866222878",
