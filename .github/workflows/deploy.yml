@@ -47,8 +47,7 @@ jobs:
                 rm -r node_modules
                 npm ci
                 cd ..
-                npm install -g serverless
-                sls deploy
+                npx serverless deploy
               env:
                 CI: true
                 AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
