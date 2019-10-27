@@ -15,3 +15,5 @@ jobs:
                 npm test -- --coverage
                 cd ..
                 bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }}
+              env:
+                CI: true
