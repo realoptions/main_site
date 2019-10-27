@@ -18,6 +18,8 @@ jobs:
                 npm ci
                 npm test
                 cd ..
+              env:
+                CI: true
             - name: setup for deploy
               run: |
                 aws configure set region us-east-1
