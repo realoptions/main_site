@@ -22,7 +22,6 @@ jobs:
                 CI: true
             - name: setup for deploy
               run: |
-                aws configure set region us-east-1
                 npm ci
                 url=$(node ./scripts/getApiUrl)
                 googleClientId=$(node ./scripts/getGoogleId)
@@ -47,6 +46,7 @@ jobs:
                 rm -r node_modules
                 npm ci
                 cd ..
+                aws configure set region us-east-1
                 npx serverless deploy
               env:
                 CI: true
