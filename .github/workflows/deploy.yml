@@ -40,6 +40,10 @@ jobs:
                 wget https://github.com/phillyfan1138/fang_oost_cal_charts/raw/master/docs/OptionCalculation.pdf
                 wget https://github.com/phillyfan1138/fang_oost_cal_charts/raw/master/docs/OptionCalibration.pdf
                 cd ..
+              env:
+                CI: true
+                AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+                AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
             - name: deploy aws
               run: |
                 cd lambdas
