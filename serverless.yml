@@ -2,7 +2,7 @@ service: finside-main-site
 
 provider:
   name: aws
-  runtime: nodejs8.10
+  runtime: nodejs10.x
   stage: prd
   iamRoleStatements: #needed to call "apigateway" in sdk
     -  Effect: "Allow"
