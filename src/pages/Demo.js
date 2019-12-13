@@ -36,7 +36,10 @@ export default () => [
     key="demo"
   >
     <div style={flex}>
-      <embed src="https://realoptions.github.io/demo-api-app" style={style} />
+      <embed
+        src="https://realoptions.github.io/demo-api-app-flutter"
+        style={style}
+      />
     </div>
   </Jumbotron>
 ]
