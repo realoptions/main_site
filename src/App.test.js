@@ -9,9 +9,9 @@ import FrontPage from './pages/FrontPage'
 import Products from './pages/Products'
 import Developers from './pages/Developers'
 import awsApp from './reducers'
-import * as Swagger from './components/Swagger' //overwride swagger
+import * as SwaggerUI from 'swagger-ui-react' //overwride swagger
 import * as SocialSpan from './components/SocialSpan'
-Swagger.default = () => <div />
+SwaggerUI.default = () => <div />
 SocialSpan.default = () => <div />
 //const mockStore = configureStore([])
 //note that there will be not be any actual API calls if catalog.free.id is defined at this level

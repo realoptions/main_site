@@ -1,6 +1,6 @@
 import React from 'react'
 import { Provider } from 'react-redux'
-import * as Swagger from '../components/Swagger' //overwride swagger
+import * as SwaggerUI from 'swagger-ui-react' //overwride swagger //overwride swagger
 import { shallow, mount } from 'enzyme'
 import Developers from './Developers'
 import configureStore from 'redux-mock-store'
@@ -26,7 +26,7 @@ it('fully mounts', () => {
     apiKey: 'hello'
   }
   const store = mockStore(initialState)
-  Swagger.default = () => <div />
+  SwaggerUI.default = () => <div />
   const developer = mount(
     <Provider store={store}>
       <Developers />
