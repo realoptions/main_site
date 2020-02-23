@@ -10,10 +10,6 @@ jobs:
               run: |
                 npm ci 
                 npm test -- --coverage
-                cd lambdas
-                npm ci
-                npm test -- --coverage
-                cd ..
                 bash <(curl -s https://codecov.io/bash) -t ${{ secrets.CODECOV_TOKEN }}
               env:
                 CI: true

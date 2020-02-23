@@ -10,17 +10,10 @@
     "query-string": "^6.2.0",
     "react": "^16.8.2",
     "react-dom": "^16.8.1",
-    "react-facebook-login": "^4.1.1",
-    "react-google-login": "^5.0.2",
-    "react-redux": "^5.0.7",
     "react-router-dom": "^4.3.1",
     "react-scripts": "^3.4.0",
-    "reactstrap": "^6.4.0",
-    "redux": "^4.0.0",
-    "swagger-ui-react": "^3.25.0"
+    "reactstrap": "^6.4.0"
   },
-  "GoogleClientID": "117231459701-omruogcepkcm1kfanp39g94n5qjptcc9.apps.googleusercontent.com",
-  "FacebookAppID": "1672160866222878",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -55,7 +48,6 @@
     "js-yaml": "^3.13.1",
     "lint-staged": "^8.0.4",
     "prettier": "1.15.1",
-    "prop-types": "^15.6.2",
-    "redux-mock-store": "^1.5.3"
+    "prop-types": "^15.6.2"
   }
 }

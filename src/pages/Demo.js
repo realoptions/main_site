@@ -1,6 +1,5 @@
 import React from 'react'
 import { Jumbotron, Container, Row, Col } from 'reactstrap'
-import ApiModal from '../components/ApiModal'
 
 const paddingTop = { paddingTop: 20 }
 const flex = {
@@ -14,7 +13,6 @@ const style = {
 const jumboStyle = {
   height: '100em'
 }
-const modalStyle = { float: 'left' }
 export default () => [
   <Jumbotron
     fluid
@@ -23,9 +21,7 @@ export default () => [
   >
     <Container>
       <Row>
-        <Col style={paddingTop}>
-          <ApiModal style={modalStyle} />
-        </Col>
+        <Col style={paddingTop} />
       </Row>
     </Container>
   </Jumbotron>,

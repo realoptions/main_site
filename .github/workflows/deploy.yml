@@ -14,26 +14,12 @@ jobs:
               run: |
                 npm ci 
                 npm test
-                cd lambdas
-                npm ci
-                npm test
-                cd ..
               env:
                 CI: true
             - name: setup for deploy
               run: |
                 npm ci
-                googleClientId=$(node ./scripts/getGoogleId)
-                facebookAppId=$(node ./scripts/getFacebookId)
-                echo "REACT_APP_GoogleClientID=$googleClientId" >> .env
-                echo "REACT_APP_FacebookAppID=$facebookAppId" >> .env
-                for i in {1..5}; do wget -O ./scripts/releases.json https://api.github.com/repos/realoptions/option_price_faas/releases/latest?access_token=$GITHUB_TOKEN && break || sleep 10; done 
-                tag=$(node ./scripts/outputTag)
-                echo "REACT_APP_TAG=$tag" >> .env
                 npm run build
-                cd lambdas
-                echo "{\"GoogleClientID\":\"$googleClientId\", \"FacebookAppID\":\"$facebookAppId\"}" > clientInfo.json
-                cd ..
                 cd build
                 wget https://github.com/phillyfan1138/fang_oost_cal_charts/raw/master/docs/OptionCalculation.pdf
                 wget https://github.com/phillyfan1138/fang_oost_cal_charts/raw/master/docs/OptionCalibration.pdf
