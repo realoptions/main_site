@@ -39,7 +39,7 @@ export const AppMenu = () => {
             </NavLink>
           </NavItem>
           <NavItem>
-            <a class="nav-link" href={DEVELOPERS}>
+            <a className="nav-link" href={DEVELOPERS}>
               Developers
             </a>
           </NavItem>
