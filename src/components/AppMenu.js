@@ -36,28 +36,16 @@ const avatarStyle = {
 }
 const Avatar = ({ url }) => <img src={url} style={avatarStyle} alt="profile" />
 
-const reset = ({ setUsagePlan, setApiKey, setClientInformation }) => () => {
-  setUsagePlan() //back to default
-  setApiKey('')
+const reset = ({ setClientInformation }) => () => {
   setClientInformation() //back to default
 }
 
-export const AppMenu = ({
-  profilePicture,
-  provider,
-  setUsagePlan,
-  setApiKey,
-  setClientInformation
-}) => {
+export const AppMenu = ({ profilePicture, provider, setClientInformation }) => {
   const [open, setOpen] = useState(false)
   const onLogin = handleSocialLogin({
-    setUsagePlan,
-    setApiKey,
     setClientInformation
   })
   const resetAll = reset({
-    setUsagePlan,
-    setApiKey,
     setClientInformation
   })
   return (

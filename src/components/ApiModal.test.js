@@ -8,19 +8,7 @@ it('renders without error', () => {
   expect(modal).toBeDefined()
 })
 it('renders open button and copy button when signed in', () => {
-  const modal = shallow(
-    <ApiModal
-      email="myemail"
-      usagePlan={{
-        id: 'hello',
-        quota: {
-          limit: 5,
-          period: 'DAY'
-        }
-      }}
-      apiKey="key"
-    />
-  )
+  const modal = shallow(<ApiModal token="key" />)
   expect(modal.find(Button).length).toEqual(2)
 })
 it('only shows copy button when not signed in', () => {

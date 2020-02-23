@@ -2,47 +2,23 @@ import React from 'react'
 import GoogleLogin from 'react-google-login'
 import FacebookLogin from 'react-facebook-login/dist/facebook-login-render-props'
 import PropTypes from 'prop-types'
-import {
-  createApiKeyAndSubscribe,
-  getUsagePlans
-} from '../services/apiMiddleware'
 
-import { getApplicablePlan } from '../services/usagePlan'
 const GOOGLE_APP_ID = process.env.REACT_APP_GoogleClientID
 const FACEBOOK_APP_ID = process.env.REACT_APP_FacebookAppID
 const GOOGLE_PROVIDER = 'google'
 const FACEBOOK_PROVIDER = 'facebook'
 
 export const handleSocialLogin = ({
-  setUsagePlan,
-  setApiKey,
   setClientInformation
 }) => providerHoc => res => {
   const { email, profilePicture, token, provider } = providerHoc(res)
+  console.log(token)
   setClientInformation({
     email,
     provider,
     token,
     profilePicture
   })
-  return getUsagePlans({ token, provider })
-    .then(({ items }) => {
-      const usagePlan = getApplicablePlan(items)
-      if (!usagePlan) {
-        return Promise.reject('No applicable usage plan')
-      }
-      return Promise.all([
-        setUsagePlan(usagePlan),
-        createApiKeyAndSubscribe({
-          email,
-          usagePlanId: usagePlan.id,
-          token,
-          provider
-        })
-      ])
-    })
-    .then(([_, { keyValue }]) => setApiKey(keyValue))
-    .catch(err => console.log(err))
 }
 
 const facebookHoc = ({ email, name, picture, accessToken }) => ({
