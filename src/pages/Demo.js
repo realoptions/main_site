@@ -32,10 +32,7 @@ export default () => [
     key="demo"
   >
     <div style={flex}>
-      <embed
-        src="https://realoptions.github.io/demo-api-app-flutter"
-        style={style}
-      />
+      <embed src="https://demo.finside.org" style={style} />
     </div>
   </Jumbotron>
 ]
