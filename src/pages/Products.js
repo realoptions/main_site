@@ -3,7 +3,7 @@ import { Container, Row, Col } from 'reactstrap'
 import { DEVELOPERS } from '../routes/names'
 const padding = { paddingTop: 40, paddingBottom: 20 }
 const githubUrl = 'https://github.com/realoptions'
-const documentationUrl = `${process.env.PUBLIC_URL}/OptionCalculation.pdf`
+const documentationUrl = `https://github.com/phillyfan1138/fang_oost_cal_charts/raw/master/docs/OptionCalculation.pdf`
 
 export const Products = () => (
   <Container>
