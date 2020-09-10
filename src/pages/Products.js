@@ -1,6 +1,6 @@
 import React from 'react'
 import { Container, Row, Col } from 'reactstrap'
-import { DEVELOPERS } from '../routes/names'
+import { DEVELOPERS, RAPIDAPI } from '../routes/names'
 const padding = { paddingTop: 40, paddingBottom: 20 }
 const githubUrl = 'https://github.com/realoptions'
 const documentationUrl = `https://github.com/phillyfan1138/fang_oost_cal_charts/raw/master/docs/OptionCalculation.pdf`
@@ -31,15 +31,8 @@ export const Products = () => (
         <h3>Easy to use</h3>
         <p>
           Head over to the <a href={DEVELOPERS}>developer</a> section to start
-          pricing options! After that, head over to the
-          <a
-            href={
-              'https://rapidapi.com/realoptions-realoptions-default/api/finside1/details'
-            }
-          >
-            api portal
-          </a>
-          to purchase a plan.
+          pricing options! After that, head over to the{' '}
+          <a href={RAPIDAPI}>api portal</a> to purchase a plan.
         </p>
       </Col>
     </Row>
