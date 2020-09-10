@@ -31,7 +31,15 @@ export const Products = () => (
         <h3>Easy to use</h3>
         <p>
           Head over to the <a href={DEVELOPERS}>developer</a> section to start
-          pricing options!
+          pricing options! After that, head over to the
+          <a
+            href={
+              'https://rapidapi.com/realoptions-realoptions-default/api/finside1/details'
+            }
+          >
+            api portal
+          </a>
+          to purchase a plan.
         </p>
       </Col>
     </Row>
