@@ -3,8 +3,8 @@ import { Container, Row, Col } from 'reactstrap'
 import { DEVELOPERS, RAPIDAPI } from '../routes/names'
 const padding = { paddingTop: 40, paddingBottom: 20 }
 const githubUrl = 'https://github.com/realoptions'
-const documentationUrl = `https://github.com/phillyfan1138/fang_oost_cal_charts/raw/master/docs/OptionCalculation.pdf`
-
+const documentationUrl =
+  'https://github.com/realoptions/option_price_faas/raw/master/techdoc/OptionCalculation.pdf'
 export const Products = () => (
   <Container>
     <Row key="description">
