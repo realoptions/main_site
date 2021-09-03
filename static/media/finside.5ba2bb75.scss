@@ -1,0 +1,42 @@
+// Override default variables before the import
+//$body-bg: #000;
+
+$primary: #eb2f96;
+$secondary: #030852;
+$light: #f8f9fa;
+$dark: #030852;
+$mid: #e4e5eb;
+
+// Import Bootstrap and its default variables
+@import '~bootstrap/scss/bootstrap.scss';
+.light-text{
+    color: $white
+}
+.dark-text{
+    color: $dark
+}
+.logo-primary{
+    fill:$primary
+}
+.no-margin{
+    margin:0px
+}
+
+.white-background{
+    background:$white
+}
+
+.light-background{
+    background:$light
+}
+.mid-background{
+    background:$mid
+}
+
+.no-padding{
+    padding:0px
+}
+
+.small-margin-left{
+    margin-left:10px
+}
