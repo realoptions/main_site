@@ -1,14 +1,14 @@
 import React from 'react'
-import { Jumbotron, Container } from 'reactstrap'
+import { Container } from 'reactstrap'
 import { Link } from 'react-router-dom'
 import { PRODUCTS } from '../routes/names'
+import Jumbotron from '../components/Jumbtron'
 const heightStyle = { height: 640 }
 
 export default () => [
   <Jumbotron
+    key="top"
     style={heightStyle}
-    key="summary"
-    fluid
     className="bg-dark light-text no-margin"
   >
     <Container>
@@ -22,6 +22,7 @@ export default () => [
     </Container>
   </Jumbotron>,
   <Jumbotron
+    key="bottom"
     style={heightStyle}
     key="description"
     fluid

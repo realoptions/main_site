@@ -1,10 +1,14 @@
 import { AppMenu } from './AppMenu'
 import React from 'react'
-import { shallow } from 'enzyme'
+import { render, screen } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 
 describe('AppMenu', () => {
   it('renders ', () => {
-    const appMenu = shallow(<AppMenu />)
-    expect(appMenu).toBeDefined()
+    render(<MemoryRouter><AppMenu /></MemoryRouter>)
+    expect(screen.getByText("Home")).toBeDefined()
+    expect(screen.getByText("Products")).toBeDefined()
+    expect(screen.getByText("Developers")).toBeDefined()
+    expect(screen.getByText("Demo")).toBeDefined()
   })
 })

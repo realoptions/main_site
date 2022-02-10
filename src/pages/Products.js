@@ -5,7 +5,7 @@ const padding = { paddingTop: 40, paddingBottom: 20 }
 const githubUrl = 'https://github.com/realoptions'
 const documentationUrl =
   'https://github.com/realoptions/option_price_faas/raw/master/techdoc/OptionCalculation.pdf'
-export const Products = () => (
+const Products = () => (
   <Container>
     <Row key="description">
       <Col xs={12} sm={9} style={padding}>

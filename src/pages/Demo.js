@@ -1,7 +1,5 @@
 import React from 'react'
-import { Jumbotron, Container, Row, Col } from 'reactstrap'
-
-const paddingTop = { paddingTop: 20 }
+import Jumbotron from '../components/Jumbtron'
 const flex = {
   display: 'flex',
   justifyContent: 'center'
@@ -13,26 +11,14 @@ const style = {
 const jumboStyle = {
   height: '100em'
 }
-export default () => [
+
+export default () =>
   <Jumbotron
-    fluid
-    key="container"
-    className="mid-background no-margin no-padding"
-  >
-    <Container>
-      <Row>
-        <Col style={paddingTop} />
-      </Row>
-    </Container>
-  </Jumbotron>,
-  <Jumbotron
-    fluid
+    key="demo"
     className="no-margin mid-background"
     style={jumboStyle}
-    key="demo"
   >
     <div style={flex}>
       <embed src="https://demo.finside.org" style={style} />
     </div>
   </Jumbotron>
-]

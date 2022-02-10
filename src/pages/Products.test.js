@@ -1,17 +1,13 @@
 import React from 'react'
-import { shallow, mount } from 'enzyme'
-import FProducts, { Products } from './Products'
+import { render, screen } from '@testing-library/react'
+import Products from './Products'
 import { MemoryRouter } from 'react-router-dom'
 
-it('shallowly renders', () => {
-  const products = shallow(<Products />)
-  expect(products).toBeDefined()
-})
 it('fully mounts', () => {
-  const products = mount(
+  render(
     <MemoryRouter>
-      <FProducts />
+      <Products />
     </MemoryRouter>
   )
-  expect(products).toBeDefined()
+  expect(screen.getByText("Real Options")).toBeDefined()
 })
