@@ -1,16 +1,13 @@
 import React from 'react'
-import { shallow, mount } from 'enzyme'
+import { render, screen } from '@testing-library/react'
 import FrontPage from './FrontPage'
 import { MemoryRouter } from 'react-router-dom'
-it('shallowly renders', () => {
-  const frontPage = shallow(<FrontPage />)
-  expect(frontPage).toBeDefined()
-})
+
 it('fully mounts', () => {
-  const frontPage = mount(
+  render(
     <MemoryRouter>
       <FrontPage />
     </MemoryRouter>
   )
-  expect(frontPage).toBeDefined()
+  expect(screen.getByText("Derivatives Modeling as a Service")).toBeDefined()
 })
