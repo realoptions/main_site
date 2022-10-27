@@ -29,7 +29,7 @@ export const AppMenu = () => {
       <Collapse isOpen={open} navbar>
         <Nav className="ml-auto" navbar>
           <NavItem>
-            <NavLink to={HOME} tag={Link}>
+            <NavLink to={HOME} tag={Link} end>
               Home
             </NavLink>
           </NavItem>

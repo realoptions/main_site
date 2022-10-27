@@ -24,7 +24,6 @@ export default () => [
   <Jumbotron
     key="bottom"
     style={heightStyle}
-    key="description"
     fluid
     className="no-margin light-background"
   >
