@@ -21,7 +21,7 @@ describe('navigating around app', () => {
         <App />
       </MemoryRouter>
     )
-    expect(screen.getByText("Derivatives Modeling as a Service")).toBeDefined()
+    expect(screen.getByText('Derivatives Modeling as a Service')).toBeDefined()
   })
   it('correctly loads Products when going to products', () => {
     render(
@@ -29,7 +29,7 @@ describe('navigating around app', () => {
         <App />
       </MemoryRouter>
     )
-    expect(screen.getByText("Real Options")).toBeDefined()
+    expect(screen.getByText('Real Options')).toBeDefined()
   })
   it('correctly loads Demo when going to Demo', () => {
     render(

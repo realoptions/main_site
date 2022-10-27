@@ -9,5 +9,5 @@ it('fully mounts', () => {
       <Products />
     </MemoryRouter>
   )
-  expect(screen.getByText("Real Options")).toBeDefined()
+  expect(screen.getByText('Real Options')).toBeDefined()
 })

@@ -15,20 +15,22 @@ const router = createHashRouter([
   {
     path: process.env.PUBLIC_URL,
     element: <App />,
-    children: [{
-      path: HOME,
-      element: <FrontPage />
-    },
-    {
-      path: PRODUCTS,
-      element: <Products />
-    },
-    {
-      path: DEMO,
-      element: <Demo />
-    }]
+    children: [
+      {
+        path: HOME,
+        element: <FrontPage />,
+      },
+      {
+        path: PRODUCTS,
+        element: <Products />,
+      },
+      {
+        path: DEMO,
+        element: <Demo />,
+      },
+    ],
   },
-]);
+])
 
 ReactDOM.render(
   <RouterProvider router={router} />,

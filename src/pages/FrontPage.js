@@ -44,5 +44,5 @@ export default () => [
         <Link to={PRODUCTS}>products page</Link>.
       </p>
     </Container>
-  </Jumbotron>
+  </Jumbotron>,
 ]

@@ -9,5 +9,5 @@ it('fully mounts', () => {
       <FrontPage />
     </MemoryRouter>
   )
-  expect(screen.getByText("Derivatives Modeling as a Service")).toBeDefined()
+  expect(screen.getByText('Derivatives Modeling as a Service')).toBeDefined()
 })
