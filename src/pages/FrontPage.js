@@ -24,7 +24,6 @@ export default () => [
   <Jumbotron
     key="bottom"
     style={heightStyle}
-    key="description"
     fluid
     className="no-margin light-background"
   >
@@ -45,5 +44,5 @@ export default () => [
         <Link to={PRODUCTS}>products page</Link>.
       </p>
     </Container>
-  </Jumbotron>
+  </Jumbotron>,
 ]
