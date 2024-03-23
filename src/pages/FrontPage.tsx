@@ -1,4 +1,4 @@
-import { Col, Row, Typography, theme, Carousel } from 'antd';
+import { Col, Row, Typography, theme, Carousel, Divider } from 'antd';
 import { DEVELOPERS, RAPIDAPI } from '../routes/names'
 const githubUrl = 'https://github.com/realoptions'
 const documentationUrl =
@@ -6,28 +6,25 @@ const documentationUrl =
 
 //const colorStyle = { backgroundColor: blue.primary }
 const { Title, Text } = Typography;
-const TEXT_STYLE = { color: "white" }
-const TITLE_TEXT_STYLE: React.CSSProperties = {
-  color: "rgba(255, 255, 255, 0.5)",
-  fontSize: "11cqw",
-  textAlign: "center"
-}
+const TEXT_STYLE = { color: "white", fontSize: "1.5em" }
+const TITLE_STYLE = { color: "white", fontSize: "5em" }
 export default () => {
   const {
-    token: { colorPrimary, },
+    token: { colorPrimary, colorLink },
   } = theme.useToken();
   const contentStyle = {
     height: '50vh',
     background: colorPrimary,
     margin: 0,
+    paddingTop: 20,
     color: "white"
   }
   return <>
-    <div style={{ background: colorPrimary, paddingTop: "48px", paddingBottom: "0px" }}>
+    <div style={{ background: colorPrimary, paddingTop: 20, paddingBottom: 20 }}>
       <Row>
         <Col xs={1} sm={4} xxl={6}></Col>
         <Col xs={22} sm={16} xxl={12}>
-          <Title style={TEXT_STYLE}>Real Options: Derivatives Modeling as a Service</Title>
+          <Title style={TITLE_STYLE}>Real Options: Derivatives Modeling as a Service</Title>
           <Text style={TEXT_STYLE} >
             For decades, the same financial models have been programmed and
             re-programmed at every bank. We are changing that. Combining
@@ -40,13 +37,16 @@ export default () => {
         <Col xs={1} sm={4} xxl={6}></Col>
       </Row>
     </div >
+    <div style={{ background: colorLink, height: "6px", width: "100vw" }} />
     <Carousel autoplay style={{ paddingTop: 0, marginTop: 0 }} autoplaySpeed={5000}>
       <div>
         <div style={contentStyle}>
           <Row>
             <Col xs={1} sm={4} xxl={6}></Col>
-            <Col xs={22} sm={16} xxl={12}>
-              <Title level={2} style={TITLE_TEXT_STYLE}>Cutting Edge</Title>
+            <Col xs={22} sm={16} xxl={12} >
+              <svg viewBox="0 0 90 18" fill="rgba(255, 255, 255, 0.5)" >
+                <text x="50%" y="15" text-anchor="middle">Cutting Edge</text>
+              </svg>
               <Text style={TEXT_STYLE} >
                 Heston, Extended Merton Jump-Diffusion, and Extended CGMY! Each model
                 includes a diffusion component which is correlated with a stochastic
@@ -63,7 +63,9 @@ export default () => {
           <Row>
             <Col xs={1} sm={4} xxl={6}></Col>
             <Col xs={22} sm={16} xxl={12}>
-              <Title level={2} style={TITLE_TEXT_STYLE}>Easy to Use</Title>
+              <svg viewBox="0 0 90 18" fill="rgba(255, 255, 255, 0.5)" >
+                <text x="50%" y="15" text-anchor="middle">Easy to Use</text>
+              </svg>
               <Text style={TEXT_STYLE} >
                 Head over to the <a href={DEVELOPERS}>developer</a> section to start
                 pricing options! After that, head over to the{' '}
@@ -79,7 +81,9 @@ export default () => {
           <Row>
             <Col xs={1} sm={4} xxl={6}></Col>
             <Col xs={22} sm={16} xxl={12}>
-              <Title level={2} style={TITLE_TEXT_STYLE}>Tested</Title>
+              <svg viewBox="0 0 90 18" fill="rgba(255, 255, 255, 0.5)"  >
+                <text x="50%" y="15" text-anchor="middle">Tested</text>
+              </svg>
               <Text style={TEXT_STYLE} >
                 We extensively test our projects for accuracy.{' '}
                 <a href={githubUrl} target="_blank" rel="noopener noreferrer">
@@ -97,7 +101,9 @@ export default () => {
           <Row>
             <Col xs={1} sm={4} xxl={6}></Col>
             <Col xs={22} sm={16} xxl={12}>
-              <Title level={2} style={TITLE_TEXT_STYLE}>Documented</Title>
+              <svg viewBox="0 0 90 18" fill="rgba(255, 255, 255, 0.5)"  >
+                <text x="50%" y="15" text-anchor="middle">Documented</text>
+              </svg>
               <Text style={TEXT_STYLE} >
                 No option models are complete without documentation! We provide
                 comprehensive{' '}
