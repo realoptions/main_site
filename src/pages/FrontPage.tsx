@@ -4,7 +4,9 @@ const githubUrl = 'https://github.com/realoptions'
 const documentationUrl =
   'https://github.com/realoptions/option_price_faas/raw/master/techdoc/OptionCalculation.pdf'
 
-//const colorStyle = { backgroundColor: blue.primary }
+const PADDING = 20
+const VIEW_BOX = "0 0 90 18"
+const OVERLAY_COLOR = "rgba(255, 255, 255, 0.5)"
 const { Title, Text } = Typography;
 const TEXT_STYLE = { color: "white", fontSize: "1.5em" }
 const TITLE_STYLE = { color: "white", fontSize: "5em" }
@@ -16,11 +18,11 @@ export default () => {
     height: '50vh',
     background: colorPrimary,
     margin: 0,
-    paddingTop: 20,
+    paddingTop: PADDING,
     color: "white"
   }
   return <>
-    <div style={{ background: colorPrimary, paddingTop: 20, paddingBottom: 20 }}>
+    <div style={{ background: colorPrimary, paddingTop: PADDING, paddingBottom: PADDING }}>
       <Row>
         <Col xs={1} sm={4} xxl={6}></Col>
         <Col xs={22} sm={16} xxl={12}>
@@ -44,7 +46,7 @@ export default () => {
           <Row>
             <Col xs={1} sm={4} xxl={6}></Col>
             <Col xs={22} sm={16} xxl={12} >
-              <svg viewBox="0 0 90 18" fill="rgba(255, 255, 255, 0.5)" >
+              <svg viewBox={VIEW_BOX} fill={OVERLAY_COLOR} >
                 <text x="50%" y="15" text-anchor="middle">Cutting Edge</text>
               </svg>
               <Text style={TEXT_STYLE} >
@@ -63,7 +65,7 @@ export default () => {
           <Row>
             <Col xs={1} sm={4} xxl={6}></Col>
             <Col xs={22} sm={16} xxl={12}>
-              <svg viewBox="0 0 90 18" fill="rgba(255, 255, 255, 0.5)" >
+              <svg viewBox={VIEW_BOX} fill={OVERLAY_COLOR}  >
                 <text x="50%" y="15" text-anchor="middle">Easy to Use</text>
               </svg>
               <Text style={TEXT_STYLE} >
@@ -81,7 +83,7 @@ export default () => {
           <Row>
             <Col xs={1} sm={4} xxl={6}></Col>
             <Col xs={22} sm={16} xxl={12}>
-              <svg viewBox="0 0 90 18" fill="rgba(255, 255, 255, 0.5)"  >
+              <svg viewBox={VIEW_BOX} fill={OVERLAY_COLOR}   >
                 <text x="50%" y="15" text-anchor="middle">Tested</text>
               </svg>
               <Text style={TEXT_STYLE} >
@@ -101,7 +103,7 @@ export default () => {
           <Row>
             <Col xs={1} sm={4} xxl={6}></Col>
             <Col xs={22} sm={16} xxl={12}>
-              <svg viewBox="0 0 90 18" fill="rgba(255, 255, 255, 0.5)"  >
+              <svg viewBox={VIEW_BOX} fill={OVERLAY_COLOR}   >
                 <text x="50%" y="15" text-anchor="middle">Documented</text>
               </svg>
               <Text style={TEXT_STYLE} >
