@@ -7,3 +7,7 @@ window.matchMedia = window.matchMedia || function () {
         removeListener: function () { }
     };
 };
+
+import { TextEncoder } from 'util';
+
+global.TextEncoder = TextEncoder;

@@ -1,7 +1,7 @@
 import React from 'react'
 import App from './App'
 import { render, screen, waitFor } from '@testing-library/react'
-import { createMemoryRouter, RouterProvider } from 'react-router-dom'
+import { createMemoryRouter, RouterProvider } from 'react-router'
 import { DEMO, HOME } from './routes/names'
 import FrontPage from './pages/FrontPage'
 import Demo from './pages/Demo'
