@@ -1,4 +1,5 @@
-import { Col, Row, Typography, theme, Carousel, Divider } from 'antd';
+import { Col, Row, Typography, theme, Carousel } from 'antd';
+import React from 'react'
 import { DEVELOPERS, RAPIDAPI } from '../routes/names'
 const githubUrl = 'https://github.com/realoptions'
 const documentationUrl =
@@ -47,7 +48,7 @@ export default () => {
             <Col xs={1} sm={4} xxl={6}></Col>
             <Col xs={22} sm={16} xxl={12} >
               <svg viewBox={VIEW_BOX} fill={OVERLAY_COLOR} >
-                <text x="50%" y="15" text-anchor="middle">Cutting Edge</text>
+                <text x="50%" y="15" textAnchor="middle">Cutting Edge</text>
               </svg>
               <Text style={TEXT_STYLE} >
                 Heston, Extended Merton Jump-Diffusion, and Extended CGMY! Each model
@@ -66,7 +67,7 @@ export default () => {
             <Col xs={1} sm={4} xxl={6}></Col>
             <Col xs={22} sm={16} xxl={12}>
               <svg viewBox={VIEW_BOX} fill={OVERLAY_COLOR}  >
-                <text x="50%" y="15" text-anchor="middle">Easy to Use</text>
+                <text x="50%" y="15" textAnchor="middle">Easy to Use</text>
               </svg>
               <Text style={TEXT_STYLE} >
                 Head over to the <a href={DEVELOPERS}>developer</a> section to start
@@ -84,7 +85,7 @@ export default () => {
             <Col xs={1} sm={4} xxl={6}></Col>
             <Col xs={22} sm={16} xxl={12}>
               <svg viewBox={VIEW_BOX} fill={OVERLAY_COLOR}   >
-                <text x="50%" y="15" text-anchor="middle">Tested</text>
+                <text x="50%" y="15" textAnchor="middle">Tested</text>
               </svg>
               <Text style={TEXT_STYLE} >
                 We extensively test our projects for accuracy.{' '}
@@ -104,7 +105,7 @@ export default () => {
             <Col xs={1} sm={4} xxl={6}></Col>
             <Col xs={22} sm={16} xxl={12}>
               <svg viewBox={VIEW_BOX} fill={OVERLAY_COLOR}   >
-                <text x="50%" y="15" text-anchor="middle">Documented</text>
+                <text x="50%" y="15" textAnchor="middle">Documented</text>
               </svg>
               <Text style={TEXT_STYLE} >
                 No option models are complete without documentation! We provide

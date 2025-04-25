@@ -4,10 +4,10 @@ import React from 'react'
 import FrontPage from './pages/FrontPage'
 import Demo from './pages/Demo'
 
-import { Avatar, Space, Layout, Menu, theme } from 'antd';
+import { Avatar, Layout, Menu, theme } from 'antd';
 import logo from './assets/Logo.png'
-import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import { ItemType } from 'antd/es/menu/hooks/useItems'
+import { Outlet, useNavigate, useLocation } from "react-router";
+import { ItemType } from 'antd/es/menu/interface'
 import { HOME, DEMO, DEVELOPERS } from './routes/names'
 const { Header, Content } = Layout;
 
@@ -18,9 +18,9 @@ export const MENU_ITEMS: MenuItem[] = [
 ]
 interface MenuItem {
   key: string;
-  label: string | JSX.Element;
+  label: string | React.JSX.Element;
   children?: ItemType[];
-  element?: JSX.Element;
+  element?: React.JSX.Element;
   theme?: string;
 }
 
