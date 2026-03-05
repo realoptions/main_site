@@ -13,8 +13,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router": "^7.5.2",
-    "react-router-dom": "^7.5.2",
-    "react-scripts": "^5.0.1"
+    "react-router-dom": "^7.5.2"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -24,11 +23,11 @@
     ]
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "predeploy": "react-scripts build",
+    "start": "vite",
+    "build": "vite build",
+    "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
-    "test": "react-scripts test --env=jsdom",
+    "test": "vitest",
     "eject": "react-scripts eject",
     "prettier": "prettier --single-quote --no-semi --write 'src/**/*.js'"
   },
@@ -49,14 +48,19 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "@testing-library/jest-dom": "^6.6.0",
-    "@testing-library/react": "^16.3.0",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
+    "@vitejs/plugin-react": "^5.1.4",
+    "@vitest/coverage-v8": "^4.0.18",
     "gh-pages": "^6.1.1",
     "husky": "^8.0.3",
     "js-yaml": "^4.1.0",
+    "jsdom": "^28.1.0",
     "lint-staged": "^15.2.9",
     "prettier": "^3.2.1",
+    "vite": "^7.3.1",
+    "vitest": "^4.0.18",
     "web-vitals": "^2.1.4"
   }
 }
