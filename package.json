@@ -59,7 +59,7 @@
     "jsdom": "^28.1.0",
     "lint-staged": "^15.2.9",
     "prettier": "^3.2.1",
-    "vite": "^7.3.1",
+    "vite": "^7.3.2",
     "vitest": "^4.0.18",
     "web-vitals": "^2.1.4"
   }
