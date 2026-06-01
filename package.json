@@ -52,7 +52,7 @@
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "@vitejs/plugin-react": "^5.1.4",
-    "@vitest/coverage-v8": "^4.0.18",
+    "@vitest/coverage-v8": "^4.1.8",
     "gh-pages": "^6.1.1",
     "husky": "^8.0.3",
     "js-yaml": "^4.1.0",
@@ -60,7 +60,7 @@
     "lint-staged": "^15.2.9",
     "prettier": "^3.2.1",
     "vite": "^7.3.2",
-    "vitest": "^4.0.18",
+    "vitest": "^4.1.8",
     "web-vitals": "^2.1.4"
   }
 }
