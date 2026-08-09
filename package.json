@@ -55,7 +55,7 @@
     "@vitest/coverage-v8": "^4.1.8",
     "gh-pages": "^6.1.1",
     "husky": "^8.0.3",
-    "js-yaml": "^4.3.0",
+    "js-yaml": "^4.3.1",
     "jsdom": "^28.1.0",
     "lint-staged": "^15.2.9",
     "prettier": "^3.2.1",
