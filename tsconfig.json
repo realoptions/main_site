@@ -14,7 +14,10 @@
         "forceConsistentCasingInFileNames": true,
         "noFallthroughCasesInSwitch": true,
         "module": "esnext",
-        "moduleResolution": "node",
+        // "node" (node10) resolution cannot read the `exports` maps of modern
+        // packages (react-router, @vitejs/plugin-react), so type-checking failed
+        // on every import. "bundler" is the correct mode for a Vite app.
+        "moduleResolution": "bundler",
         "resolveJsonModule": true,
         "isolatedModules": true,
         "noEmit": true,

@@ -1,73 +1,55 @@
 import React from 'react'
 
-
-import FrontPage from './pages/FrontPage'
-import Demo from './pages/Demo'
-
-import { Avatar, Layout, Menu, theme } from 'antd';
+import { Avatar, Layout, Menu, theme } from 'antd'
 import logo from './assets/Logo.png'
-import { Outlet, useNavigate, useLocation } from "react-router";
-import { ItemType } from 'antd/es/menu/interface'
-import { HOME, DEMO, DEVELOPERS } from './routes/names'
-const { Header, Content } = Layout;
+import { Outlet, useNavigate, useLocation } from 'react-router'
+import { resolveNavAction, toMenuItems } from './routes/config'
+const { Header, Content } = Layout
 
-export const MENU_ITEMS: MenuItem[] = [
-  { key: HOME, label: "Home", element: <FrontPage /> },
-  { key: DEVELOPERS, label: "Developers" },
-  { key: DEMO, label: "Demo", element: <Demo /> }
-]
-interface MenuItem {
-  key: string;
-  label: string | React.JSX.Element;
-  children?: ItemType[];
-  element?: React.JSX.Element;
-  theme?: string;
-}
-
-const isKeyInRoute = (key: string, menu_items: MenuItem[]) => {
-  return menu_items.find(v => v.key === key) ? true : false
-}
-
-const isValidUrl = (urlString: string) => {
-  try {
-    return Boolean(new URL(urlString));
-  }
-  catch (e) {
-    return false;
-  }
-}
 const App: React.FC = () => {
-  const navigate = useNavigate();
+  const navigate = useNavigate()
   const location = useLocation()
   const {
     token: { colorBgContainer },
-  } = theme.useToken();
+  } = theme.useToken()
+
+  const handleMenuClick = ({ key }: { key: string }) => {
+    const action = resolveNavAction(key)
+    if (!action) return
+    if (action.kind === 'open-external') {
+      window.location.href = action.href
+    } else {
+      navigate(action.path)
+    }
+  }
   return (
-    <Layout className="layout" style={{ minHeight: "100vh" }}>
-      <Header style={{ display: 'flex', alignItems: 'center', backgroundColor: colorBgContainer }}>
-        <Avatar size="large" icon={<img src={logo} alt="" />} style={{ backgroundColor: colorBgContainer }} />
+    <Layout className="layout" style={{ minHeight: '100vh' }}>
+      <Header
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          backgroundColor: colorBgContainer,
+        }}
+      >
+        <Avatar
+          size="large"
+          icon={<img src={logo} alt="" />}
+          style={{ backgroundColor: colorBgContainer }}
+        />
         <Menu
           style={{ flex: 1, minWidth: 0 }}
           theme="light"
           mode="horizontal"
-          onClick={({ key }) => {
-            if (isValidUrl(key)) {
-              window.location.href = key
-            }
-            else {
-              isKeyInRoute(key, MENU_ITEMS) && navigate(key)
-            }
-          }}
-          selectedKeys={[location.pathname.replace("/", "")]}
-          items={MENU_ITEMS.map(({ key, label, children, theme }) => ({ key, label, children, theme }))}
+          onClick={handleMenuClick}
+          selectedKeys={[location.pathname.replace(/^\//, '')]}
+          items={toMenuItems()}
         />
       </Header>
       <Content style={{ padding: '0px' }}>
         <Outlet />
       </Content>
-    </Layout >
-  );
-};
-
+    </Layout>
+  )
+}
 
 export default App
