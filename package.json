@@ -5,22 +5,13 @@
   "private": true,
   "dependencies": {
     "@ant-design/colors": "^7.0.2",
-    "@types/jest": "^29.5.11",
     "@types/node": "^20.11.0",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "antd": "^5.15.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-router": "^8.3.0",
-    "react-router-dom": "^7.18.2"
-  },
-  "jest": {
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx}",
-      "!**/registerServiceWorker.js",
-      "!**/setupTests.js"
-    ]
+    "react-router": "^8.3.0"
   },
   "scripts": {
     "start": "vite",
@@ -28,19 +19,19 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build",
     "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit",
     "eject": "react-scripts eject",
-    "prettier": "prettier --single-quote --no-semi --write 'src/**/*.js'"
+    "prettier": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,css}\"",
+    "format": "npm run prettier",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,css}\"",
+    "prepare": "husky install"
   },
   "lint-staged": {
-    "src/**/*.{js,jsx,json,css}": [
-      "prettier --single-quote --write --no-semi",
-      "git add"
+    "src/**/*.{ts,tsx,js,jsx,json,css}": [
+      "prettier --write"
     ]
-  },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged"
-    }
   },
   "browserslist": [
     ">0.2%",
@@ -59,6 +50,7 @@
     "jsdom": "^28.1.0",
     "lint-staged": "^15.2.9",
     "prettier": "^3.2.1",
+    "typescript": "^5.9.3",
     "vite": "^8.0.16",
     "vitest": "^4.1.11",
     "web-vitals": "^2.1.4"

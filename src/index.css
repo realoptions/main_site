@@ -1,14 +1,12 @@
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
-  background-color: #FAFAFA
+  background-color: #fafafa;
 }
 
 /*
-a {
-    color: #9E9E9E;
-}*/
-html {
-  font-family: 'Roboto', sans-serif;
-}
+  Typography is intentionally NOT set here. The font stack comes from the
+  `fontFamily` theme token in src/index.tsx, which is the single source of truth.
+  The previous `body { font-family: sans-serif }` / `html { font-family: Roboto }`
+  rules fought that token — and named a webfont that was never actually loaded.
+*/
